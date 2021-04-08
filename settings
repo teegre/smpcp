@@ -1,0 +1,23 @@
+#
+#  _  _  ____  ____
+# ( \/ )(  _ \(  _ \
+# / \/ \ ) __/ )   /
+# \_)(_/(__)  (__\_)
+#
+# SETTINGS
+# C : 2021/04/02
+# M : 2021/04/05
+# D : Configuration file.
+
+sticker_db = ~/.config/mpd/sticker.sql
+clean = 1 month
+filter = off
+nonstop = off
+skip = 2
+station = music non-stop radio
+voice = disable
+
+# internal use
+volume = 100
+dim = off
+single = off
