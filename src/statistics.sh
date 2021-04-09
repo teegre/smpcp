@@ -54,8 +54,6 @@ set_sticker() {
   return 1
 }
 
-
-
 media_update() {
   __is_mpd_running || {
     echo > "$HOME/.config/currentmedia"
@@ -64,7 +62,7 @@ media_update() {
 
   local fmt='artist %artist%\ntitle %title%\nalbum %album%\ndate %date%'
   {
-    state -p
+    echo "status $(state -p)"
     getcurrent "$fmt"
   } > "$HOME/.config/currentmedia"
 }
