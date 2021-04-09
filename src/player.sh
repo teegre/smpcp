@@ -63,10 +63,30 @@ stop() {
   # stop playback.
 
   __is_mpd_running || return 1
-  local s
-  s="$(state)"
-  [[ $s == "stop" ]] && return 1
-  cmd stop
+
+  state && cmd stop
+}
+
+stop_after_current() {
+  # stop playback when current song is over.
+
+  __is_mpd_running || return 1
+
+  state || return 1
+
+  [[ $(read_config single) == "on" ]] && return 0
+
+  write_config single on || return 1
+
+  single 1 &> /dev/null || return 1
+
+  while read -r; do
+    [[ $REPLY ]] && {
+      write_config single off
+      single 0 &> /dev/null
+    }
+  done < <(./idlecmd player)
+
 }
 
 next() {
