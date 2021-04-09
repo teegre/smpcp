@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/08
+# M │ 2021/04/09
 # D │ Queue management.
 
 list() {
@@ -209,7 +209,7 @@ add_album() {
   # add current song's album
   # or add given album.
   # usage: add_album [-p] [ <artist> <album> ]
-  # -p starts playback if needed.
+  # -p starts album playback.
   
   __is_mpd_running || return 1
 
@@ -220,11 +220,8 @@ add_album() {
 
   [[ $1 && $2 ]] && {
 
-    cmd clear
-
-    if search artist "$1" album "$2" &> /dev/null; then
-      searchadd artist "$1" album "$2"
-    elif search albumartist "$1" album "$2" &> /dev/null; then
+    if search albumartist "$1" album "$2" &> /dev/null; then
+      [[ $PLAY ]] && cmd clear
       searchadd albumartist "$1" album "$2"
     else
       __msg E "nothing found."
@@ -253,7 +250,7 @@ add_album() {
 
   # does album contains other tracks?
   [[ $(fcmd -c lsinfo "$album_uri" file) -eq 1 ]] && {
-    __msg W "no more songs."
+    __msg E "'$(getcurrent "%album%")' no more songs."
     return 1
   }
 
@@ -271,7 +268,7 @@ add_album() {
 
   [[ $PLAY ]] && {
     state || play 1
-    __msg M "$(getcurrent "now playing: %artist% - %album%")"
+    __msg M "$(getcurrent "now playing: %album%")"
   }
 
   return 0
