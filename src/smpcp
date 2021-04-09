@@ -34,6 +34,11 @@ source playlist.sh
 source query.sh
 source statistics.sh
 
+__is_mpd_running || {
+  __msg E "MPD is not running."
+  exit 1
+}
+
 case $1 in
   add        ) shift; add "$@" ;;
   addalbum   ) shift; add_album "$@" ;;
