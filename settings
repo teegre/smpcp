@@ -1,23 +1,40 @@
 #
-#  _  _  ____  ____
-# ( \/ )(  _ \(  _ \
-# / \/ \ ) __/ )   /
-# \_)(_/(__)  (__\_)
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
+# ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
+# ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
+#  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
+#
+# This file is part of smpcp.
+# Copyright (C) 2021, Stéphane MEYER.
+#
+# Smpcp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>
 #
 # SETTINGS
-# C : 2021/04/02
-# M : 2021/04/05
+# C : 2021/04/09
+# M : 2021/04/09
 # D : Configuration file.
 
 sticker_db = ~/.config/mpd/sticker.sql
 clean = 1 month
-filter = off
-nonstop = off
 skip = 2
-station = music non-stop radio
+station_name = music non-stop radio
 voice = disable
 
 # internal use
 volume = 100
 dim = off
 single = off
+filter = off
+nonstop = off
