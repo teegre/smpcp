@@ -31,15 +31,8 @@
 list() {
   # (kinda) pretty print queue.
 
-  __is_mpd_running || return 1
-  
-  local cols cpos pl
-
-  shopt -s checkwinsize; (:;:)
-  ((cols=COLUMNS))
-  
+  local pl cpos
   pl="$(mktemp)"
-
   cpos="$(getcurrent "%pos%")"
 
   cmd playlistinfo | __parse_song_info "%artist% →%title% →%album%" \
@@ -52,12 +45,25 @@ list() {
     return
   }
 
+  local duration=0 count=0
+  while read -r; do
+    ((duration+=${REPLY%%.*}))
+    ((count++))
+  done < <(fcmd playlistinfo duration)
+
+  shopt -s checkwinsize; (:;:)
+
   column \
     -d -N "pos,artist,title,album" \
     -T "title,album" \
-    -c "$cols" \
+    -c "$COLUMNS" \
     -t -s "→" \
     -o "│ " "$pl" | less -F
+
+  local fmt
+
+  ((duration>3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
+  echo -e "---\n$((count)) item(s) - $(TZ=UTC _date "$fmt" $((duration)))"
 
   rm "$pl" 2> /dev/null
 }
@@ -66,8 +72,6 @@ add() {
   # add song(s) to queue.
   # song(s) can also be piped.
   # usage: add <uri>
-
-  __is_mpd_running || return 1
 
   if (( $# > 0 )); then
     cmd add "$@"
@@ -83,8 +87,6 @@ delete() {
   # usage:
   #  delete <pos>
   #  delete <start-end>
-
-  __is_mpd_running || return 1
 
   [[ $1 =~ ^([0-9]+)-([0-9]+)$ ]] && {
     local start end
@@ -114,8 +116,6 @@ delete() {
 move() {
   # move song(s) within the queue.
   # usage: move [<from> | <start-end>] <to>
-
-  __is_mpd_running || return 1
 
   [[ $1 =~ ^([0-9]+)-([0-9]+)$ ]] && {
     local start end
@@ -170,8 +170,6 @@ crop() {
   # delete all songs from the queue
   # except for the currently playing song.
 
-  __is_mpd_running || return 1
-
   local cur_id
   cur_id="$(getcurrent "%id%")"
 
@@ -206,13 +204,11 @@ __album_uri() {
 }
 
 add_album() {
-  # add current song's album
+  # add album for current song,
   # or add given album.
   # usage: add_album [-p] [ <artist> <album> ]
   # -p starts album playback.
   
-  __is_mpd_running || return 1
-
   [[ $1 == "-p" ]] && {
     local PLAY=1
     shift
