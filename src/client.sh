@@ -60,8 +60,8 @@ fi
 
 if [[ $1 =~ ^idle.*$ ]]; then
   case $1 in
-    idle    ) shift; ./idlecmd "$@" ;;
-    idleloop) shift; ./idlecmd loop "$@" ;;
+    idle    ) shift; idlecmd "$@" ;;
+    idleloop) shift; idlecmd loop "$@" ;;
     *       ) echo "ACK [] {} invalid command."; return
   esac
   return $?

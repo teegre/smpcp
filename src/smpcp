@@ -27,12 +27,14 @@
 # M │ 2021/04/09
 # D │ Main program.
 
-source client.sh
-source core.sh
-source player.sh
-source playlist.sh
-source query.sh
-source statistics.sh
+declare SMPCP_LIB="/usr/lib/smpcp"
+
+source "$SMPCP_LIB"/client.sh
+source "$SMPCP_LIB"/core.sh
+source "$SMPCP_LIB"/player.sh
+source "$SMPCP_LIB"/playlist.sh
+source "$SMPCP_LIB"/query.sh
+source "$SMPCP_LIB"/statistics.sh
 
 __is_mpd_running || {
   __msg E "MPD is not running."

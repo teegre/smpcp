@@ -20,6 +20,8 @@ install: src/$(PROGNAME).out
 	${CC} src/idle.c $(LIBS) -o src/idlecmd
 	install -m755 src/idlecmd $(DESTDIR)$(BINDIR)
 
+	install -m755 src/tracker $(DESTDIR)$(BINDIR)
+
 	install -Dm644 src/*.sh   -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	install -Dm644 settings     -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	install -Dm644 $(MANPAGE) -t $(DESTDIR)$(MANDIR)
@@ -32,6 +34,7 @@ install: src/$(PROGNAME).out
 uninstall:
 	rm $(DESTDIR)$(BINDIR)/$(PROGNAME)
 	rm $(DESTDIR)$(BINDIR)/idlecmd
+	rm $(DESTDIR)$(BINDIR)/tracker
 	rm -rf $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	rm -rf $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	rm $(DESTDIR)$(MANDIR)/$(MANPAGE)

@@ -23,15 +23,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>
 #
-# STALKER
+# TRACKER
 # C : 2021/04/09
 # M : 2021/04/09
-# D : Wait until a song is over and update stats.
+# D : Notify and update statistics on event.
 
-source client.sh
-source core.sh
-source player.sh
-source statistics.sh
+
+declare SMPCP_LIB="/usr/lib/smpcp"
+
+source "$SMPCP_LIB"/client.sh
+source "$SMPCP_LIB"/core.sh
+source "$SMPCP_LIB"/player.sh
+source "$SMPCP_LIB"/statistics.sh
 
 declare _ID
 
@@ -40,9 +43,9 @@ __is_mpd_running || {
   exit 1
 }
 
-stalk() {
-  # wait until a song is over.
-  # 
+track() {
+  # notify song change and
+  # and update playback statistics.
 
   local s
   s="$(state -p)"
@@ -69,10 +72,10 @@ stalk() {
 }
 
 
-__stalking() { kill -0 "$pid" 2> /dev/null && return 0 || return 1; }
+__tracking() { kill -0 "$pid" 2> /dev/null && return 0 || return 1; }
 
-stalk & pid=$!
-__stalking || unset pid
+track & pid=$!
+__tracking || unset pid
   
 while read -r; do
   sleep 1
@@ -80,10 +83,10 @@ while read -r; do
   s="$(state -p)"
 
   # song changed.
-  [[ $(getcurrent "%id%") != "$_ID" ]] && __stalking && {
+  [[ $(getcurrent "%id%") != "$_ID" ]] && __tracking && {
     [[ $s == "play" ]] && {
       kill "$pid" 2> /dev/null
-      stalk & pid=$!
+      track & pid=$!
       continue
     }
   }
@@ -97,8 +100,8 @@ while read -r; do
   }
   
   # song ended normally.
-  [[ $s == "play" ]] && ! __stalking && {
-    stalk & pid=$!
+  [[ $s == "play" ]] && ! __tracking && {
+    track & pid=$!
   }
 
-done < <(./idlecmd loop player)
+done < <(cmd idleloop player)
