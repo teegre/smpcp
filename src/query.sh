@@ -25,10 +25,8 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/04/08
+# M │ 2021/04/09
 # D │ Database query.
-
-source client.sh
 
 search() {
   # case insensitive search in the database.
