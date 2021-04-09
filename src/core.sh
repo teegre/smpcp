@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/06
+# M │ 2021/04/09
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -37,7 +37,7 @@ declare SMPCP_LOG="$HOME/.config/smpcp/log"
 declare STICKER_DB="$HOME/.config/mpd/sticker.sql"
 declare SMPCP_LOCK="$HOME/.config/smpcp/lock"
 
-_date() { printf "(%$1)T" "-1"; }
+_date() { printf "%($1)T" "${2:--1}"; }
 
 now() { _date "%F %T"; }
 
