@@ -25,11 +25,8 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/08
+# M : 2021/04/09
 # D : Statistics management.
-
-source core.sh
-source client.sh
 
 get_sticker() {
   local uri param value
