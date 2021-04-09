@@ -10,12 +10,14 @@
 
 ## Description
 
-**Smpcp** is a simple client for [Music Player Daemon](https://www.musicpd.org) written in Bash, that includes some more advanced features like:
+**Smpcp** is a simple client for [Music Player Daemon](https://www.musicpd.org) written in Bash (and C), that includes some more advanced features like:
 
 *  Music non stop.
 *  Song rating.
 *  Playback statistics.
+*  Voice over.
 
 # Dependences
 
-bash coreutils libmpdclient libnotify util-linux
+bash coreutils gnu-netcat libmpdclient libnotify util-linux  
+optional: espeak
