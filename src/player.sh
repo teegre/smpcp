@@ -32,8 +32,6 @@ toggle() {
   # toggle music player playback state.
   # if a track number is given, play it.
 
-  __is_mpd_running || return 1
-
   if [[ "${*}" ]]; then
     play "$@"
   else 
@@ -41,13 +39,8 @@ toggle() {
   fi
 }
 
-# same as toggle.
-pause() { toggle "$@"; }
-
 play() {
   # start playback.
-
-  __is_mpd_running || return 1
 
   local track
   track="$1"
@@ -62,15 +55,11 @@ play() {
 stop() {
   # stop playback.
 
-  __is_mpd_running || return 1
-
   state && cmd stop
 }
 
 stop_after_current() {
   # stop playback when current song is over.
-
-  __is_mpd_running || return 1
 
   state || return 1
 
@@ -91,15 +80,11 @@ stop_after_current() {
 
 next() {
   # play next song.
-
-  __is_mpd_running || return 1
   cmd next
 }
 
 previous() {
   # play previous song.
-
-  __is_mpd_running || return 1
   cmd previous
 }
 
@@ -109,8 +94,6 @@ __playback_mode() {
   # enable with on or 1.
   # disable with off or 0.
   # print status otherwise.
-
-  __is_mpd_running || return 1
 
   local mode value
   mode="$1"; shift
@@ -145,8 +128,6 @@ xfade() {
   # crossfade:
   # set/show status.
 
-  __is_mpd_running || return 1
-  
   if [[ $1 =~ ^[0-9]+ ]]; then
     cmd crossfade "$1" || return 1
     __msg M "xfade $1 second(s)"
@@ -167,8 +148,6 @@ replaygain() {
   # replaygain:
   # set/show status.
 
-  __is_mpd_running || return 1
-
   case $1 in
     track) cmd replay_gain_mode track || return 1 ;;
     album) cmd replay_gain_mode album || return 1 ;;
@@ -180,8 +159,6 @@ replaygain() {
 
 pstatus() {
   # terse status display.
-
-  __is_mpd_running || return 1
 
   local status state
   state="$(state -p)"
@@ -220,8 +197,6 @@ pstatus() {
 status() {
   # display player status
   # and current song info.
-
-  __is_mpd_running || return 1
 
   pstatus
   getcurrent "%artist%: %title%\n%album% | %date%"
