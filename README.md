@@ -15,9 +15,7 @@
 *  Music non stop.
 *  Song rating.
 *  Playback statistics.
-*  Voice over.
 
 # Dependences
 
 bash coreutils gnu-netcat libmpdclient libnotify util-linux  
-optional: espeak
