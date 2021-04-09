@@ -25,7 +25,7 @@
 #
 # ALIASES
 # C │ 2021/04/05
-# D │ 2021/04/07
+# D │ 2021/04/09
 # M │ Aliases.
 
 alias aa='smpcp addalbum'
