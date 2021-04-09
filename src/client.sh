@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/08
+# M │ 2021/04/09
 # D │ Basic MPD client.
 
 __is_mpd_running() {
@@ -280,4 +280,67 @@ getnext() {
   songid="$(fcmd status nextsongid)"
   [[ $songid ]] || return 1
   cmd playlistid "$songid" | __parse_song_info "$fmt" 
+}
+
+getduration() {
+  # get song duration in seconds.
+  # usage: getduration [-h] [uri]
+  # -h print time in a human readable format.
+
+  __is_mpd_running || return 1
+  
+  local duration
+  duration="$(fcmd status duration)"
+  duration="${duration%%.*}"
+
+  [[ $duration ]] || return 1
+
+  [[ $1 ]] || { echo "$duration"; return; }
+
+  [[ $1 == "-h" ]] && {
+    ((duration>3600)) && {
+      TZ=UTC _date "%H:%M:%S" $((duration))
+      echo
+      return
+    }
+    TZ=UTC _date "%M:%S" $((duration))
+    echo
+    return
+  }
+  return 1
+}
+
+getelapsed() {
+  # get current song elapsed time in seconds.
+  # usage: getelapsed [-h]
+  # -h print time in a human readable format.
+
+  __is_mpd_running || return 1
+
+  local elapsed
+  elapsed="$(fcmd status elapsed)"
+  elapsed="${elapsed%%.*}"
+
+  [[ $elapsed ]] || return 1
+
+  [[ $1 ]] || { echo "$elapsed"; return; }
+
+  [[ $1 == "-h" ]] && {
+    local duration
+    duration="$(fcmd status duration)"
+    duration="${duration%%.*}"
+    ((duration>3600)) && {
+      TZ=UTC _date "%H:%M:%S" $((elapsed))
+      echo
+      return
+    }
+    TZ=UTC _date "%M:%S" $((elapsed))
+    echo
+    return
+  }
+  return 1
+}
+
+get_albumart() {
+  echo "$HOME/projets/smpcp/cover.jpg"
 }
