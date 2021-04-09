@@ -29,16 +29,20 @@
 # D : Wait until a song is over and update stats.
 
 source client.sh
+source core.sh
 source player.sh
 source statistics.sh
 
 declare _ID
 
+__is_mpd_running || {
+  __msg E "MPD is not running."
+  exit 1
+}
+
 stalk() {
   # wait until a song is over.
   # 
-
-  __is_mpd_running || return 1
 
   local s
   s="$(state -p)"
@@ -52,45 +56,49 @@ stalk() {
     elapsed="$(getelapsed)"
   }
 
-  song="$(getcurrent "%artist%: %title%")"
+  song="$(getcurrent)"
 
-  # cmd albumart "$(getcurrent)" 0 > "$img"
   notify-send -i "$(get_albumart)" "$(status)"
+  media_update
 
   _ID="$(getcurrent "%id%")"
 
   sleep $((duration-elapsed))
 
-  echo "played: ${song,,}"
+  update_stats "$song" && echo "$(now) --- $song"
 }
 
+
+__stalking() { kill -0 "$pid" 2> /dev/null && return 0 || return 1; }
+
 stalk & pid=$!
+__stalking || unset pid
   
 while read -r; do
-  sleep 0.125
+  sleep 1
 
   s="$(state -p)"
 
   # song changed.
-  if [[ $(getcurrent "%id%") != "$_ID" ]] && \
-    kill -0 "$pid" 2> /dev/null; then
-      [[ $s == "play" ]] && {
-        kill "$pid" 2> /dev/null
-        stalk & pid=$!
-        continue
-      }
-  fi
+  [[ $(getcurrent "%id%") != "$_ID" ]] && __stalking && {
+    [[ $s == "play" ]] && {
+      kill "$pid" 2> /dev/null
+      stalk & pid=$!
+      continue
+    }
+  }
   
   # pause/stop.
   [[ $s == "pause" || $s == "stop" ]] && {
     kill "$pid" 2> /dev/null
     unset pid
+    media_update
     continue
   }
   
   # song ended normally.
-  if [[ $s == "play" ]] && ! kill -0 "$pid" 2> /dev/null; then
+  [[ $s == "play" ]] && ! __stalking && {
     stalk & pid=$!
-  fi
+  }
 
 done < <(./idlecmd loop player)
