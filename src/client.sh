@@ -47,8 +47,6 @@ __cmd() {
 # it prevents netcat from prematurely returning when an expensive task is running
 # (i.e listall).
 
-__is_mpd_running || return 1
-
 local host port nccmd
 host="${MPD_HOST:-localhost}"
 port="${MPD_PORT:-6600}"
@@ -88,8 +86,6 @@ CMD
 
 cmd() {
   # like __cmd + filter errors.
-  __is_mpd_running || return 1
-
   while read -r; do
     [[ $REPLY =~ ^OK.+$ ]] && continue
     [[ $REPLY == "OK" ]] && return 0
@@ -107,8 +103,6 @@ fcmd() {
   # options:
   # -c print line count only (must be 1st argument).
   # -x see "__cmd".
-
-  __is_mpd_running || return 1
 
   [[ $1 == "-c" ]] && {
     local COUNT=1
@@ -148,8 +142,6 @@ state() {
   # 0 ) playing or paused.
   # 1 ) stopped.
   # -p option print actual state (play, pause or stop).
-
-  __is_mpd_running || return 1
 
   local state
   state="$(fcmd status state)"
@@ -259,8 +251,6 @@ getcurrent() {
   # usage: getcurrent [format]
   # if no format is given, print URI.
 
-  __is_mpd_running || return 1
-
   local fmt
   fmt="${1:-"%file%"}"
 
@@ -271,8 +261,6 @@ getnext() {
   # display specific info about next song.
   # usage: getnext [format]
   # if no format is given, print URI.
-
-  __is_mpd_running || return 1
 
   local fmt songid
   fmt="${1:-"%file%"}"
@@ -287,8 +275,6 @@ getduration() {
   # usage: getduration [-h] [uri]
   # -h print time in a human readable format.
 
-  __is_mpd_running || return 1
-  
   local duration
   duration="$(fcmd status duration)"
   duration="${duration%%.*}"
@@ -315,8 +301,6 @@ getelapsed() {
   # usage: getelapsed [-h]
   # -h print time in a human readable format.
 
-  __is_mpd_running || return 1
-
   local elapsed
   elapsed="$(fcmd status elapsed)"
   elapsed="${elapsed%%.*}"
@@ -342,5 +326,6 @@ getelapsed() {
 }
 
 get_albumart() {
+  # TODO: find a proper way to get album cover path.
   echo "$HOME/projets/smpcp/cover.jpg"
 }
