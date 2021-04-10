@@ -326,6 +326,50 @@ getelapsed() {
 }
 
 get_albumart() {
-  # TODO: find a proper way to get album cover path.
-  echo "$HOME/projets/smpcp/cover.jpg"
+
+  # is album art in cache directory?
+  local albumart
+  albumart="$(getcurrent "%album%" | shasum | cut -d' ' -f 1)"
+  albumart="${SMPCP_CACHE}/${albumart}.jpg"
+
+  [[ -a $albumart ]] && {
+    echo "$albumart"
+    return
+  }
+
+  local default musiclib
+  default="$HOME/projets/smpcp/cover.jpg"
+  musiclib="$(read_config music_library)" || unset musiclib
+
+  [[ $musiclib ]] || {
+    echo "$default"
+    return
+  }
+
+  musiclib="${musiclib/\~/$HOME}"
+
+  local covers cover album_uri album
+  album_uri="$(getcurrent)"
+  album_uri="${album_uri%/*}"
+  album="${musiclib}/$album_uri"
+
+  mapfile -t covers < <(find "$album" -name 'cover.*')
+
+  [[ ${covers[*]} ]] || {
+    echo "$default"
+    return
+  }
+
+  if [[ ${#covers[@]} -gt 1 ]]; then
+    cover="${covers[0]}"
+  else
+    cover="${covers[*]}"
+  fi
+
+  convert "$cover" -resize 64x64 "$albumart" &> /dev/null || {
+    echo "$default"
+    return
+  }
+
+  echo "$albumart"
 }
