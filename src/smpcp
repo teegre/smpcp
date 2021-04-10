@@ -35,6 +35,7 @@ source "$SMPCP_LIB"/player.sh
 source "$SMPCP_LIB"/playlist.sh
 source "$SMPCP_LIB"/query.sh
 source "$SMPCP_LIB"/statistics.sh
+source "$SMPCP_LIB"/volume.sh
 
 __is_mpd_running || {
   __msg E "MPD is not running."
@@ -49,6 +50,7 @@ case $1 in
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
   delete     ) shift; delete "$@" ;;
+  dim        ) dim ;;
   getcurrent ) shift; getcurrent "$@" ;;
   getduration) shift; getduration "$@" ;;
   getelapsed ) shift; getelapsed "$@" ;;
@@ -66,6 +68,7 @@ case $1 in
   playalbum  ) shift; add_album -p "$@" ;;
   prev       ) previous ;;
   random     ) shift; random "$@";;
+  rating     ) shift; rating "$@" ;;
   repeat     ) shift; repeat "$@" ;;
   replaygain ) shift; replaygain "$@" ;;
   search     ) shift; search "$@" ;;
@@ -76,6 +79,7 @@ case $1 in
   stop       ) stop ;;
   stop_after ) stop_after_current ;;
   toggle     ) shift; toggle "$@" ;;
+  vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   *          ) __msg E "invalid option '$1'."
 esac
