@@ -25,12 +25,13 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/09
+# M │ 2021/04/10
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
 __version='0.1'
 
+declare SMPCP_CACHE="$HOME/.config/smpcp/.cache"
 declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
 declare SMPCP_HIST="$HOME/.config/smpcp/history"
 declare SMPCP_LOG="$HOME/.config/smpcp/log"
@@ -43,6 +44,9 @@ now() { _date "%F %T"; }
 
 # a simple logger.
 logme() { echo "$(now) --- $*" >> "$SMPCP_LOG"; }
+
+# strip path and filename and print lowercase file extension.
+get_ext() { local ext; ext="${1##*.}"; echo "${ext,,}"; }
 
 __msg() {
   # error/message display.
@@ -94,4 +98,26 @@ write_config() {
       sed -i "s/^\s*${param}\s*.*/${param} = ${value}/" "$SMPCP_SETTINGS"
     fi
   } || return 1
+}
+
+wait_for_pid() {
+  # wait for process to terminate for a given duration.
+  # usage: wait_for_pid <duration_in_seconds> <pid>
+  # returned value:
+  # 0 if process ended,
+  # 1 otherwise.
+
+  local dur pid count
+  dur="$1"
+  pid="$2"
+  count=0
+
+  [[ $dur && $pid ]] && {
+    kill -0 "$pid" 2> /dev/null || return 0
+    while ((count<dur)); do
+      sleep 1
+      ((count++))
+    done
+    kill -0 "$pid" 2> /dev/null && return 1 || return 0
+  }
 }
