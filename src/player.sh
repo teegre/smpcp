@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/06
+# M │ 2021/04/10
 # D │ Player functions.
 
 toggle() {
@@ -34,7 +34,9 @@ toggle() {
 
   if [[ "${*}" ]]; then
     play "$@"
-  else 
+  elif ! state; then
+    play
+  else
     cmd pause
   fi
 }
@@ -198,7 +200,7 @@ status() {
   # display player status
   # and current song info.
 
-  pstatus
+  echo "$(pstatus) $(rating) x$(playcount) [$(get_ext "$(getcurrent)")]"
   getcurrent "%artist%: %title%\n%album% | %date%"
 }
 
