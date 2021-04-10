@@ -25,16 +25,20 @@
 #
 # ALIASES
 # C │ 2021/04/05
-# D │ 2021/04/09
+# D │ 2021/04/10
 # M │ Aliases.
 
 alias aa='smpcp addalbum'
 alias add='smpcp add'
-alias clr='smpcp clr'
+alias clr='smpcp clear'
 alias cr='smpcp crop'
 alias cs='smpcp consume'
 alias del='smpcp delete'
+alias dim='smpcp dim'
+alias like='smpcp rating 4'
+alias love='smpcp rating 5'
 alias move='smpcp move'
+alias nope='smpcp rating 1'
 alias nx='smpcp next'
 alias p='smpcp toggle'
 alias pl='smpcp play'
@@ -49,4 +53,7 @@ alias search='smpcp search'
 alias searchadd='smpcp searchadd'
 alias si='smpcp status'
 alias sn='smpcp single'
+alias soso='smpcp rating 2'
+alias tsok='smpcp rating 3'
+alias vol='smpcp vol'
 alias xf='smpcp xfade'
