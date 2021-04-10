@@ -62,7 +62,7 @@ if [[ $1 =~ ^idle.*$ ]]; then
   case $1 in
     idle    ) shift; idlecmd "$@" ;;
     idleloop) shift; idlecmd loop "$@" ;;
-    *       ) echo "ACK [] {} invalid command."; return
+    *       ) echo "ACK [] {} invalid command."
   esac
   return $?
 fi
@@ -70,12 +70,19 @@ fi
 # preserve quoted arguments.
 local arg arglist
 for arg in "${@}"; do
+  # quote ' and "...
   if [[ $arg =~ ^.*[[:space:]]+.* ]]; then
+    arglist+=("\"${arg}\"")
+  elif [[ $arg =~ ^.*[\"|\']+.*$ ]]; then
+    arg="${arg//\'/\\\'}"
+    arg="${arg//\"/\\\"}"
     arglist+=("\"$arg\"")
   else
     arglist+=("$arg")
   fi
 done
+
+# __msg M "arglist: ${arglist[*]}"
 
 ${nccmd} << CMD
 ${arglist[@]:-}
