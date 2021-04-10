@@ -23,10 +23,11 @@
 #
 # SETTINGS
 # C : 2021/04/09
-# M : 2021/04/09
+# M : 2021/04/10
 # D : Configuration file.
 
 sticker_db = ~/.config/mpd/sticker.sql
+music_library =
 clean = 1 month
 skip = 2
 station_name = music non-stop radio
