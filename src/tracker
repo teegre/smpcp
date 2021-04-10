@@ -25,8 +25,8 @@
 #
 # TRACKER
 # C : 2021/04/09
-# M : 2021/04/09
-# D : Notify and update statistics on event.
+# M : 2021/04/10
+# D : Notification and statistics update.
 
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -37,11 +37,14 @@ source "$SMPCP_LIB"/player.sh
 source "$SMPCP_LIB"/statistics.sh
 
 declare _ID
+declare _VERBOSE
 
 __is_mpd_running || {
   __msg E "MPD is not running."
   exit 1
 }
+
+[[ $1 == "--verbose" || $1 == "-v" ]] && { _VERBOSE=1; shift; }
 
 track() {
   # notify song change and
@@ -52,14 +55,14 @@ track() {
 
   [[ $s == "pause" || $s == "stop" ]] && return 1
 
-  local duration elapsed song
+  local duration elapsed uri
   # shellcheck disable=2119
   {
     duration="$(getduration)"
     elapsed="$(getelapsed)"
   }
 
-  song="$(getcurrent)"
+  uri="$(getcurrent)"
 
   notify-send -i "$(get_albumart)" "$(status)"
   media_update
@@ -68,39 +71,50 @@ track() {
 
   sleep $((duration-elapsed))
 
-  update_stats "$song" && echo "$(now) --- $song"
+  update_stats "$uri"
 }
 
 
-__tracking() { kill -0 "$pid" 2> /dev/null && return 0 || return 1; }
-
 track & pid=$!
-__tracking || unset pid
+wait_for_pid 1 "$pid" && unset pid
   
 while read -r; do
-  sleep 1
 
   s="$(state -p)"
 
   # song changed.
-  [[ $(getcurrent "%id%") != "$_ID" ]] && __tracking && {
+  if [[ $(getcurrent "%id%") != "$_ID" ]] &&  ! wait_for_pid 2 "$pid"; then
     [[ $s == "play" ]] && {
+
+      [[ $_VERBOSE ]] &&
+        echo "change"
+
       kill "$pid" 2> /dev/null
       track & pid=$!
       continue
     }
-  }
+  fi
   
   # pause/stop.
   [[ $s == "pause" || $s == "stop" ]] && {
-    kill "$pid" 2> /dev/null
+
+    [[ $_VERBOSE ]] &&
+      echo "$s"
+
+    ! wait_for_pid 2 "$pid" && kill "$pid" 2> /dev/null
     unset pid
     media_update
     continue
   }
   
+  wait $pid
+
   # song ended normally.
-  [[ $s == "play" ]] && ! __tracking && {
+  [[ $s == "play" ]] && {
+
+    [[ $_VERBOSE ]] &&
+      echo "end"
+
     track & pid=$!
   }
 
