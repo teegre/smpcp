@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/04/10
+# M : 2021/04/11
 # D : Volume control.
 
 volume() {
@@ -39,10 +39,23 @@ volume() {
     return 1
   }
 
-  [[ $1 =~ ^[\+\|\-]?[0-9]+$ ]] && {
-    cmd setvol "$1" || return 1
-    write_config volume "$(fcmd status volume)" &&
+  local val
+  val="$1"
+
+  [[ $val =~ ^[\+\|\-]?[0-9]+$ ]] && {
+    local vol
+    vol="$(fcmd status volume)"
+
+    if [[ $val =~ ^[\+|\-].*$ ]]; then
+      ((vol+=val))
+    else
+      ((vol=val))
+    fi
+    cmd setvol "$vol" || return 1
+    write_config volume "$(fcmd status volume)" && {
+      __msg M "volume: ${vol}%"
       return 0
+    }
     return 1
   }
   __msg E "invalid value."
