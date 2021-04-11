@@ -18,4 +18,4 @@
 
 # Dependences
 
-bash coreutils gnu-netcat libmpdclient libnotify util-linux  
+bash coreutils gnu-netcat imagemagick libmpdclient libnotify util-linux  
