@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/09
+# M │ 2021/04/11
 # D │ Basic MPD client.
 
 __is_mpd_running() {
@@ -70,9 +70,10 @@ fi
 # preserve quoted arguments.
 local arg arglist
 for arg in "${@}"; do
-  # quote ' and "...
+  # whitespace separated string: assuming double quotes are escaped.
   if [[ $arg =~ ^.*[[:space:]]+.* ]]; then
     arglist+=("\"${arg}\"")
+  # no whitespace string: quote and escape.
   elif [[ $arg =~ ^.*[\"|\']+.*$ ]]; then
     arg="${arg//\'/\\\'}"
     arg="${arg//\"/\\\"}"
