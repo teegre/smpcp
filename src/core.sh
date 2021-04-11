@@ -35,7 +35,6 @@ declare SMPCP_CACHE="$HOME/.config/smpcp/.cache"
 declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
 declare SMPCP_HIST="$HOME/.config/smpcp/history"
 declare SMPCP_LOG="$HOME/.config/smpcp/log"
-declare STICKER_DB="$HOME/.config/mpd/sticker.sql"
 declare SMPCP_LOCK="$HOME/.config/smpcp/lock"
 
 _date() { printf "%($1)T" "${2:--1}"; }
@@ -87,6 +86,7 @@ read_config() {
 
 write_config() {
   # write value for a given parameter in config file.
+  # append parameter/value to config file if not present.
 
   [[ -n "$*" && -n "$2" ]] && {
     local param="$1"
@@ -100,10 +100,25 @@ write_config() {
   } || return 1
 }
 
+check_pid() {
+  # check if process is running.
+  # usage: check_pid <pid>
+  # exit values:
+  # 0 if process is active,
+  # 1 otherwise.
+
+  [[ $pid ]] || {
+    __msg E "check_pid: missing process id."
+    return 1
+  }
+
+  kill -0 "$1" 2> /dev/null && return 0 || return 1
+}
+
 wait_for_pid() {
   # wait for process to terminate for a given duration.
   # usage: wait_for_pid <duration_in_seconds> <pid>
-  # returned value:
+  # exit values:
   # 0 if process ended,
   # 1 otherwise.
 
