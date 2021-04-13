@@ -347,7 +347,7 @@ get_albumart() {
   }
 
   local default musiclib
-  default="$HOME/projets/smpcp/cover.jpg"
+  default="/etc/smpcp/assets/cover.jpg"
   musiclib="$(read_config music_library)" || unset musiclib
 
   [[ $musiclib ]] || {
