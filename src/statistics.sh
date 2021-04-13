@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/09
+# M : 2021/04/12
 # D : Statistics management.
 
 get_sticker() {
@@ -146,9 +146,13 @@ rating() {
       delete_sticker "$uri" rating || return 1
       return 0
     else
-      set_sticker "$uri" rating $((r*2))
+      set_sticker "$uri" rating $((r*2)) || return 1
+      __msg M "$(getcurrent "%artist%: %title%") $cr → $r"
+      return 0
     fi
   }
+  __msg E "invalid value."
+  return 1
 }
 
 playcount() {
