@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/09
+# M │ 2021/04/13
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -73,6 +73,7 @@ case $1 in
   replaygain ) shift; replaygain "$@" ;;
   search     ) shift; search "$@" ;;
   searchadd  ) shift; searchadd "$@" ;;
+  seek       ) shift; seek "$@" ;;
   setsticker ) shift; set_sticker "$@" ;;
   single     ) shift; single "$@" ;;
   status     ) status ;;
