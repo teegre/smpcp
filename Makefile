@@ -5,7 +5,7 @@ LIBDIR    ?= $(PREFIX)/lib
 SHAREDIR  ?= $(PREFIX)/share
 MANDIR    ?= $(SHAREDIR)/man/man1
 CONFIGDIR ?= /etc
-
+ASSETSDIR ?= $(CONGIGDIR)/$(PROGNAME)
 MANPAGE    = $(PROGNAME).1
 
 CC         = gcc
@@ -20,10 +20,11 @@ install: src/$(PROGNAME).out
 	${CC} src/idle.c $(LIBS) -o src/idlecmd
 	install -m755 src/idlecmd $(DESTDIR)$(BINDIR)
 
-	install -m755 src/smpcd $(DESTDIR)$(BINDIR)
+	install -m755 src/smpcpd $(DESTDIR)$(BINDIR)
 
 	install -Dm644 src/*.sh   -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
-	install -Dm644 settings     -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
+	install -Dm644 settings   -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
+	install -Dm644 cover.jpg  -t $(DESTDIR)$(ASSETSDIR)/assets
 	install -Dm644 $(MANPAGE) -t $(DESTDIR)$(MANDIR)
 	install -Dm644 LICENSE    -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
 
@@ -34,7 +35,7 @@ install: src/$(PROGNAME).out
 uninstall:
 	rm $(DESTDIR)$(BINDIR)/$(PROGNAME)
 	rm $(DESTDIR)$(BINDIR)/idlecmd
-	rm $(DESTDIR)$(BINDIR)/tracker
+	rm $(DESTDIR)$(BINDIR)/smpcpd
 	rm -rf $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	rm -rf $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	rm $(DESTDIR)$(MANDIR)/$(MANPAGE)
