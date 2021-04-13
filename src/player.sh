@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -65,19 +65,16 @@ stop_after_current() {
 
   state || return 1
 
-  [[ $(read_config single) == "on" ]] && return 0
-
-  write_config single on || return 1
+  [[ $(read_config single) == "on" ]] && {
+    single 0 &> /dev/null || return 1
+    write_config single off || return 1
+    __msg M "stop after current: off."
+    return 0
+  }
 
   single 1 &> /dev/null || return 1
-
-  while read -r; do
-    [[ $REPLY ]] && {
-      write_config single off
-      single 0 &> /dev/null
-    }
-  done < <(./idlecmd player)
-
+  write_config single on || return 1
+  __msg M "stop after current: on."
 }
 
 next() {
@@ -88,6 +85,116 @@ next() {
 previous() {
   # play previous song.
   cmd previous
+}
+
+seek() {
+  # seek within current song.
+  # usage: seek [+-]<[[HH:]MM:]SS> or [+-]<0-100%>
+  # + seek forward from current song position.
+  # - seek backward from current song position.
+  # otherwise seek is performed from the start.
+
+  state || {
+    __msg E "not playing."
+    return 1
+  }
+
+  local pos sign rel sk
+  pos="$1"
+
+  if [[ $pos =~ ^\+.*$ ]]; then
+    ((rel=1))
+    sign="+"
+  elif [[ $pos =~ ^-.*$ ]]; then
+    ((rel=-1))
+  else
+    ((rel=0))
+  fi
+
+  # % seek.
+  if [[ $pos =~ ^[+\|-]?([0-9]+)%$ ]]; then
+    local p
+    p="${BASH_REMATCH[1]}"
+
+    ((p < 0 || p > 100)) && {
+      __msg E "invalid number."
+      return 1
+    }
+
+    local cpos
+    cpos="$(getduration)"
+
+    ((sk=p*cpos/100))
+
+  # [[HH:]MM:]SS seek.
+  elif [[ $pos =~ ^[+\|-]?(.+)$ ]]; then
+
+    local p T h m s
+    p="${BASH_REMATCH[1]}"
+
+    IFS=$'\n' read -d "" -ra T <<< "${p//:/$'\n'}"
+
+    # SS
+    if [[ ${#T[@]} -eq 1 ]]; then
+      if [[ ${T[0]} =~ ^[0-9]+$ ]]; then
+        s="${T[0]}"
+        h=0
+        m=0
+      else
+        __msg E "invalid number for secs."
+        return 1
+      fi
+    # MM:SS
+    elif [[ ${#T[@]} -eq 2 ]]; then
+      # M
+      if [[ ${T[0]} =~ ^[0-9]+$ ]]; then
+        m="${T[0]}"
+      else
+        __msg E "invalid number for minutes."
+        return 1
+      fi
+      # S
+      if [[ ${T[1]} =~ ^[0-9]+$ ]]; then
+        s="${T[1]}"
+      else
+        __msg E "invalid number for seconds."
+        return 1
+      fi
+      h=0
+    # HH:MM:SS
+    elif [[ ${#T[@]} -eq 3 ]]; then
+      # HH
+      if [[ ${T[0]} =~ ^[0-9]+$ ]]; then
+        h="${T[0]}"
+      else
+        __msg E "invalid number for hours."
+        return 1
+      fi
+      # MM
+      if [[ ${T[1]} =~ ^[0-9]+$ ]]; then
+        m="${T[1]}"
+      else
+        __msg E "invalid number for minutes."
+        return 1
+      fi
+      # SS
+      if [[ ${T[2]} =~ ^[0-9]+$ ]]; then
+        s="${T[2]}"
+      else
+        __msg E "invalid number for seconds."
+        return 1
+      fi
+    fi
+    ((sk=(h*3600)+(m*60)+s))
+  fi
+
+  [[ $rel -eq -1 ]] && ((sk=-sk))
+
+  if [[ $rel ]]; then
+    cmd seekcur "${sign}${sk}"
+  else
+    cmd seekcur "$sk"
+  fi
 }
 
 __playback_mode() {
@@ -105,23 +212,23 @@ __playback_mode() {
 
   if [[ -z $1 ]]; then
     case $value in
-      0) __msg M "$mode off" ;;
-      1) __msg M "$mode on"
+      0) __msg M "${mode}: off" ;;
+      1) __msg M "${mode}: on"
     esac
   elif [[ $1 == "on" || $1 == "1" ]]; then
     case $value in
-      0) cmd "$mode" 1 && __msg M "$mode on" ;;
-      1) __msg M "$mode on"
+      0) cmd "$mode" 1 && __msg M "${mode}: on" ;;
+      1) __msg M "${mode}: on"
     esac
   elif [[ $1 == "off" || $1 == "0" ]]; then
     case $value in
-      0) __msg M "$mode off" ;;
-      1) cmd "$mode" 0 && __msg M "$mode off" ;;
+      0) __msg M "${mode}: off" ;;
+      1) cmd "$mode" 0 && __msg M "${mode}: off"
     esac
   fi
 }
 
-repeat()  { __playback_mode repeat  "$1"; } 
+# repeat()  { __playback_mode repeat  "$1"; }
 random()  { __playback_mode random  "$1"; }
 single()  { __playback_mode single  "$1"; }
 consume() { __playback_mode consume "$1"; }
@@ -141,7 +248,7 @@ xfade() {
       * ) __msg M "xfade $value"
     esac
   else
-    __msg E "usage: xfade [duration_in_seconds]"
+    __msg E "invalid value."
     return 1
   fi
 }
@@ -153,7 +260,8 @@ replaygain() {
   case $1 in
     track) cmd replay_gain_mode track || return 1 ;;
     album) cmd replay_gain_mode album || return 1 ;;
-    auto ) cmd replay_gain_mode auto  || return 1
+    auto ) cmd replay_gain_mode auto  || return 1 ;;
+    *    ) __msg E "invalid parameter."; return 1
   esac
 
   __msg M "replay gain mode: $(fcmd replay_gain_status replay_gain_mode)"
