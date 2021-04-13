@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/12
+# M │ 2021/04/13
 # D │ Basic MPD client.
 
 __is_mpd_running() {
@@ -35,8 +35,9 @@ __is_mpd_running() {
   local pid
   [[ -s $pidfile ]] && {
     pid="$(<"$pidfile")"
-    kill -0 "$pid" &> /dev/null && return 0
+    check_pid "$pid" && return 0
   }
+  __msg E "mpd PID file not found."
   return 1
 }
 
@@ -74,7 +75,7 @@ for arg in "${@}"; do
   if [[ $arg =~ ^.*[[:space:]]+.* ]]; then
     arglist+=("\"${arg}\"")
   # no whitespace string: quote and escape.
-  elif [[ $arg =~ ^.*[\"|\']+.*$ ]]; then
+  elif [[ $arg =~ ^.*[\"\|\']+.*$ ]]; then
     arg="${arg//\'/\\\'}"
     arg="${arg//\"/\\\"}"
     arglist+=("\"$arg\"")
@@ -254,9 +255,9 @@ __parse_song_info() {
   ((count==0)) && return 1 || return 0
 }
 
-getcurrent() {
+get_current() {
   # display specific info about current song.
-  # usage: getcurrent [format]
+  # usage: get_current [format]
   # if no format is given, print URI.
 
   local fmt
@@ -265,9 +266,9 @@ getcurrent() {
   cmd currentsong | __parse_song_info "$fmt"
 }
 
-getnext() {
+get_next() {
   # display specific info about next song.
-  # usage: getnext [format]
+  # usage: get_next [format]
   # if no format is given, print URI.
 
   local fmt songid
@@ -278,9 +279,9 @@ getnext() {
   cmd playlistid "$songid" | __parse_song_info "$fmt" 
 }
 
-getduration() {
+get_duration() {
   # get song duration in seconds.
-  # usage: getduration [-h] [uri]
+  # usage: get_duration [-h] [uri]
   # -h print time in a human readable format.
 
   local duration
@@ -304,7 +305,7 @@ getduration() {
   return 1
 }
 
-getelapsed() {
+get_elapsed() {
   # get current song elapsed time in seconds.
   # usage: getelapsed [-h]
   # -h print time in a human readable format.
