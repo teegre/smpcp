@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -25,17 +25,25 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/09
+# M │ 2021/04/12
 # D │ Queue management.
 
 list() {
   # (kinda) pretty print queue.
 
-  local pl cpos
+  local pl cpos _cmd _fcmd
   pl="$(mktemp)"
   cpos="$(getcurrent "%pos%")"
 
-  cmd playlistinfo | __parse_song_info "%artist% →%title% →%album%" \
+  if [[ $(fcmd status playlistlength) -gt 50 ]]; then
+    _cmd="cmd -x playlistinfo"
+    _fcmd="fcmd -x playlistinfo duration"
+  else
+    _cmd="cmd playlistinfo"
+    _fcmd="fcmd -x playlistinfo duration"
+  fi
+
+  ${_cmd} | __parse_song_info "%artist% →%title% →%album%" \
     | awk '{print NR "→" $0}' \
     | sed "s_^${cpos}→_>>→_"  \
     > "$pl"
@@ -49,7 +57,7 @@ list() {
   while read -r; do
     ((duration+=${REPLY%%.*}))
     ((count++))
-  done < <(fcmd playlistinfo duration)
+  done < <(${_fcmd})
 
   shopt -s checkwinsize; (:;:)
 
@@ -58,11 +66,11 @@ list() {
     -T "title,album" \
     -c "$COLUMNS" \
     -t -s "→" \
-    -o "│ " "$pl" | less -F
+    -o "│ " "$pl"
 
   local fmt
 
-  ((duration>3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
+  ((duration>=3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
   echo -e "---\n$((count)) item(s) - $(TZ=UTC _date "$fmt" $((duration)))"
 
   rm "$pl" 2> /dev/null
