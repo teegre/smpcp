@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/10
+# M │ 2021/04/12
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -132,6 +132,7 @@ wait_for_pid() {
     while ((count<dur)); do
       sleep 1
       ((count++))
+      kill -0 "$pid" 2> /dev/null || return 0
     done
     kill -0 "$pid" 2> /dev/null && return 1 || return 0
   }
