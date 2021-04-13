@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/11
+# M │ 2021/04/12
 # D │ Basic MPD client.
 
 __is_mpd_running() {
