@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/10
+# M │ 2021/04/13
 # D │ Player functions.
 
 toggle() {
@@ -122,7 +122,7 @@ seek() {
     }
 
     local cpos
-    cpos="$(getduration)"
+    cpos="$(get_duration)"
 
     ((sk=p*cpos/100))
 
@@ -308,7 +308,7 @@ status() {
   # display player status
   # and current song info.
 
-  echo "$(pstatus) $(rating) x$(playcount) [$(get_ext "$(getcurrent)")]"
-  getcurrent "%artist%: %title%\n%album% | %date%"
+  echo "$(pstatus) $(rating) x$(playcount) [$(get_ext "$(get_current)")]"
+  get_current "%artist%: %title%\n%album% | %date%"
 }
 
