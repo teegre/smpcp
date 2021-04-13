@@ -20,7 +20,7 @@ install: src/$(PROGNAME).out
 	${CC} src/idle.c $(LIBS) -o src/idlecmd
 	install -m755 src/idlecmd $(DESTDIR)$(BINDIR)
 
-	install -m755 src/tracker $(DESTDIR)$(BINDIR)
+	install -m755 src/smpcd $(DESTDIR)$(BINDIR)
 
 	install -Dm644 src/*.sh   -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	install -Dm644 settings     -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
