@@ -1,5 +1,5 @@
 ```
-.▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+.▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -10,12 +10,13 @@
 
 ## Description
 
-**Smpcp** is a simple client for [Music Player Daemon](https://www.musicpd.org) written in Bash (and C), that includes some more advanced features like:
+**Smpcp** is a client for [Music Player Daemon](https://www.musicpd.org) written in Bash (and C), that includes some more advanced features like:
 
+*  Notification with album art on song change.
 *  Music non stop.
 *  Song rating.
 *  Playback statistics.
 
-# Dependences
+## Dependencies
 
-bash coreutils gnu-netcat imagemagick libmpdclient libnotify util-linux  
+bash coreutils gnu-netcat imagemagick libmpdclient libnotify mpd util-linux  
