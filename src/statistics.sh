@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/12
+# M : 2021/04/13
 # D : Statistics management.
 
 get_sticker() {
@@ -74,7 +74,7 @@ media_update() {
   local fmt='artist %artist%\ntitle %title%\nalbum %album%\ndate %date%'
   {
     echo "status $(state -p)"
-    getcurrent "$fmt"
+    get_current "$fmt"
   } > "$HOME/.config/currentmedia"
 }
 
@@ -119,7 +119,7 @@ rating() {
   # if no given value, print actual rating.
 
   local cr uri
-  cr="$(get_sticker "$(getcurrent)" rating 2> /dev/null)" || cr=0
+  cr="$(get_sticker "$(get_current)" rating 2> /dev/null)" || cr=0
   ((cr/=2))
 
   [[ $1 ]] || {
@@ -134,7 +134,7 @@ rating() {
     return 0
   }
 
-  uri="$(getcurrent)"
+  uri="$(get_current)"
 
   [[ $1 =~ ^[0-9]+$ ]] && {
     local r="$1"
@@ -147,7 +147,7 @@ rating() {
       return 0
     else
       set_sticker "$uri" rating $((r*2)) || return 1
-      __msg M "$(getcurrent "%artist%: %title%") $cr → $r"
+      __msg M "$(get_current "%artist%: %title%") $cr → $r"
       return 0
     fi
   }
@@ -159,6 +159,6 @@ playcount() {
   # print current song playcount.
 
   local plc
-  plc="$(get_sticker "$(getcurrent)" playcount 2> /dev/null)" || plc=0
+  plc="$(get_sticker "$(get_current)" playcount 2> /dev/null)" || plc=0
   echo "$plc"
 }
