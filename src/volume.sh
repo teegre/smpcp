@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/04/11
+# M : 2021/04/13
 # D : Volume control.
 
 volume() {
@@ -42,18 +42,25 @@ volume() {
   local val
   val="$1"
 
-  [[ $val =~ ^[\+\|\-]?[0-9]+$ ]] && {
+  [[ $val =~ ^[+\|-]?[0-9]+$ ]] && {
     local vol
     vol="$(fcmd status volume)"
 
-    if [[ $val =~ ^[\+|\-].*$ ]]; then
+    if [[ $val =~ ^[+\|-].*$ ]]; then
       ((vol+=val))
     else
       ((vol=val))
     fi
+
+    ((vol > 100 || vol < 0)) && {
+      __msg M "volume: $(fcmd status volume)%"
+      return 1
+    }
+
     cmd setvol "$vol" || return 1
     write_config volume "$(fcmd status volume)" && {
       __msg M "volume: ${vol}%"
+      write_config dim off
       return 0
     }
     return 1
@@ -63,7 +70,8 @@ volume() {
 }
 
 dim() {
-  # -6dB dimmer.
+  # toggle -6dB dimmer.
+  # usage: dim
 
   local s
   s="$(state -p)"
@@ -79,12 +87,17 @@ dim() {
     svol="$(read_config volume)"
     cmd setvol $((svol))
     write_config dim off
-    __msg M "dim off."
+    __msg M "dim: off."
+    return 0
   elif [[ $dimmed == "off" ]]; then
     local cvol
     cvol="$(fcmd status volume)"
-    cmd setvol $((cvol/2))
-    write_config dim on
-    __msg M "dim on."
+    ((cvol > 1)) && {
+      cmd setvol $((cvol/2))
+      write_config dim on
+      __msg M "dim: on."
+      return 0
+    }
+    __msg M "dim: off."
   fi
 }
