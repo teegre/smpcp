@@ -307,7 +307,7 @@ get_duration() {
 
 get_elapsed() {
   # get current song elapsed time in seconds.
-  # usage: getelapsed [-h]
+  # usage: get_elapsed [-h]
   # -h print time in a human readable format.
 
   local elapsed
@@ -338,7 +338,7 @@ get_albumart() {
 
   # is album art in cache directory?
   local albumart
-  albumart="$(getcurrent "%album%" | shasum | cut -d' ' -f 1)"
+  albumart="$(get_current "%album%" | shasum | cut -d' ' -f 1)"
   albumart="${SMPCP_CACHE}/${albumart}.jpg"
 
   [[ -a $albumart ]] && {
@@ -358,7 +358,7 @@ get_albumart() {
   musiclib="${musiclib/\~/$HOME}"
 
   local covers cover album_uri album
-  album_uri="$(getcurrent)"
+  album_uri="$(get_current)"
   album_uri="${album_uri%/*}"
   album="${musiclib}/$album_uri"
 
