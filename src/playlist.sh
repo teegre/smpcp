@@ -33,7 +33,7 @@ list() {
 
   local pl cpos _cmd _fcmd
   pl="$(mktemp)"
-  cpos="$(getcurrent "%pos%")"
+  cpos="$(get_current "%pos%")"
 
   if [[ $(fcmd status playlistlength) -gt 50 ]]; then
     _cmd="cmd -x playlistinfo"
@@ -179,7 +179,7 @@ crop() {
   # except for the currently playing song.
 
   local cur_id
-  cur_id="$(getcurrent "%id%")"
+  cur_id="$(get_current "%id%")"
 
   while read -r id; do
     [[ $id != "$cur_id" ]] &&
@@ -205,7 +205,7 @@ __song_mode() {
 
 __album_uri() {
   local album_uri
-  album_uri="$(getcurrent)"
+  album_uri="$(get_current)"
   album_uri="${album_uri%/*}"
   echo "$album_uri"
   [[ $album_uri ]] && return 0 || return 1
@@ -236,7 +236,7 @@ add_album() {
 
     [[ $PLAY ]] && { 
       play 1 || return 1
-      __msg M "$(getcurrent "now playing: %album%")"
+      __msg M "$(get_current "now playing: %album%")"
     }
     return 0
   }
@@ -254,11 +254,11 @@ add_album() {
 
   # does album contains other tracks?
   [[ $(fcmd -c lsinfo "$album_uri" file) -eq 1 ]] && {
-    __msg E "'$(getcurrent "%album%")' no more songs."
+    __msg E "'$(get_current "%album%")' no more songs."
     return 1
   }
 
-  if [[ $(getcurrent "%track%") =~ ^0*1$ ]]; then
+  if [[ $(get_current "%track%") =~ ^0*1$ ]]; then
     crop
     add "$album_uri"
     delete 2
@@ -272,7 +272,7 @@ add_album() {
 
   [[ $PLAY ]] && {
     state || play 1
-    __msg M "$(getcurrent "now playing: %album%")"
+    __msg M "$(get_current "now playing: %album%")"
   }
 
   return 0
