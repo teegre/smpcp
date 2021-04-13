@@ -1,7 +1,7 @@
-#! /usr/bin/env bash
+# shellcheck shell=bash
 
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -25,7 +25,7 @@
 #
 # ALIASES
 # C │ 2021/04/05
-# D │ 2021/04/10
+# D │ 2021/04/13
 # M │ Aliases.
 
 alias aa='smpcp addalbum'
@@ -51,9 +51,11 @@ alias rpg='smpcp replaygain'
 alias s='smpcp stop'
 alias search='smpcp search'
 alias searchadd='smpcp searchadd'
+alias seek='smpcp seek'
 alias si='smpcp status'
 alias sn='smpcp single'
 alias soso='smpcp rating 2'
+alias sta='smpcp stop_after'
 alias tsok='smpcp rating 3'
 alias vol='smpcp vol'
 alias xf='smpcp xfade'
