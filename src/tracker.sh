@@ -25,7 +25,7 @@
 #
 # TRACKER
 # C : 2021/04/09
-# M : 2021/04/12
+# M : 2021/04/13
 # D : Player event tracker.
 
 _wait() {
@@ -41,8 +41,8 @@ _wait() {
 
   # shellcheck disable=2119
   {
-    duration="$(getduration)"
-    elapsed="$(getelapsed)"
+    duration="$(get_duration)"
+    elapsed="$(get_elapsed)"
   }
 
   sleep $((duration-elapsed))
@@ -65,7 +65,7 @@ tracker() {
   local PID ID STATE
 
   _wait & PID=$!
-  ID="$(getcurrent "%id%")"
+  ID="$(get_current "%id%")"
 
   if wait_for_pid 1 "$PID"; then
     unset PID ID
@@ -83,12 +83,12 @@ tracker() {
       echo "play"
 
       _wait & PID=$!
-      ID="$(getcurrent "%id%")"
+      ID="$(get_current "%id%")"
       continue
     }
 
     # song changed.
-    if [[ $(getcurrent "%id%") != "$ID" ]]; then
+    if [[ $(get_current "%id%") != "$ID" ]]; then
       [[ $STATE == "play" ]] && {
 
         wait_for_pid 2 "$PID" || {
@@ -97,7 +97,7 @@ tracker() {
 
           kill "$PID" 2> /dev/null
           _wait & PID=$!
-          ID="$(getcurrent "%id%")"
+          ID="$(get_current "%id%")"
           continue
         }
       }
@@ -118,7 +118,7 @@ tracker() {
     # even though it seems only one event occured, so we have to
     # replace actual _wait process just in case something really
     # happened.
-    [[ $(getcurrent "%id%") == "$ID" ]] &&
+    [[ $(get_current "%id%") == "$ID" ]] &&
       ! wait_for_pid 1 "$PID" && [[ $STATE == "play" ]] && {
 
         kill "$PID" 2> /dev/null
@@ -132,7 +132,7 @@ tracker() {
     [[ $STATE == "play" ]] && {
 
       _wait & PID=$!
-      ID="$(getcurrent "%id%")"
+      ID="$(get_current "%id%")"
       
       echo "change"
     }
