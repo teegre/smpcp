@@ -51,10 +51,10 @@ case $1 in
   crop       ) crop ;;
   delete     ) shift; delete "$@" ;;
   dim        ) dim ;;
-  getcurrent ) shift; getcurrent "$@" ;;
-  getduration) shift; getduration "$@" ;;
-  getelapsed ) shift; getelapsed "$@" ;;
-  getnext    ) shift; getnext "$@" ;;
+  getcurrent ) shift; get_current "$@" ;;
+  getduration) shift; get_duration "$@" ;;
+  getelapsed ) shift; get_elapsed "$@" ;;
+  getnext    ) shift; get_next "$@" ;;
   getstat    ) shift; get_stat "$@" ;;
   getsticker ) shift; get_sticker "$@" ;;
   idle       ) shift; cmd idle "$@" ;;
