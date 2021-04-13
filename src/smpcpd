@@ -1,0 +1,115 @@
+#! /usr/bin/env bash
+
+#
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
+# ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
+# ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
+# ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
+#  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
+#
+# This file is part of smpcp.
+# Copyright (C) 2021, Stéphane MEYER.
+#
+# Smpcp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>
+#
+# SMPCPD
+# C : 2021/04/10
+# M : 2021/04/13
+# D : Music non stop.
+
+declare SMPCP_LIB="/usr/lib/smpcp"
+declare SMPCP_PID="$HOME/.config/smpcp/pid"
+
+source "$SMPCP_LIB"/core.sh
+source "$SMPCP_LIB"/client.sh
+source "$SMPCP_LIB"/player.sh
+source "$SMPCP_LIB"/playlist.sh
+source "$SMPCP_LIB"/tracker.sh
+source "$SMPCP_LIB"/statistics.sh
+
+declare URI
+
+# check if an instance is already running.
+[[ -s "$SMPCP_PID" ]] && {
+  pid="$(<"$SMPCP_PID")"
+  check_pid "$pid" && {
+    __msg E "($pid) an instance is already running."
+    exit 1
+  }
+}
+
+# save current pid.
+echo "$$" > "$SMPCP_PID"
+
+
+notify() {
+  notify-send -i "$(get_albumart)" "$(status)"
+}
+
+play_event() {
+  URI="$(get_current)"
+  notify
+  media_update
+}
+
+pause_event() {
+  media_update
+  [[ $(read_config single) == "on" ]] && {
+    single 0 &> /dev/null
+    write_config single off
+  }
+}
+
+stop_event() {
+  media_update
+  [[ $(read_config single) == "on" ]] && {
+    single 0 &> /dev/null
+    write_config single off
+  }
+}
+
+change_event() {
+  URI="$(get_current)"
+  notify
+  media_update
+  # handle playlist generator here vvv
+}
+
+end_event() {
+  update_stats "$URI"
+}
+
+trap exit INT QUIT TERM
+
+while read -r; do
+  # react to player events
+  # play
+  # pause
+  # stop
+  # change
+  # end
+
+  echo "$REPLY"
+
+  case $REPLY in
+    play  ) play_event ;;
+    pause ) pause_event ;;
+    stop  ) stop_event ;;
+    change) change_event ;;
+    end   ) end_event
+  esac
+
+done < <(tracker)
+
+
