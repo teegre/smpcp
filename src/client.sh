@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/13
+# M │ 2021/04/14
 # D │ Basic MPD client.
 
 __is_mpd_running() {
@@ -346,23 +346,33 @@ get_albumart() {
     return
   }
 
-  local default musiclib
+  local default musicdir
   default="/etc/smpcp/assets/cover.jpg"
-  musiclib="$(read_config music_library)" || unset musiclib
 
-  [[ $musiclib ]] || {
+  # locate music directory.
+  musicdir="$(fcmd config music_directory 2> /dev/null)" ||
+    musicdir="$(read_config music_directory)" || {
+      echo "$default"
+      return
+    }
+
+  # expand ~ if needed.
+  [[ $musicdir =~ ^~.*$ ]] &&
+    musicdir="${musicdir/\~/"$HOME"}"
+
+  # remove trailing /
+  musicdir="${musicdir%*/}"
+
+  # does directory exists?
+  [[ -d $musicdir ]] || {
     echo "$default"
     return
   }
 
-  musiclib="${musiclib/\~/$HOME}"
+  local uri covers cover
+  uri="$(__album_uri)"
 
-  local covers cover album_uri album
-  album_uri="$(get_current)"
-  album_uri="${album_uri%/*}"
-  album="${musiclib}/$album_uri"
-
-  mapfile -t covers < <(find "$album" -name 'cover.*')
+  mapfile -t covers < <(fcmd listfiles "$uri" file | grep '^cover\..*$\|^folder\..*$')
 
   [[ ${covers[*]} ]] || {
     echo "$default"
@@ -375,7 +385,7 @@ get_albumart() {
     cover="${covers[*]}"
   fi
 
-  convert "$cover" -resize 64x64 "$albumart" &> /dev/null || {
+  convert "${musicdir}/${uri}/$cover" -resize 64x64 "$albumart" &> /dev/null || {
     echo "$default"
     return
   }
