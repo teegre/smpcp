@@ -214,18 +214,22 @@ __album_uri() {
 add_album() {
   # add album for current song,
   # or add given album.
-  # usage: add_album [-p] [ <artist> <album> ]
+  # usage: add_album [-i|-p] [ <artist> <album> ]
+  # -i add album after current song.
   # -p starts album playback.
   
-  [[ $1 == "-p" ]] && {
-    local PLAY=1
-    shift
-  }
+  for opt in "$@"; do
+    case $opt in
+      -i) local INSERT=1; unset PLAY; shift ;;
+      -p) local PLAY=1; unset INSERT; shift
+    esac
+  done
 
   [[ $1 && $2 ]] && {
 
     if search albumartist "$1" album "$2" &> /dev/null; then
       [[ $PLAY ]] && cmd clear
+      [[ $INSERT ]] && crop
       searchadd albumartist "$1" album "$2"
     else
       __msg E "nothing found."
