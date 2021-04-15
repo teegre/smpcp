@@ -25,18 +25,26 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/04/13
-# D : Music non stop.
+# M : 2021/04/15
+# D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
 declare SMPCP_PID="$HOME/.config/smpcp/pid"
 
-source "$SMPCP_LIB"/core.sh
+# shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh
+# shellcheck source=/usr/lib/smpcp/core.sh
+source "$SMPCP_LIB"/core.sh
+# shellcheck source=/usr/lib/smpcp/player.sh
 source "$SMPCP_LIB"/player.sh
+# shellcheck source=/usr/lib/smpcp/playlist.sh
 source "$SMPCP_LIB"/playlist.sh
+# shellcheck source=/usr/lib/smpcp/tracker.sh
 source "$SMPCP_LIB"/tracker.sh
+# shellcheck source=/usr/lib/smpcp/statistics.sh
 source "$SMPCP_LIB"/statistics.sh
+# shellcheck source=/usr/lib/smpcp/volume.sh
+source "$SMPCP_LIB"/volume.sh
 
 declare URI
 
@@ -52,15 +60,21 @@ declare URI
 # save current pid.
 echo "$$" > "$SMPCP_PID"
 
-
-notify() {
-  notify-send -i "$(get_albumart)" "$(status)"
+notify_song() {
+  # display a song change notification.
+  if [[ $(read_config dim) == "on" ]]; then
+    notify-send -i "$(get_albumart)" -u low "$(status)"
+  else
+    notify-send -i "$(get_albumart)" "$(status)"
+  fi
 }
 
 play_event() {
   URI="$(get_current)"
-  notify
+  volume auto
+  notify_song
   media_update
+  # handle playlist generator here vvv
 }
 
 pause_event() {
@@ -77,11 +91,12 @@ stop_event() {
     single 0 &> /dev/null
     write_config single off
   }
+  write_config dim off
 }
 
 change_event() {
   URI="$(get_current)"
-  notify
+  notify_song
   media_update
   # handle playlist generator here vvv
 }
@@ -89,8 +104,6 @@ change_event() {
 end_event() {
   update_stats "$URI"
 }
-
-trap exit INT QUIT TERM
 
 while read -r; do
   # react to player events
@@ -111,5 +124,3 @@ while read -r; do
   esac
 
 done < <(tracker)
-
-
