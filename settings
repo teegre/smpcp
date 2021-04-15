@@ -7,14 +7,4 @@
 #
 # SETTINGS
 
-sticker_db =
 music_library =
-clean = 1 month
-skip = 2
-
-# INTERNAL USE
-volume = 100
-dim = off
-single = off
-filter = off
-nonstop = off
