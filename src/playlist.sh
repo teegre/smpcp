@@ -25,55 +25,56 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/12
+# M │ 2021/04/15
 # D │ Queue management.
 
-list() {
+list_queue() {
   # (kinda) pretty print queue.
 
-  local pl cpos _cmd _fcmd
-  pl="$(mktemp)"
-  cpos="$(get_current "%pos%")"
+  local len
+  len="$(fcmd status playlistlength)"
 
-  if [[ $(fcmd status playlistlength) -gt 50 ]]; then
-    _cmd="cmd -x playlistinfo"
-    _fcmd="fcmd -x playlistinfo duration"
-  else
-    _cmd="cmd playlistinfo"
-    _fcmd="fcmd -x playlistinfo duration"
-  fi
-
-  ${_cmd} | __parse_song_info "%artist% →%title% →%album%" \
-    | awk '{print NR "→" $0}' \
-    | sed "s_^${cpos}→_>>→_"  \
-    > "$pl"
-  
-  [[ ! -s "$pl" ]] && {
+  ((len == 0)) && {
     __msg M "queue is empty."
     return
   }
 
-  local duration=0 count=0
-  while read -r; do
-    ((duration+=${REPLY%%.*}))
-    ((count++))
-  done < <(${_fcmd})
+  local cpos _cmd
+  cpos="$(get_current "%pos%")"
+
+  if ((len > 50)); then
+    _cmd="cmd -x playlistinfo"
+  else
+    _cmd="cmd playlistinfo"
+  fi
+  
+  local pos=0 maxwidth entry title dur=0
 
   shopt -s checkwinsize; (:;:)
 
-  column \
-    -d -N "pos,artist,title,album" \
-    -T "title,album" \
-    -c "$COLUMNS" \
-    -t -s "→" \
-    -o "│ " "$pl"
+  ((maxwidth=COLUMNS-${#len}-9))
+
+  while read -r; do
+    ((++pos))
+
+    IFS=$'\n' read -d "" -ra entry <<< "${REPLY/→/$'\n'}"
+    title="${entry[0]}"
+    ((dur+=${entry[1]%%.*}))
+
+    ((${#title} > maxwidth)) && title="${title:0:$((maxwidth))}…"
+    if ((pos == cpos)); then
+      printf "%-${#len}s  │ %s\n" ">" "$title"
+    else
+      printf "%0${#len}d. │ %s\n" "$pos" "$title"
+    fi
+  done < <(${_cmd} | __parse_song_info "%artist%: %title%→%duration%")
 
   local fmt
 
-  ((duration>=3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
-  echo -e "---\n$((count)) item(s) - $(TZ=UTC _date "$fmt" $((duration)))"
-
-  rm "$pl" 2> /dev/null
+  ((dur>=3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
+  local trk
+  ((pos>1)) && trk="tracks" || trk="track"
+  echo -e "---\n$((pos)) $trk - $(TZ=UTC _date "$fmt" $((dur)))"
 }
 
 add() {
