@@ -83,7 +83,10 @@ add() {
   # usage: add <uri>
 
   if (( $# > 0 )); then
-    cmd add "$@"
+    local uri
+    uri="${*}"
+    uri="${uri%*/}"
+    cmd add "$uri"
   else
     while IFS= read -r; do
       cmd add "$REPLY"
@@ -180,7 +183,7 @@ crop() {
   # except for the currently playing song.
 
   local cur_id
-  cur_id="$(get_current "%id%")"
+  cur_id="$(get_current "%id%")" || return 1
 
   while read -r id; do
     [[ $id != "$cur_id" ]] &&
@@ -251,8 +254,8 @@ add_album() {
     return 1
   }
 
-  local album_uri
-  album_uri="$(__album_uri)" || {
+  local uri
+  uri="$(__album_uri)" || {
     __msg E "no current song."
     return 1
   }
@@ -263,20 +266,19 @@ add_album() {
     return 1
   }
 
-  if [[ $(get_current "%track%") =~ ^0*1$ ]]; then
-    crop
-    add "$album_uri"
-    delete 2
-  else
-    state && PLAY=1
-    cmd clear
-    add "$album_uri"
-  fi
+  [[ $INSERT ]] && crop
+  [[ $PLAY ]] && cmd clear
+
+  add "$uri"
+
+  [[ $INSERT ]] &&
+    [[ $(get_current "%track%") =~ ^0*1$ ]] &&
+      delete 2
   
   __album_mode
 
   [[ $PLAY ]] && {
-    state || play 1
+    play 1
     __msg M "$(get_current "now playing: %album%")"
   }
 
