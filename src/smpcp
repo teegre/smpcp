@@ -29,12 +29,21 @@
 
 declare SMPCP_LIB="/usr/lib/smpcp"
 
+# shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh
+# shellcheck source=/usr/lib/smpcp/core.sh
 source "$SMPCP_LIB"/core.sh
+# shellcheck source=/usr/lib/smpcp/help.sh
+source "$SMPCP_LIB"/help.sh
+# shellcheck source=/usr/lib/smpcp/player.sh
 source "$SMPCP_LIB"/player.sh
+# shellcheck source=/usr/lib/smpcp/playlist.sh
 source "$SMPCP_LIB"/playlist.sh
+# shellcheck source=/usr/lib/smpcp/query.sh
 source "$SMPCP_LIB"/query.sh
+# shellcheck source=/usr/lib/smpcp/statistics.sh
 source "$SMPCP_LIB"/statistics.sh
+# shellcheck source=/usr/lib/smpcp/volume.sh
 source "$SMPCP_LIB"/volume.sh
 
 __is_mpd_running || {
@@ -55,10 +64,11 @@ case $1 in
   getduration) shift; get_duration "$@" ;;
   getelapsed ) shift; get_elapsed "$@" ;;
   getnext    ) shift; get_next "$@" ;;
-  getstat    ) shift; get_stat "$@" ;;
   getsticker ) shift; get_sticker "$@" ;;
+  help       ) _help ;;
   idle       ) shift; cmd idle "$@" ;;
   idleloop   ) shift; cmd idleloop "$@" ;;
+  insertalbum) shift; add_album -i "$@" ;;
   fcmd       ) shift; fcmd "$@" ;;
   ls         ) list ;;
   move       ) shift; move "$@" ;;
