@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/12
+# M │ 2021/04/15
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -55,7 +55,7 @@ __msg() {
     M) _type=":: "; shift ;; # message
     W) _type="-- "; shift ;; # warning
   esac
-  >&2 echo "[smpcp] ${_type}$1"
+  >&2 echo "[smpcp] ${_type}${1,,}"
 }
 
 read_config() {
