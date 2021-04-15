@@ -28,7 +28,8 @@
 # D │ 2021/04/13
 # M │ Aliases.
 
-alias aa='smpcp addalbum'
+alias aa='smpcp insertalbum'
+alias aaa='smpcp addalbum'
 alias add='smpcp add'
 alias clr='smpcp clear'
 alias cr='smpcp crop'
