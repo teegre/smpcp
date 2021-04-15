@@ -25,18 +25,51 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/04/13
+# M : 2021/04/15
 # D : Volume control.
+
+notify_volume() {
+  # display volume change notification.
+  local vol="$1"
+
+  [[ $vol ]] || return 1
+  notify-send -u low -t 1000 "[smpcp]" "volume: ${vol}%"
+}
 
 volume() {
   # show or set volume.
   # usage:
   #   volume
-  #   volume [+ | -] <value>
+  #   volume [-n] [+|-] <value>
+
+  [[ $1 == "-n" ]] && {
+    local NOTIFY=1
+    shift
+  }
 
   [[ $1 ]] || {
-    read_config volume && return 0
+    local vol
+    vol="$(read_config volume)"
+    [[ $NOTIFY ]] && {
+      notify-volume "$vol"
+      return 0
+    }
+    [[ $NOTIFY ]] || { echo "$vol"; return 0; }
     return 1
+  }
+
+  # internal use only.
+  # if a volume change occured when player was stopped,
+  # useful to set correct volume on play.
+  [[ $1 == "auto" ]] && {
+    local vol cvol
+    cvol="$(fcmd status volume)"
+    vol="$(read_config volume)"
+    dimmed="$(read_config dim)"
+
+    [[ $cvol -ne "$vol" && $dimmed == "off" ]] && 
+      state && cmd setvol $((vol))
+    return 0
   }
 
   local val
@@ -53,13 +86,24 @@ volume() {
     fi
 
     ((vol > 100 || vol < 0)) && {
-      __msg M "volume: $(fcmd status volume)%"
+      vol="$(fcmd status volume)"
+      [[ $NOTIFY ]] && notify_volume "$vol"
+      [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
       return 1
     }
 
-    cmd setvol "$vol" || return 1
+    state || {
+      # volume will be set on play.
+      write_config volume "$vol"
+      [[ $NOTIFY ]] && notify_volume "$vol"
+      [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
+      return 0
+    }
+
+    cmd setvol "$vol"
     write_config volume "$(fcmd status volume)" && {
-      __msg M "volume: ${vol}%"
+      [[ $NOTIFY ]] && notify_volume "$vol"
+      [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
       write_config dim off
       return 0
     }
