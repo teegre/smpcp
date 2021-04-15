@@ -338,7 +338,7 @@ get_albumart() {
 
   # is album art in cache directory?
   local albumart
-  albumart="$(get_current "%album%" | shasum | cut -d' ' -f 1)"
+  albumart="$(get_current "%album%" | sha1sum | cut -d' ' -f 1)"
   albumart="${SMPCP_CACHE}/${albumart}.jpg"
 
   [[ -a $albumart ]] && {
