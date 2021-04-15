@@ -228,7 +228,7 @@ __playback_mode() {
   fi
 }
 
-# repeat()  { __playback_mode repeat  "$1"; }
+repeat()  { __playback_mode repeat  "$1"; }
 random()  { __playback_mode random  "$1"; }
 single()  { __playback_mode single  "$1"; }
 consume() { __playback_mode consume "$1"; }
