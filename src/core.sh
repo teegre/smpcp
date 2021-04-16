@@ -25,26 +25,35 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/15
+# M │ 2021/04/16
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
 __version='0.1'
 
+declare SMPCP_ASSETS="/etc/smpcp/assets"
 declare SMPCP_CACHE="$HOME/.config/smpcp/.cache"
-declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
 declare SMPCP_HIST="$HOME/.config/smpcp/history"
-declare SMPCP_LOG="$HOME/.config/smpcp/log"
 declare SMPCP_LOCK="$HOME/.config/smpcp/lock"
+declare SMPCP_LOG="$HOME/.config/smpcp/log"
+declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
 
 _date() { printf "%($1)T" "${2:--1}"; }
+
+secs_to_hms() {
+  # format given duration in seconds to [HH:]MM:SS.
+
+  local dur="$1" fmt
+  ((dur>=3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
+  TZ=UTC _date "$fmt" $((dur))
+}
 
 now() { _date "%F %T"; }
 
 # a simple logger.
 logme() { echo "$(now) --- $*" >> "$SMPCP_LOG"; }
 
-# strip path and filename and print lowercase file extension.
+# strip path and filename from URI and print lowercase file extension.
 get_ext() { local ext; ext="${1##*.}"; echo "${ext,,}"; }
 
 __msg() {
@@ -63,7 +72,7 @@ read_config() {
 
   [[ $1 ]] || { echo "null"; return 1; }
   
-  local param regex line
+  local param regex line value
   param="$1"
   regex="^[[:space:]]*${param}[[:space:]]*=[[:space:]]*(.+)$"
 
@@ -74,7 +83,10 @@ read_config() {
         echo "null"
         return 1
       else
-        echo "${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[1]}"
+        [[ $value =~ ^\~ ]] &&
+          value="${value/\~/"$HOME"}"
+        echo "$value"
         return 0
       fi
     }
