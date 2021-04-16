@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/15
+# M │ 2021/04/16
 # D │ Queue management.
 
 list_queue() {
@@ -69,12 +69,10 @@ list_queue() {
     fi
   done < <(${_cmd} | __parse_song_info "%artist%: %title%→%duration%")
 
-  local fmt
-
-  ((dur>=3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
   local trk
   ((pos>1)) && trk="tracks" || trk="track"
-  echo -e "---\n$((pos)) $trk - $(TZ=UTC _date "$fmt" $((dur)))"
+  echo "---"
+  echo "$((pos)) $trk - $(secs_to_hms $((dur)))"
 }
 
 add() {
@@ -207,14 +205,6 @@ __song_mode() {
   cmd replay_gain_mode track
 }
 
-__album_uri() {
-  local album_uri
-  album_uri="$(get_current)"
-  album_uri="${album_uri%/*}"
-  echo "$album_uri"
-  [[ $album_uri ]] && return 0 || return 1
-}
-
 add_album() {
   # add album for current song,
   # or add given album.
@@ -255,13 +245,13 @@ add_album() {
   }
 
   local uri
-  uri="$(__album_uri)" || {
+  uri="$(_album_uri)" || {
     __msg E "no current song."
     return 1
   }
 
   # does album contains other tracks?
-  [[ $(fcmd -c lsinfo "$album_uri" file) -eq 1 ]] && {
+  [[ $(fcmd -c lsinfo "$uri" file) -eq 1 ]] && {
     __msg E "'$(get_current "%album%")' no more songs."
     return 1
   }
