@@ -24,7 +24,7 @@ install: src/$(PROGNAME).out
 
 	install -Dm644 src/*.sh   -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	install -Dm644 settings   -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
-	install -Dm644 cover.jpg  -t $(DESTDIR)$(ASSETSDIR)/
+	install -Dm644 assets/*.* -t $(DESTDIR)$(ASSETSDIR)/
 	install -Dm644 $(MANPAGE) -t $(DESTDIR)$(MANDIR)
 	install -Dm644 LICENSE    -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
 
