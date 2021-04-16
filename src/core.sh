@@ -140,11 +140,10 @@ wait_for_pid() {
   count=0
 
   [[ $dur && $pid ]] && {
-    kill -0 "$pid" 2> /dev/null || return 0
     while ((count<dur)); do
+      kill -0 "$pid" 2> /dev/null || return 0
       sleep 1
       ((count++))
-      kill -0 "$pid" 2> /dev/null || return 0
     done
     kill -0 "$pid" 2> /dev/null && return 1 || return 0
   }
