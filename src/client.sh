@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/14
+# M │ 2021/04/16
 # D │ Basic MPD client.
 
 __is_mpd_running() {
@@ -42,9 +42,10 @@ __is_mpd_running() {
 }
 
 __cmd() {
+# DON'T USE THIS. USE cmd INSTEAD.
 # send a command to music player daemon.
 # usage: __cmd [-x] <command> [options]
-# -x sets the buffering output delay time (source: netcat manpage) to 1 second.
+# -x sets netcat buffering output delay time to 1 second.
 # it prevents netcat from prematurely returning when an expensive task is running
 # (i.e listall).
 
@@ -68,6 +69,8 @@ if [[ $1 =~ ^idle.*$ ]]; then
   return $?
 fi
 
+# __msg M "$*"
+
 # preserve quoted arguments.
 local arg arglist
 for arg in "${@}"; do
@@ -75,7 +78,7 @@ for arg in "${@}"; do
   if [[ $arg =~ ^.*[[:space:]]+.* ]]; then
     arglist+=("\"${arg}\"")
   # no whitespace string: quote and escape.
-  elif [[ $arg =~ ^.*[\"\|\']+.*$ ]]; then
+  elif [[ $arg =~ ^.*[^\\][\"\|\']+.*$ ]]; then
     arg="${arg//\'/\\\'}"
     arg="${arg//\"/\\\"}"
     arglist+=("\"$arg\"")
@@ -334,6 +337,18 @@ get_elapsed() {
   return 1
 }
 
+_album_uri() {
+  # print current album URI.
+
+  local uri
+  uri="$(get_current)"
+  uri="${album_uri%/*}"
+
+  echo "$uri"
+
+  [[ $uri ]] && return 0 || return 1
+}
+
 get_albumart() {
 
   # is album art in cache directory?
@@ -370,7 +385,7 @@ get_albumart() {
   }
 
   local uri covers cover
-  uri="$(__album_uri)"
+  uri="$(_album_uri)"
 
   mapfile -t covers < <(fcmd listfiles "$uri" file | grep '^cover\..*$\|^folder\..*$')
 
@@ -387,8 +402,106 @@ get_albumart() {
 
   convert "${musicdir}/${uri}/$cover" -resize 64x64 "$albumart" &> /dev/null || {
     echo "$default"
-    return
+    return 1
   }
 
   echo "$albumart"
+}
+
+get_album_info() {
+  # print current album full info.
+  
+  local info artist album albumartist date fmt
+  mapfile -t info < <(get_current "%artist%\n%album%\n%albumartist%\n%date%") ||
+    return 1
+
+  artist="${info[0]}"
+  album="${info[1]}"
+  albumartist="${info[2]}"
+  date="${info[3]}"
+
+  if [[ $albumartist != "%albumartist%" && $artist != "$albumartist" ]]; then
+    local VA=1 # stands for various artists
+    fmt="%track%→%artist%→%title%→%duration%"
+  else
+    fmt="%track%→%title%→%duration%"
+  fi
+
+  local uri tracklist count=0
+  uri="$(_album_uri)"
+  while read -r; do
+    ((++count))
+    tracklist+=("$REPLY")
+  done < <(cmd lsinfo "$uri" | __parse_song_info -s "$fmt")
+
+  local t song track title dur=0
+  for t in "${tracklist[@]}"; do
+    IFS=$'\n' read -d "" -ra song <<< "${t//→/$'\n'}"
+    track="${song[0]}"
+    if [[ $VA ]]; then
+      artist="${song[1]}"
+      title="${song[2]}"
+      duration="${song[3]%%.*}"
+    else
+      title="${song[1]}"
+      duration="${song[2]%%.*}"
+    fi
+
+    ((dur+=duration))
+
+    [[ $VA ]] ||
+      printf "%0${#count}d. │ %s │ %s\n" $((track)) "$(secs_to_hms $((duration)))" "$title"
+    [[ $VA ]] &&
+      printf "%0${#count}d. │ %s │ %s: %s\n" $((track)) "$(secs_to_hms $((duration)))" "$artist" "$title"
+  done
+
+  local trk
+  ((count>1)) && trk="tracks" || trk="track"
+  echo "---"
+  [[ $VA ]] && artist="$albumartist"
+  [[ $date ]] && echo "${artist}: ${album} ($date)"
+  [[ $date ]] || echo "${artist}: ${album} (n/a)"
+  echo "$((count)) $trk - $(secs_to_hms $((dur)))"
+}
+
+_quote() {
+  # set appropriate quoting for filter argument.
+  # usage: _quote <argument>
+  local arg
+  arg="$1"
+  # Symphonie n° 6 "Pastorale"
+  if [[ $arg =~ ^.*[[:space:]]+\".+\".*$ ]]; then
+    arg="'${arg//\"/\\\"}'"
+  # The Man Machine
+  elif [[ $arg =~ ^.*[[:space:]]+.* ]]; then
+    arg="\\\"${arg}\\\""
+  # "Heroes"
+  elif [[ $arg =~ ^\".+\"$ ]]; then
+    arg="'${arg}'"
+  else
+    arg="\"${arg}\""
+  fi
+  echo "$arg"
+}
+
+get_discography() {
+  # print artist discography
+
+  local artist count=0
+  [[ $1 ]] && artist="$1" ||
+    artist="$(get_current "%artist%")" || return 1
+
+  local album date
+  while read -r; do
+    ((++count))
+    album="$REPLY"
+    date="$(fcmd list date "(album==$(_quote "$REPLY"))" Date)"
+    [[ $date ]] && echo "$album ($date)"
+    [[ $date ]] || echo "$album"
+  done < <(fcmd list album "(artist==$(_quote "$artist"))" Album)
+
+  local alb
+  echo "---"
+  ((count>1)) && alb="albums" || alb="album"
+  echo "$artist - $count ${alb}."
 }
