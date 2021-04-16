@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/13
+# M : 2021/04/16
 # D : Statistics management.
 
 get_sticker() {
@@ -77,6 +77,8 @@ media_update() {
     get_current "$fmt"
   } > "$HOME/.config/currentmedia"
 }
+
+clear_media() { :> "$HOME/.config/currentmedia"; }
 
 update_stats() {
   
