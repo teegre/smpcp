@@ -72,3 +72,9 @@ Commands:
   smpcp xfade [duration]                           set crossfade duration.
 EOB
 }
+
+_print_version() {
+  echo "smpcp version $__version"
+  echo "This program is free software."
+  echo -e "It is distributed AS IS with NO WARRANTY.\n"
+}

@@ -94,5 +94,6 @@ case $1 in
   toggle     ) shift; toggle "$@" ;;
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
+  ""         ) _print_version; status ;;
   *          ) __msg E "invalid option '$1'."
 esac
