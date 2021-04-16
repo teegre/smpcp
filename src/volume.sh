@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/04/15
+# M : 2021/04/16
 # D : Volume control.
 
 notify_volume() {
@@ -33,7 +33,17 @@ notify_volume() {
   local vol="$1"
 
   [[ $vol ]] || return 1
-  notify-send -u low -t 1000 "[smpcp]" "volume: ${vol}%"
+
+  local icon
+  if ((vol < 35)); then
+    icon="$SMPCP_ASSETS/volume-low.png"
+  elif ((vol < 75)); then
+    icon="$SMPCP_ASSETS/volume-medium.png"
+  else
+    icon="$SMPCP_ASSETS/volume-high.png"
+  fi
+
+  notify-send -i "$icon" -u low -t 1250 "[smpcp]" "volume: ${vol}%"
 }
 
 volume() {
@@ -47,14 +57,20 @@ volume() {
     shift
   }
 
+  [[ $(read_config dim) == "on" ]] &&
+    local DIM=1
+
   [[ $1 ]] || {
-    local vol
+    local vol msg
     vol="$(read_config volume)"
+
+    [[ $DIM ]] && msg="(${vol})" || msg="$vol"
+
     [[ $NOTIFY ]] && {
-      notify-volume "$vol"
+      notify_volume "$msg"
       return 0
     }
-    [[ $NOTIFY ]] || { echo "$vol"; return 0; }
+    [[ $NOTIFY ]] || { echo "$msg"; return 0; }
     return 1
   }
 
@@ -65,10 +81,10 @@ volume() {
     local vol cvol
     cvol="$(fcmd status volume)"
     vol="$(read_config volume)"
-    dimmed="$(read_config dim)"
 
-    [[ $cvol -ne "$vol" && $dimmed == "off" ]] && 
+    [[ $cvol -ne "$vol" && ! $DIM ]] && 
       state && cmd setvol $((vol))
+
     return 0
   }
 
@@ -76,17 +92,18 @@ volume() {
   val="$1"
 
   [[ $val =~ ^[+\|-]?[0-9]+$ ]] && {
-    local vol
-    vol="$(fcmd status volume)"
+    local cvol vol
+    cvol="$(fcmd status volume)"
 
     if [[ $val =~ ^[+\|-].*$ ]]; then
-      ((vol+=val))
+      ((vol=cvol+val))
     else
       ((vol=val))
     fi
 
-    ((vol > 100 || vol < 0)) && {
-      vol="$(fcmd status volume)"
+    ((vol=vol<0?0:vol>100?100:vol))
+
+    ((vol==cvol)) && {
       [[ $NOTIFY ]] && notify_volume "$vol"
       [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
       return 1
