@@ -62,10 +62,10 @@ echo "$$" > "$SMPCP_PID"
 
 notify_song() {
   # display a song change notification.
-  if [[ $(read_config dim) == "on" ]]; then
-    notify-send -i "$(get_albumart)" -u low "$(status)"
-  else
+  if state; then
     notify-send -i "$(get_albumart)" "$(status)"
+  else
+    notify-send "$(pstatus)"
   fi
 }
 
@@ -78,6 +78,7 @@ play_event() {
 }
 
 pause_event() {
+  notify_song
   media_update
   [[ $(read_config single) == "on" ]] && {
     single 0 &> /dev/null
@@ -86,6 +87,7 @@ pause_event() {
 }
 
 stop_event() {
+  notify_song
   media_update
   [[ $(read_config single) == "on" ]] && {
     single 0 &> /dev/null
