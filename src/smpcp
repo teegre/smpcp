@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/13
+# M │ 2021/04/16
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -54,12 +54,14 @@ __is_mpd_running || {
 case $1 in
   add        ) shift; add "$@" ;;
   addalbum   ) shift; add_album "$@" ;;
+  albuminfo  ) get_album_info ;;
   clear      ) cmd clear ;;
   cmd        ) shift; cmd "$@" ;;
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
   delete     ) shift; delete "$@" ;;
   dim        ) dim ;;
+  discog     ) shift; get_discography "$@" ;;
   getcurrent ) shift; get_current "$@" ;;
   getduration) shift; get_duration "$@" ;;
   getelapsed ) shift; get_elapsed "$@" ;;
@@ -70,7 +72,7 @@ case $1 in
   idleloop   ) shift; cmd idleloop "$@" ;;
   insertalbum) shift; add_album -i "$@" ;;
   fcmd       ) shift; fcmd "$@" ;;
-  ls         ) list ;;
+  ls         ) list_queue ;;
   move       ) shift; move "$@" ;;
   next       ) next ;;
   pause      ) shift; pause "$@" ;;
