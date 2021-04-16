@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/04/15
+# M : 2021/04/16
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -104,6 +104,9 @@ change_event() {
 end_event() {
   update_stats "$URI"
 }
+
+#
+trap clear_media INT QUIT TERM
 
 while read -r; do
   # react to player events
