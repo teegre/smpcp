@@ -197,7 +197,7 @@ seek() {
   fi
 }
 
-__playback_mode() {
+_playback_mode() {
   # playback mode:
   # enable/disable/show status.
   # enable with on or 1.
@@ -228,10 +228,10 @@ __playback_mode() {
   fi
 }
 
-repeat()  { __playback_mode repeat  "$1"; }
-random()  { __playback_mode random  "$1"; }
-single()  { __playback_mode single  "$1"; }
-consume() { __playback_mode consume "$1"; }
+repeat()  { _playback_mode repeat  "$1"; }
+random()  { _playback_mode random  "$1"; }
+single()  { _playback_mode single  "$1"; }
+consume() { _playback_mode consume "$1"; }
 
 xfade() {
   # crossfade:
@@ -299,6 +299,10 @@ pstatus() {
 
   [[ $(fcmd status xfade) -gt 0 ]] \
     && status+="x" \
+    || status+="-"
+
+  [[ $(read_config dim) == "on" ]] \
+    && status+="d" \
     || status+="-"
 
   echo "$status"
