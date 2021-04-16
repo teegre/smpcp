@@ -25,8 +25,11 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/04/12
+# M │ 2021/04/16
 # D │ Database query.
+
+declare SMPCP_STICKER_DB
+SMPCP_STICKER_DB="$(read_config sticker_db)"
 
 search() {
   # case insensitive search in the database.
@@ -53,3 +56,24 @@ searchadd() {
 
   cmd searchadd "$@"
 }
+
+_db_rating_count() {
+# return item count that matches rating criteria.
+# usage: _db_rating_count <criteria>
+# example: db_rating_count '10'
+# comparison operators are:
+#  = equal, > greater, < lesser, >= greater or equal
+#  <= lesser or equal, <> or != different
+
+local val
+val="$1"
+
+[[ $val =~ ^[0-9]+ ]] && val="=$val"
+
+sqlite3 "$SMPCP_STICKER_DB" << SQL
+.timeout 2000
+SELECT COUNT(uri) FROM sticker
+WHERE name="rating" AND value${val};
+SQL
+}
+
