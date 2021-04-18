@@ -25,11 +25,12 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/16
+# M │ 2021/04/18
 # D │ Queue management.
 
 list_queue() {
-  # (kinda) pretty print queue.
+  # print queue.
+  # usage: list_queue [-f [format]]
 
   local len
   len="$(fcmd status playlistlength)"
@@ -39,14 +40,24 @@ list_queue() {
     return
   }
 
-  local cpos _cmd
-  cpos="$(get_current "%pos%")"
+  local _cmd
 
   if ((len > 50)); then
     _cmd="cmd -x playlistinfo"
   else
     _cmd="cmd playlistinfo"
   fi
+
+  [[ $1 == "-f" ]] && {
+    local fmt
+    fmt="${2:-"%file%"}"
+
+    ${_cmd} | _parse_song_info "$fmt"
+    return
+  }
+
+  local cpos
+  cpos="$(get_current "%pos%")"
   
   local pos=0 maxwidth entry title dur=0
 
@@ -67,7 +78,7 @@ list_queue() {
     else
       printf "%0${#len}d. │ %s\n" "$pos" "$title"
     fi
-  done < <(${_cmd} | __parse_song_info "%artist%: %title%→%duration%")
+  done < <(${_cmd} | _parse_song_info "%artist%: %title%→%duration%")
 
   local trk
   ((pos>1)) && trk="tracks" || trk="track"
@@ -176,6 +187,16 @@ move() {
   return 1
 }
 
+clear_queue() {
+  _daemon && get_mode &> /dev/null && {
+    cmd clear
+    update_daemon
+    return
+  }
+
+  cmd clear
+}
+
 crop() {
   # delete all songs from the queue
   # except for the currently playing song.
@@ -273,4 +294,11 @@ add_album() {
   }
 
   return 0
+}
+
+queue_is_empty() {
+  # check whether queue is empty.
+  local count
+  count="$(fcmd status playlistlength)"
+  return $((count>0?1:0))
 }

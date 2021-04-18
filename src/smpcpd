@@ -25,11 +25,10 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/04/16
+# M : 2021/04/18
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
-declare SMPCP_PID="$HOME/.config/smpcp/pid"
 
 # shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh
@@ -39,6 +38,8 @@ source "$SMPCP_LIB"/core.sh
 source "$SMPCP_LIB"/player.sh
 # shellcheck source=/usr/lib/smpcp/playlist.sh
 source "$SMPCP_LIB"/playlist.sh
+# shellcheck source=/usr/lib/smpcp/playlist.sh
+source "$SMPCP_LIB"/query.sh
 # shellcheck source=/usr/lib/smpcp/tracker.sh
 source "$SMPCP_LIB"/tracker.sh
 # shellcheck source=/usr/lib/smpcp/statistics.sh
@@ -47,18 +48,20 @@ source "$SMPCP_LIB"/statistics.sh
 source "$SMPCP_LIB"/volume.sh
 
 declare URI
+declare LOCK=0
 
 # check if an instance is already running.
-[[ -s "$SMPCP_PID" ]] && {
-  pid="$(<"$SMPCP_PID")"
+[[ -s "$SMPCPD_PID" ]] && {
+  pid="$(<"$SMPCPD_PID")"
   check_pid "$pid" && {
     __msg E "($pid) an instance is already running."
     exit 1
   }
+  unset pid
 }
 
 # save current pid.
-echo "$$" > "$SMPCP_PID"
+echo "$$" > "$SMPCPD_PID"
 
 notify_song() {
   # display a song change notification.
@@ -69,12 +72,50 @@ notify_song() {
   fi
 }
 
+add_songs() {
+  # add songs to the queue.
+
+  get_mode &> /dev/null || return 1
+
+  get_next &> /dev/null && return 1
+
+  local mode
+  mode="$(get_mode)"
+
+  if [[ $mode -eq 1 ]]; then
+    LOCK=1
+    local songcount
+    songcount="$(read_config playlist_song_count)" || songcount=10
+    echo "adding $((songcount)) new songs..."
+    get_rnd $((songcount)) | add
+    echo "new songs added."
+    __song_mode
+    LOCK=0
+    state || play
+    return 0
+  elif [[ $mode -eq 2 ]]; then
+    LOCK=1
+    echo "adding a new album..."
+    get_rnd -a 1 | add
+    echo "new album added."
+    __album_mode
+    state || play
+    LOCK=0
+    return 0
+  fi
+
+  return 1
+}
+
 play_event() {
+  while ((LOCK)); do sleep 1; done
   URI="$(get_current)"
   volume auto
   notify_song
   media_update
+
   # handle playlist generator here vvv
+  add_songs
 }
 
 pause_event() {
@@ -97,35 +138,69 @@ stop_event() {
 }
 
 change_event() {
+  while ((LOCK)); do sleep 1; done
   URI="$(get_current)"
   notify_song
   media_update
+
   # handle playlist generator here vvv
+  add_songs
 }
 
 end_event() {
   update_stats "$URI"
+  add_songs && {
+    state || play
+  }
 }
 
-#
-trap clear_media INT QUIT TERM
+update_daemon() {
+  echo "received update signal."
+  add_songs
+}
 
-while read -r; do
-  # react to player events
-  # play
-  # pause
-  # stop
-  # change
-  # end
+quit_daemon() {
+  echo "shutting down..."
+  clear_media
+  RUN=0
+}
 
-  echo "$REPLY"
+loop() {
+  while read -r; do
+    # react to player events
+    # play
+    # pause
+    # stop
+    # change
+    # end
 
-  case $REPLY in
-    play  ) play_event ;;
-    pause ) pause_event ;;
-    stop  ) stop_event ;;
-    change) change_event ;;
-    end   ) end_event
-  esac
+    echo "$REPLY"
 
-done < <(tracker)
+    case $REPLY in
+      play  ) play_event ;;
+      pause ) pause_event ;;
+      stop  ) stop_event ;;
+      change) change_event ;;
+      end   ) end_event
+    esac
+
+  done < <(tracker)
+}
+
+# use this trap if the queue is empty to add new 
+# songs when invoking play command.
+trap update_daemon HUP
+
+trap quit_daemon INT QUIT TERM
+
+echo "reading database..."
+update_song_list
+echo "done."
+
+# have to handle the case mpd is not running
+# or was stopped when smpcpd was running...
+RUN=1
+while ((RUN)); do
+  __is_mpd_running && loop
+  sleep 1
+done

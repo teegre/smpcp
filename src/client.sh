@@ -25,8 +25,10 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/16
+# M │ 2021/04/18
 # D │ Basic MPD client.
+
+declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
 
 __is_mpd_running() {
   # check whether mpd is running or not.
@@ -42,12 +44,13 @@ __is_mpd_running() {
 }
 
 __cmd() {
-# DON'T USE THIS. USE cmd INSTEAD.
 # send a command to music player daemon.
 # usage: __cmd [-x] <command> [options]
 # -x sets netcat buffering output delay time to 1 second.
-# it prevents netcat from prematurely returning when an expensive task is running
-# (i.e listall).
+# it prevents netcat from prematurely returning while 
+# an expensive task is running (i.e listall).
+#
+# DON'T USE THIS. USE cmd INSTEAD.
 
 local host port nccmd
 host="${MPD_HOST:-localhost}"
@@ -167,7 +170,7 @@ state() {
   fi
 }
 
-__parse_song_info() {
+_parse_song_info() {
   # parse song information in the given format.
   #
   # available tags:
@@ -184,6 +187,26 @@ __parse_song_info() {
 
   local fmt
   fmt="${1:-%artist% - %title%}"
+
+  strip_unexpanded() {
+    # strip un-expanded tags from string.
+
+    local source str i w dest
+    
+    source="$1"
+    IFS=$'\n' read -d "" -ra str <<< "${source// /$'\n'}"
+    for ((i==0;i<${#str[@]};i++)); do
+      w="${str[$i]}"
+      [[ $w =~ ^%.+%(.*)$ ]] && {
+        dest+="${BASH_REMATCH[1]}"
+        continue
+      }
+      ((i==0)) && dest+="$w"
+      ((i>0)) && dest+=" $w"
+    done
+
+    echo "$dest"
+  }
 
   local count=0
 
@@ -236,7 +259,7 @@ __parse_song_info() {
     [[ $REPLY =~ ^duration:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%duration%"/${BASH_REMATCH[1]}}"
       if [[ $search ]]; then 
-        echo -e "$fmt"
+        echo -e "$(strip_unexpanded "$fmt")"
         fmt="${1:-%artist% - %title%}"
         ((count++))
       else
@@ -249,7 +272,7 @@ __parse_song_info() {
     }
     [[ $REPLY =~ ^Id:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%id%"/${BASH_REMATCH[1]}}"
-      echo -e "$fmt"
+      echo -e "$(strip_unexpanded "$fmt")"
       fmt="${1:-%artist% - %title%}"
       ((count++))
     }
@@ -266,7 +289,7 @@ get_current() {
   local fmt
   fmt="${1:-"%file%"}"
 
-  cmd currentsong | __parse_song_info "$fmt"
+  cmd currentsong | _parse_song_info "$fmt"
 }
 
 get_next() {
@@ -279,7 +302,7 @@ get_next() {
 
   songid="$(fcmd status nextsongid)"
   [[ $songid ]] || return 1
-  cmd playlistid "$songid" | __parse_song_info "$fmt" 
+  cmd playlistid "$songid" | _parse_song_info "$fmt" 
 }
 
 get_duration() {
@@ -337,12 +360,14 @@ get_elapsed() {
   return 1
 }
 
+# shellcheck disable=SC2120
 _album_uri() {
   # print current album URI.
 
   local uri
-  uri="$(get_current)"
-  uri="${album_uri%/*}"
+
+  [[ $1 ]] && uri="$1" || uri="$(get_current)"
+  uri="${uri%/*}"
 
   echo "$uri"
 
@@ -362,7 +387,7 @@ get_albumart() {
   }
 
   local default musicdir
-  default="/etc/smpcp/assets/cover.jpg"
+  default="$SMPCP_ASSETS/cover.jpg"
 
   # locate music directory.
   musicdir="$(fcmd config music_directory 2> /dev/null)" ||
@@ -432,7 +457,7 @@ get_album_info() {
   while read -r; do
     ((++count))
     tracklist+=("$REPLY")
-  done < <(cmd lsinfo "$uri" | __parse_song_info -s "$fmt")
+  done < <(cmd lsinfo "$uri" | _parse_song_info -s "$fmt")
 
   local t song track title dur=0
   for t in "${tracklist[@]}"; do
@@ -504,4 +529,18 @@ get_discography() {
   echo "---"
   ((count>1)) && alb="albums" || alb="album"
   echo "$artist - $count ${alb}."
+}
+
+update_song_list() {
+  # make a text file containing all songs to ease playlist generation.
+  # do it only if needed (expensive!).
+
+  [[ -s $SMPCP_SONG_LIST ]] && {
+    local list_mod_date db_mod_date
+    list_mod_date="$(stat -t "$SMPCP_SONG_LIST" | cut -d' ' -f 13)"
+    db_mod_date="$(fcmd stats db_update)"
+    ((list_mod_date >= db_mod_date)) && return
+  }
+    
+  fcmd -x list file file > "$SMPCP_SONG_LIST"
 }

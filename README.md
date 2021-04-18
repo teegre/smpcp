@@ -19,4 +19,4 @@
 
 ## Dependencies
 
-bash coreutils gnu-netcat imagemagick libmpdclient libnotify mpd util-linux  
+bash coreutils gnu-netcat imagemagick libmpdclient libnotify mpd sqlite3 util-linux  

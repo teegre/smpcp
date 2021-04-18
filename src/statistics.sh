@@ -25,16 +25,16 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/16
+# M : 2021/04/18
 # D : Statistics management.
 
 get_sticker() {
-  local uri param value
+  local uri name value
   uri="$1"
-  param="$2"
-  [[ $uri && $param ]] && {
-    value="$(fcmd sticker get song "$uri" "$param" sticker)" || return 1
-    [[ $value =~ ^$param=(.+)$ ]] && {
+  name="$2"
+  [[ $uri && $name ]] && {
+    value="$(cmd sticker get song "$uri" "$name")" || return 1
+    [[ $value =~ ^sticker:[[:space:]]${name}=(.+)$ ]] && {
       echo "${BASH_REMATCH[1]}"
       return 0
     }
@@ -43,23 +43,35 @@ get_sticker() {
 }
 
 set_sticker() {
-  local uri param value
+  local uri name value
   uri="$1"
-  param="$2"
+  name="$2"
   value="$3"
-  [[ $uri && $param && $value ]] && {
-    cmd sticker set song "$uri" "$param" "$value" || return 1
+  [[ $uri && $name && $value ]] && {
+    cmd sticker set song "$uri" "$name" "$value" || return 1
     return 0
   }
   return 1
 }
 
-delete_sticker() {
-  local uri param
+find_sticker() {
+  local uri name
   uri="$1"
-  param="$2"
-  [[ $uri && $param ]] && {
-    cmd sticker delete song "$uri" "$param" || return 1
+  name="$2"
+  while read -r; do
+    [[ $REPLY =~ ^sticker:[[:space:]]${name}=(.+)$ ]] &&
+      echo "${BASH_REMATCH[1]}"
+      local OK=1
+  done < <(cmd sticker find song "$uri" "$name")
+  [[ $OK ]] && return 0 || return 1
+}
+
+delete_sticker() {
+  local uri name
+  uri="$1"
+  name="$2"
+  [[ $uri && $name ]] && {
+    cmd sticker delete song "$uri" "$name" || return 1
     return 0
   }
   return 1
@@ -149,7 +161,7 @@ rating() {
       return 0
     else
       set_sticker "$uri" rating $((r*2)) || return 1
-      __msg M "$(get_current "%artist%: %title%") $cr → $r"
+      __msg M "$(get_current "%artist%: %title%") [$cr → $r]"
       return 0
     fi
   }

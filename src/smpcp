@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/16
+# M │ 2021/04/18
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -55,7 +55,7 @@ case $1 in
   add        ) shift; add "$@" ;;
   addalbum   ) shift; add_album "$@" ;;
   albuminfo  ) get_album_info ;;
-  clear      ) cmd clear ;;
+  clear      ) clear_queue ;;
   cmd        ) shift; cmd "$@" ;;
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
@@ -66,32 +66,38 @@ case $1 in
   getduration) shift; get_duration "$@" ;;
   getelapsed ) shift; get_elapsed "$@" ;;
   getnext    ) shift; get_next "$@" ;;
+  getrnd     ) shift; get_rnd "$@" ;;
   getsticker ) shift; get_sticker "$@" ;;
   help       ) _help ;;
+  history    ) _db_get_history ;;
   idle       ) shift; cmd idle "$@" ;;
   idleloop   ) shift; cmd idleloop "$@" ;;
   insertalbum) shift; add_album -i "$@" ;;
   fcmd       ) shift; fcmd "$@" ;;
-  ls         ) list_queue ;;
+  ls         ) shift; list_queue "$@" ;;
+  mode       ) shift; _mode "$@" ;;
   move       ) shift; move "$@" ;;
   next       ) next ;;
+  nextalbum  ) next_album ;;
   pause      ) shift; pause "$@" ;;
   play       ) shift; play "$@" ;;
   playalbum  ) shift; add_album -p "$@" ;;
   prev       ) previous ;;
   random     ) shift; random "$@";;
   rating     ) shift; rating "$@" ;;
-  repeat     ) shift; repeat "$@" ;;
+  repeat     ) shift; _repeat "$@" ;;
   replaygain ) shift; replaygain "$@" ;;
   search     ) shift; search "$@" ;;
   searchadd  ) shift; searchadd "$@" ;;
   seek       ) shift; seek "$@" ;;
   setsticker ) shift; set_sticker "$@" ;;
   single     ) shift; single "$@" ;;
+  skip       ) shift; skip ;;
   status     ) status ;;
   stop       ) stop ;;
   stop_after ) stop_after_current ;;
   toggle     ) shift; toggle "$@" ;;
+  update     ) shift; update "$@" ;;
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   ""         ) _print_version; status ;;

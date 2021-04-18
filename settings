@@ -7,4 +7,14 @@
 #
 # SETTINGS
 
+# path to music library.
 music_library =
+
+# sticker database location.
+sticker_db =
+
+# how long a song should be kept in history.
+keep_in_history =
+
+# how many times a song can be skipped before being banned.
+skip_limit = 3

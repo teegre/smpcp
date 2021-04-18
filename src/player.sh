@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/13
+# M │ 2021/04/18
 # D │ Player functions.
 
 toggle() {
@@ -43,6 +43,16 @@ toggle() {
 
 play() {
   # start playback.
+  # usage: play [pos]
+
+  state || _daemon && get_mode &> /dev/null && queue_is_empty && {
+    # too bad! playback is stopped, daemon is active, song/album mode
+    # is enabled and queue is empty!
+    # so we need to tell smpcpd to add songs for us 
+    # by sending a HUP signal.
+    update_daemon
+    return
+  }
 
   local track
   track="$1"
@@ -82,9 +92,48 @@ next() {
   cmd next
 }
 
+next_album() {
+  # play another album
+
+  local mode
+  mode="$(get_mode)"
+  [[ $mode -eq 2 ]] && _daemon && {
+    cmd clear
+    update_daemon
+    return 0
+  }
+
+  _daemon || {
+    __msg E "daemon is not running."
+    return 1
+  }
+
+  [[ $mode -ne 2 ]] && {
+    __msg E "not in album mode." 
+    return 1
+  }
+}
+
 previous() {
   # play previous song.
   cmd previous
+}
+
+skip() {
+  # skip current song.
+
+  state || return 1
+
+  local uri skipcount
+
+  uri="$(get_current)"
+
+  skipcount="$(get_sticker "$uri)" skipcount)" || skipcount=0
+  ((skipcount++))
+  update_stats "$uri"
+  set_sticker "$uri" skipcount $((skipcount)) || return 1
+  next
+  return 0
 }
 
 seek() {
@@ -228,7 +277,7 @@ _playback_mode() {
   fi
 }
 
-repeat()  { _playback_mode repeat  "$1"; }
+_repeat() { _playback_mode repeat  "$1"; }
 random()  { _playback_mode random  "$1"; }
 single()  { _playback_mode single  "$1"; }
 consume() { _playback_mode consume "$1"; }
@@ -267,6 +316,41 @@ replaygain() {
   __msg M "replay gain mode: $(fcmd replay_gain_status replay_gain_mode)"
 }
 
+_mode() {
+  # set play mode or print status.
+
+  _daemon || {
+    __msg E "not available when daemon is not running."
+    write_config mode off
+    return 1
+  }
+
+  case $1 in
+    song ) write_config mode song;  __msg M "mode: song."   ;;
+    album) write_config mode album; __msg M "mode: album."  ;;
+    off  ) write_config mode off;   __msg M "mode: normal." ;;
+    ""   ) __msg M "mode: $(read_config mode)." ;;
+    *    ) __msg E "invalid option."
+  esac
+}
+
+get_mode() {
+  # helper function to get mode as an integer.
+  # 0 off
+  # 1 song
+  # 2 album
+
+  local mode
+  mode="$(read_config mode)" || mode="off"
+
+  case $mode in
+    off  ) echo 0; return 1 ;;
+    song ) echo 1; return 0 ;;
+    album) echo 2; return 0 ;;
+    *    ) echo 0; return 1 ;; # just in case.
+  esac
+}
+
 pstatus() {
   # terse status display.
 
@@ -279,7 +363,18 @@ pstatus() {
     stop ) status=""
   esac
 
-  local options mode
+  local options pbmode mode
+
+  mode="$(read_config mode)" || mode="off"
+
+  case $mode in
+    off  ) mode="normal" ;;
+    song ) mode="song" ;;
+    album) mode="album" ;;
+    *    ) mode="normal" ;;
+  esac
+
+  status+=" [${mode}] "
 
   local -A __m
   __m["repeat"]="r"
@@ -287,13 +382,11 @@ pstatus() {
   __m["single"]="s"
   __m["consume"]="c"
 
-  status+=" "
-
   options=( "repeat" "random" "single" "consume" )
 
-  for mode in "${options[@]}"; do
-    [[ "$(fcmd status "$mode")" -eq 1 ]] \
-      && status+="${__m["$mode"]}" \
+  for pbmode in "${options[@]}"; do
+    [[ "$(fcmd status "$pbmode")" -eq 1 ]] \
+      && status+="${__m["$pbmode"]}" \
       || status+="-"
   done
 

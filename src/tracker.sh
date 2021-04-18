@@ -25,7 +25,7 @@
 #
 # TRACKER
 # C : 2021/04/09
-# M : 2021/04/13
+# M : 2021/04/18
 # D : Player event tracker.
 
 _wait() {
@@ -64,13 +64,15 @@ tracker() {
 
   local PID ID STATE
 
+  state -p
+
   _wait & PID=$!
   ID="$(get_current "%id%")"
 
   if wait_for_pid 1 "$PID"; then
     unset PID ID
   else
-    echo "play"
+    state -p
   fi
 
   while read -r; do

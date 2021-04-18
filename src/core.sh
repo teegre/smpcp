@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/16
+# M │ 2021/04/18
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -33,10 +33,10 @@ __version='0.1'
 
 declare SMPCP_ASSETS="/etc/smpcp/assets"
 declare SMPCP_CACHE="$HOME/.config/smpcp/.cache"
-declare SMPCP_HIST="$HOME/.config/smpcp/history"
-declare SMPCP_LOCK="$HOME/.config/smpcp/lock"
 declare SMPCP_LOG="$HOME/.config/smpcp/log"
 declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
+
+declare SMPCPD_PID="$HOME/.config/smpcp/pid"
 
 _date() { printf "%($1)T" "${2:--1}"; }
 
@@ -56,15 +56,38 @@ logme() { echo "$(now) --- $*" >> "$SMPCP_LOG"; }
 # strip path and filename from URI and print lowercase file extension.
 get_ext() { local ext; ext="${1##*.}"; echo "${ext,,}"; }
 
+_max() {
+  # return max value
+  # usage: 
+  #  _max <value1> <value2> ... <valueN>
+  #  <command> | _max
+
+  local v1 v2
+  if (( $# > 1 )); then
+    for v1 in "$@"; do
+      [[ $v1 -gt "$v2" ]] && v2="$v1"
+    done
+    echo "$v2"
+    return 0
+  else
+    while IFS= read -r v1; do
+      [[ $v1 -gt "$v2" ]] && v2="$v1"
+    done
+    echo "$v2"
+    return 0
+  fi
+  return 1
+}
+
 __msg() {
   # error/message display.
-  local _type
+  local _type msg
   case $1 in
-    E) _type="!! "; shift ;; # error
-    M) _type=":: "; shift ;; # message
-    W) _type="-- "; shift ;; # warning
+    E) _type="[ERROR] "; shift; msg="$1" ;;   # error
+    M) _type=""; shift ; msg="${1,,}" ;;      # message
+    W) _type="[WARNING] "; shift; msg="$1" ;; # warning
   esac
-  >&2 echo "[smpcp] ${_type}${1,,}"
+  >&2 echo "${_type}smpcp: ${msg}"
 }
 
 read_config() {
@@ -147,4 +170,22 @@ wait_for_pid() {
     done
     check_pid "$pid" 2> /dev/null && return 1 || return 0
   }
+}
+
+_daemon() {
+  # check whether daemon is enabled.
+
+  local pid
+  pid="$(<"$SMPCPD_PID")"
+
+  check_pid "$pid"
+}
+
+update_daemon() {
+  # send HUP signal to daemon to notify it
+  # to add new songs to the queue.
+
+  local pid
+  pid="$(<"$SMPCPD_PID")"
+  kill -HUP "$pid" 2> /dev/null
 }
