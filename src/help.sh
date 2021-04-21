@@ -72,6 +72,7 @@ Commands:
   smpcp searchadd <type> <query>                   search for songs and add them to queue.
   smpcp seek [+|-]<[HH:[MM:]]SS> | [+|-]<0-100%>   seek to specified position.
   smpcp single [off|on]                            set single mode.
+  smpcp skip                                       skip current track.
   smpcp status                                     print player status
   smpcp stop                                       stop playback.
   smpcp stop_after                                 stop playback after current song.
