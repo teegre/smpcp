@@ -63,6 +63,10 @@ declare LOCK=0
 # save current pid.
 echo "$$" > "$SMPCPD_PID"
 
+logme --clear
+
+logme "daemon started."
+
 notify_song() {
   # display a song change notification.
   if state; then
@@ -77,6 +81,7 @@ add_songs() {
 
   get_mode &> /dev/null || return 1
 
+  # shellcheck disable=SC2119
   get_next &> /dev/null && return 1
 
   local mode
@@ -99,8 +104,8 @@ add_songs() {
     get_rnd -a 1 | add
     echo "new album added."
     __album_mode
-    state || play
     LOCK=0
+    state || play
     return 0
   fi
 
@@ -148,7 +153,8 @@ change_event() {
 }
 
 end_event() {
-  update_stats "$URI"
+  update_stats "$URI" ||
+    logme "[ERROR] could not update song statistics. uri: $URI"
   while ((LOCK)); do sleep 1; done
   add_songs && {
     state || play
@@ -161,12 +167,15 @@ update_daemon() {
 }
 
 quit_daemon() {
+  logme "shutting down."
   echo "shutting down..."
   clear_media
   RUN=0
+  logme "quit."
 }
 
 loop() {
+  logme "waiting for events."
   while read -r; do
     # react to player events
     # play
@@ -178,11 +187,11 @@ loop() {
     echo "$REPLY"
     
     case $REPLY in
-      play  ) play_event & ;;
+      play  ) play_event ;;
       pause ) pause_event ;;
       stop  ) stop_event ;;
-      change) change_event & ;;
-      end   ) end_event &
+      change) change_event ;;
+      end   ) end_event
     esac
 
   done < <(tracker)
@@ -205,3 +214,5 @@ while ((RUN)); do
   __is_mpd_running && loop
   sleep 1
 done
+
+logme "daemon stopped."
