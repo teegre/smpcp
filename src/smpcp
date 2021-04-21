@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/18
+# M │ 2021/04/21
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -59,9 +59,11 @@ case $1 in
   cmd        ) shift; cmd "$@" ;;
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
+  DEBUG      ) shift; "$@" ;;
   delete     ) shift; delete "$@" ;;
   dim        ) dim ;;
   discog     ) shift; get_discography "$@" ;;
+  findsticker) shift; find_sticker "$@" ;;
   getcurrent ) shift; get_current "$@" ;;
   getduration) shift; get_duration "$@" ;;
   getelapsed ) shift; get_elapsed "$@" ;;
@@ -82,6 +84,7 @@ case $1 in
   pause      ) shift; pause "$@" ;;
   play       ) shift; play "$@" ;;
   playalbum  ) shift; add_album -p "$@" ;;
+  playtime   ) db_playtime ;;
   prev       ) previous ;;
   random     ) shift; random "$@";;
   rating     ) shift; rating "$@" ;;
@@ -98,6 +101,7 @@ case $1 in
   stop_after ) stop_after_current ;;
   toggle     ) shift; toggle "$@" ;;
   update     ) shift; update "$@" ;;
+  version     ) __msg M "smpcp: version ${__version}." ;;
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   ""         ) _print_version; status ;;
