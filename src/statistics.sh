@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/18
+# M : 2021/04/21
 # D : Statistics management.
 
 get_sticker() {
@@ -174,5 +174,16 @@ playcount() {
 
   local plc
   plc="$(get_sticker "$(get_current)" playcount 2> /dev/null)" || plc=0
+
   echo "$plc"
+}
+
+db_playtime() {
+  # print db total playtime
+  
+  local t
+  t="$(fcmd stats db_playtime)"
+
+  secs_to_hms $((t))
+  echo
 }
