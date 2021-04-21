@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/18
+# M │ 2021/04/21
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -319,14 +319,9 @@ get_duration() {
   [[ $1 ]] || { echo "$duration"; return; }
 
   [[ $1 == "-h" ]] && {
-    ((duration>3600)) && {
-      TZ=UTC _date "%H:%M:%S" $((duration))
+      secs_to_hms $((duration))
       echo
       return
-    }
-    TZ=UTC _date "%M:%S" $((duration))
-    echo
-    return
   }
   return 1
 }
@@ -348,12 +343,7 @@ get_elapsed() {
     local duration
     duration="$(fcmd status duration)"
     duration="${duration%%.*}"
-    ((duration>3600)) && {
-      TZ=UTC _date "%H:%M:%S" $((elapsed))
-      echo
-      return
-    }
-    TZ=UTC _date "%M:%S" $((elapsed))
+    secs_to_hms $((elapsed))
     echo
     return
   }
