@@ -286,7 +286,15 @@ add_album() {
   }
 
   [[ $INSERT ]] && crop
-  [[ $PLAY ]] && cmd clear
+  [[ $PLAY ]] && {
+    if [[ $(get_current "%track%") =~ ^0*1$ ]]; then
+      crop
+      INSERT=1
+      unset PLAY
+    else
+     cmd clear
+    fi
+  }
 
   add "$uri"
 
