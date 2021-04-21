@@ -128,7 +128,7 @@ skip() {
 
   uri="$(get_current)"
 
-  skipcount="$(get_sticker "$uri)" skipcount)" || skipcount=0
+  skipcount="$(get_sticker "$uri" skipcount 2> /dev/null)" || skipcount=0
   ((skipcount++))
   update_stats "$uri"
   set_sticker "$uri" skipcount $((skipcount)) || return 1
@@ -320,7 +320,7 @@ _mode() {
   # set play mode or print status.
 
   _daemon || {
-    __msg E "not available when daemon is not running."
+    __msg W "mode: off (daemon not running.)"
     write_config mode off
     return 1
   }
@@ -328,7 +328,7 @@ _mode() {
   case $1 in
     song ) write_config mode song;  __msg M "mode: song."   ;;
     album) write_config mode album; __msg M "mode: album."  ;;
-    off  ) write_config mode off;   __msg M "mode: normal." ;;
+    off  ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
     ""   ) __msg M "mode: $(read_config mode)." ;;
     *    ) __msg E "invalid option."
   esac
