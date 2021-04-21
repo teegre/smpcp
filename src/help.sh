@@ -78,6 +78,7 @@ Commands:
   smpcp stop_after                                 stop playback after current song.
   smpcp toggle [pos]                               toggle play/pause. play if paused.
   smpcp update [uri]                               update database.
+  smpcp version                                    show program version and exit.
   smpcp vol [+|-]<vol>                             set volume.
   smpcp xfade [duration]                           set crossfade duration.
 EOB
