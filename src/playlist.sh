@@ -32,10 +32,7 @@ list_queue() {
   # print queue.
   # usage: list_queue [-f [format]]
 
-  local len
-  len="$(fcmd status playlistlength)"
-
-  ((len == 0)) && {
+  queue_is_empty && {
     __msg M "queue is empty."
     return
   }
