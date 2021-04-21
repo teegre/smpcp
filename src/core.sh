@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/18
+# M │ 2021/04/21
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -41,17 +41,49 @@ declare SMPCPD_PID="$HOME/.config/smpcp/pid"
 _date() { printf "%($1)T" "${2:--1}"; }
 
 secs_to_hms() {
-  # format given duration in seconds to [HH:]MM:SS.
+  # format given duration in seconds to
+  # [W week(s),] [D day(s),] [HH:]MM:SS.
 
-  local dur="$1" fmt
-  ((dur>=3600)) && fmt="%H:%M:%S" || fmt="%M:%S"
-  TZ=UTC _date "$fmt" $((dur))
+  local dur="$1"
+
+  if ((dur>=86400)); then
+    local weeks days w d
+    ((days=dur/3660/24))
+    ((weeks=days/7))
+
+    ((weeks>0)) && ((days=days%7))
+
+    ((weeks>1)) && w="weeks" || w="week"
+    ((days > 1)) && d="days" || d="day"
+
+    if ((weeks>0)) && ((days>0)); then
+      TZ=UTC _date "$((weeks)) ${w}, $((days)) ${d}, %H:%M:%S" $((dur))
+    elif ((weeks>0)) && ((days==0)); then
+      TZ=UTC _date "$((weeks)) ${w}, %H:%M:%S" $((dur))
+    else
+      TZ=UTC _date "$((days)) ${d}, %H:%M:%S" $((dur))
+    fi
+
+  elif ((dur>=3600)); then
+    TZ=UTC _date "%H:%M:%S" $((dur))
+
+  else
+    TZ=UTC _date "%M:%S" $((dur))
+
+  fi
 }
 
 now() { _date "%F %T"; }
 
 # a simple logger.
-logme() { echo "$(now) --- $*" >> "$SMPCP_LOG"; }
+logme() {
+  [[ $1 == "--clear" ]] && {
+    :> "$SMPCP_LOG"
+    return
+  }
+
+  echo "$(now) --- $*" >> "$SMPCP_LOG"
+}
 
 # strip path and filename from URI and print lowercase file extension.
 get_ext() { local ext; ext="${1##*.}"; echo "${ext,,}"; }
@@ -81,13 +113,20 @@ _max() {
 
 __msg() {
   # error/message display.
+
   local _type msg
+
   case $1 in
-    E) _type="[ERROR] "; shift; msg="$1" ;;   # error
-    M) _type=""; shift ; msg="${1,,}" ;;      # message
-    W) _type="[WARNING] "; shift; msg="$1" ;; # warning
+    E) _type="error: "; msg="$2" ;;   # error
+    M) msg="${2,,}" ;;                    # message
+    W) _type="warning: "; msg="$2" ;; # warning
   esac
-  >&2 echo "${_type}smpcp: ${msg}"
+
+  if [[ $1 == "E" || $1 == "W" ]]; then
+    >&2 echo "${_type}${msg}"
+  else
+    echo "$msg"
+  fi
 }
 
 read_config() {
