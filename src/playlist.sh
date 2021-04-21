@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/18
+# M │ 2021/04/19
 # D │ Queue management.
 
 list_queue() {
@@ -224,6 +224,14 @@ __song_mode() {
   cmd single 0
   cmd crossfade 10
   cmd replay_gain_mode track
+}
+
+__normal_mode() {
+  cmd consume 0
+  cmd random 0
+  cmd single 0
+  cmd crossfade 0
+  cmd replay_gain_mode auto
 }
 
 add_album() {
