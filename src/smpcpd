@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/04/19
+# M : 2021/04/21
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -149,6 +149,7 @@ change_event() {
 
 end_event() {
   update_stats "$URI"
+  while ((LOCK)); do sleep 1; done
   add_songs && {
     state || play
   }
@@ -175,13 +176,13 @@ loop() {
     # end
 
     echo "$REPLY"
-
+    
     case $REPLY in
-      play  ) play_event ;;
+      play  ) play_event & ;;
       pause ) pause_event ;;
       stop  ) stop_event ;;
-      change) change_event ;;
-      end   ) end_event
+      change) change_event & ;;
+      end   ) end_event &
     esac
 
   done < <(tracker)
