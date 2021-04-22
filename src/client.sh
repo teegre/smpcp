@@ -368,6 +368,17 @@ _album_uri() {
   [[ $uri ]] && return 0 || return 1
 }
 
+get_music_dir() {
+  # locate music directory.
+
+  local musicdir
+  musicdir="$(fcmd config music_directory 2> /dev/null)" ||
+    musicdir="$(read_config music_directory)" ||
+      return 1
+  echo "$musicdir"
+  return 0
+}
+
 get_albumart() {
 
   # is album art in cache directory?
@@ -384,11 +395,10 @@ get_albumart() {
   default="$SMPCP_ASSETS/cover.jpg"
 
   # locate music directory.
-  musicdir="$(fcmd config music_directory 2> /dev/null)" ||
-    musicdir="$(read_config music_directory)" || {
-      echo "$default"
-      return
-    }
+  musicdir="$(get_music_dir)" || {
+    echo "$default"
+    return
+  }
 
   # expand ~ if needed.
   [[ $musicdir =~ ^~.*$ ]] &&
