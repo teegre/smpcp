@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/19
+# M │ 2021/04/22
 # D │ Queue management.
 
 list_queue() {
@@ -33,8 +33,8 @@ list_queue() {
   # usage: list_queue [-f [format]]
 
   queue_is_empty && {
-    __msg M "queue is empty."
-    return
+    >&2 __msg M "queue is empty."
+    return 1
   }
 
   local _cmd
