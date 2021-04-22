@@ -101,10 +101,14 @@ CMD
 
 cmd() {
   # like __cmd + filter errors.
+  local _cmd
+  _cmd="$*"
   while read -r; do
     [[ $REPLY =~ ^OK.+$ ]] && continue
     [[ $REPLY == "OK" ]] && return 0
     [[ $REPLY =~ ^ACK[[:space:]]\[.*\][[:space:]]\{.*\}[[:space:]](.+)$ ]] && {
+      [[ ${FUNCNAME[-2]} == "loop" && $_cmd != "config" ]] &&
+        logme "[ERROR] ${BASH_REMATCH[1],,}\ncommand: ${_cmd}\nfunctions: ${FUNCNAME[*]}"
       __msg E "${BASH_REMATCH[1],,}"
       return 1
     }
