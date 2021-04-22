@@ -69,11 +69,8 @@ tracker() {
   _wait & PID=$!
   ID="$(get_current "%id%")"
 
-  if wait_for_pid 1 "$PID"; then
+  wait_for_pid 1 "$PID" &&
     unset PID ID
-  else
-    state -p
-  fi
 
   while read -r; do
 
