@@ -82,7 +82,7 @@ logme() {
     return
   }
 
-  echo "$(now) --- $*" >> "$SMPCP_LOG"
+  echo -e "$(now) --- $*" >> "$SMPCP_LOG"
 }
 
 # strip path and filename from URI and print lowercase file extension.
