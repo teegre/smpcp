@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/18
+# M │ 2021/04/23
 # D │ Player functions.
 
 toggle() {
@@ -89,11 +89,12 @@ stop_after_current() {
 
 next() {
   # play next song.
+
   cmd next
 }
 
 next_album() {
-  # play another album
+  # play another album.
 
   local mode
   mode="$(get_mode)"
@@ -116,6 +117,7 @@ next_album() {
 
 previous() {
   # play previous song.
+
   cmd previous
 }
 
@@ -326,11 +328,12 @@ _mode() {
   }
 
   case $1 in
-    song ) write_config mode song;  __msg M "mode: song."   ;;
-    album) write_config mode album; __msg M "mode: album."  ;;
-    off  ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
-    ""   ) __msg M "mode: $(read_config mode)." ;;
-    *    ) __msg E "invalid option."
+    song  ) write_config mode song;  __msg M "mode: song."   ;;
+    album ) write_config mode album; __msg M "mode: album."  ;;
+    normal) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
+    off   ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
+    ""    ) __msg M "mode: $(read_config mode)." ;;
+    *     ) __msg E "invalid option."
   esac
 }
 
