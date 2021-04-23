@@ -333,14 +333,18 @@ get_rnd() {
   
   ((C=count))
   ((RR5=C*R5/RT))
-  get_uri_by_rating 10 $((RR5))
-  r=$?
-  ((count-=r))
+  ((RR5>0)) && {
+    get_uri_by_rating 10 $((RR5))
+    r=$?
+    ((count-=r))
+  }
 
   ((RR4=C*R4/RT))
-  get_uri_by_rating 8 $((RR4))
-  r=$?
-  ((count-=r))
+  ((RR4>0)) && {
+    get_uri_by_rating 8 $((RR4))
+    r=$?
+    ((count-=r))
+  }
 
   get_random_song $((count))
 }
