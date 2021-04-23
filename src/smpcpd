@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/04/21
+# M : 2021/04/22
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -204,8 +204,13 @@ trap update_daemon HUP
 trap quit_daemon INT QUIT TERM
 
 echo "reading database..."
-update_song_list
+update_song_list && {
+  echo "done."
+  echo "cleaning orphan stickers..."
+  clean_orphan_stickers -q
+}
 echo "done."
+
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...
