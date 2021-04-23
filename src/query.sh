@@ -25,8 +25,8 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/04/21
-# D │ Database query.
+# M │ 2021/04/22
+# D │ Music and sticker database query.
 
 # to achieve some advanced search we need to directly query
 # the sticker database.
@@ -198,6 +198,80 @@ SELECT datetime(value) AS d, uri
 FROM sticker
 WHERE name="lastplayed" AND value BETWEEN "${from}" AND "$(now)"
 ORDER BY d DESC;
+SQL
+}
+
+_db_get_all_songs() {
+
+sqlite3 "$SMPCP_STICKER_DB" << SQL
+.timeout 2000
+SELECT uri FROM sticker
+GROUP BY uri
+ORDER BY uri ASC;
+SQL
+}
+
+clean_orphan_stickers() {
+# check for orphans and remove them from
+# sticker database.
+#
+# NOTE: when a file is removed physically and from the database, 
+# its stats remain in the sticker database. Hence this function.
+# But when a file is renamed or moved, it would be great to
+# keep its stats in the sticker database and only update its uri...
+
+[[ $1 == "-q" ]] && {
+  shift
+  local QUIET=1
+}
+
+local musicdir
+
+musicdir="$(get_music_dir)" || {
+  __msg E "could not find music directory."
+  return 1
+}
+
+__msg M "scanning sticker database."
+
+local uris
+local -a _orphans
+local -a orphans
+local t i=0 uri
+
+mapfile -t uris < <(_db_get_all_songs)
+
+((t=${#uris[@]}))
+
+__msg M "found $t URI."
+__msg M "done."
+__msg M "processing."
+
+for uri in "${uris[@]}"; do
+  [[ $QUIET ]] || ((++i))
+  [[ -a ${musicdir}/$uri ]] ||
+    _orphans+=("\"${uri//\"/\\\"}\"")
+  [[ $QUIET ]] ||
+    printf "\r-- %d/%d: %d%%" $((i)) $((t)) $((i*100/t))
+done
+
+[[ $QUIET ]] || echo
+
+__msg M "found ${#_orphans[@]} orphan(s)."
+
+[[ ${_orphans[*]} ]] || return 0
+
+# format list
+for ((i=0;i<${#_orphans[@]}-1;i++)); do
+  orphans+=("${_orphans[$i]}, ")
+done
+
+orphans+=("${_orphans[-1]}")
+
+sqlite3 "$SMPCP_STICKER_DB" << SQL
+.timeout 2000
+DELETE FROM sticker
+WHERE uri IN (${orphans[*]})
 SQL
 }
 
