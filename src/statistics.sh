@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/21
+# M : 2021/04/23
 # D : Statistics management.
 
 get_sticker() {
@@ -105,8 +105,14 @@ update_stats() {
   
   local playcount
   playcount="$(get_sticker "$uri" playcount 2> /dev/null)" || playcount=0
+
   ((playcount++))
-  set_sticker "$uri" playcount "$playcount" || return 1
+  set_sticker "$uri" playcount "$playcount" ||
+    return 1
+  get_sticker "$uri" rating &> /dev/null ||
+    rating 0 &> /dev/null
+  get_sticker "$uri" skipcount &> /dev/null ||
+    set_sticker "$uri" skipcount 0
 
   return 0
 }
