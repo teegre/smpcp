@@ -155,25 +155,27 @@ rating() {
     return 0
   }
 
-  uri="$(get_current)"
-
   [[ $1 =~ ^[0-9]+$ ]] && {
     local r="$1"
     ((r<0 || r>5)) && {
       __msg E "invalid value."
       return 1
     }
-    if [[ $r -eq 0 ]]; then
-      delete_sticker "$uri" rating || return 1
-      return 0
-    else
-      set_sticker "$uri" rating $((r*2)) || return 1
-      __msg M "$(get_current "%artist%: %title%") [$cr → $r]"
-      return 0
-    fi
+    set_sticker "$uri" rating $((r*2)) || return 1
+    __msg M "$(get_current "%artist%: %title%") [$cr → $r]"
+    return 0
   }
   __msg E "invalid value."
   return 1
+}
+
+lastplayed() {
+  # print when current song was last played.
+
+  local lsp
+  lsp="$(get_sticker "$(get_current)" lastplayed)" || lsp="-"
+
+  echo "$lsp"
 }
 
 playcount() {
@@ -183,6 +185,30 @@ playcount() {
   plc="$(get_sticker "$(get_current)" playcount 2> /dev/null)" || plc=0
 
   echo "$plc"
+}
+
+skipcount() {
+  # print current song skipcount.
+
+  local skc
+  skc="$(get_sticker "$(get_current)" skipcount 2> /dev/null)" || {
+    echo 0
+    return 1
+  }
+
+  echo $((skc))
+  return 0
+}
+
+song_stats() {
+  # print current song statistics.
+
+  get_current "%artist%: %title%\n%album% (%date%)"
+  echo "===="
+  echo "rating:      $(rating)"
+  echo "last played: $(lastplayed)"
+  echo "play count:  $(playcount)"
+  echo "skip count:  $(skipcount)"
 }
 
 db_playtime() {
