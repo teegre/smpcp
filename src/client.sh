@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/21
+# M │ 2021/04/22
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -129,6 +129,7 @@ fcmd() {
   }
 
   # key is the last option.
+  # or the last option is the key.
   local key="${!#}"
 
   # rebuild argument list.
@@ -543,8 +544,9 @@ update_song_list() {
     local list_mod_date db_mod_date
     list_mod_date="$(stat -t "$SMPCP_SONG_LIST" | cut -d' ' -f 13)"
     db_mod_date="$(fcmd stats db_update)"
-    ((list_mod_date >= db_mod_date)) && return
+    ((list_mod_date >= db_mod_date)) && return 1
   }
     
   fcmd -x list file file > "$SMPCP_SONG_LIST"
+  return 0
 }
