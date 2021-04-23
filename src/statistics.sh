@@ -139,7 +139,8 @@ rating() {
   # if no given value, print actual rating.
 
   local cr uri
-  cr="$(get_sticker "$(get_current)" rating 2> /dev/null)" || cr=0
+  uri="$(get_current)"
+  cr="$(get_sticker "$uri" rating 2> /dev/null)" || cr=0
   ((cr/=2))
 
   [[ $1 ]] || {
