@@ -124,9 +124,9 @@ reset_stats() {
 
   [[ $uri ]] || return 1
 
-  cmd sticker delete song "$uri" lastplayed &&
-    cmd sticker delete song "$uri" playcount &&
-      cmd sticker delete song "$uri" skipcount &&
+  set_sticker "$uri" lastplayed "-" &&
+    set_sticker "$uri" playcount 0 &&
+      set_sticker "$uri" skipcount 0 &&
         return 0
 
   return 1
