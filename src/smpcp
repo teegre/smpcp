@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/21
+# M │ 2021/04/23
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -101,7 +101,7 @@ case $1 in
   stop_after ) stop_after_current ;;
   toggle     ) shift; toggle "$@" ;;
   update     ) shift; update "$@" ;;
-  version     ) __msg M "smpcp: version ${__version}." ;;
+  version    ) __msg M "smpcp: version ${__version}." ;;
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   ""         ) _print_version; status ;;
