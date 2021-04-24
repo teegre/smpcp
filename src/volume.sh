@@ -92,7 +92,13 @@ volume() {
 
   [[ $val =~ ^[+\|-]?[0-9]+$ ]] && {
     local cvol vol
-    cvol="$(fcmd status volume)"
+    if [[ $DIM ]]; then
+      [[ $NOTIFY ]] && dim -n
+      [[ $NOTIFY ]] || dim
+      return 0
+    else
+      cvol="$(fcmd status volume)"
+    fi
 
     if [[ $val =~ ^[+\|-].*$ ]]; then
       ((vol=cvol+val))
@@ -111,6 +117,7 @@ volume() {
     state || {
       # volume will be set on play.
       write_config volume "$vol"
+      write_config dim off
       [[ $NOTIFY ]] && notify_volume "$vol"
       [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
       return 0
@@ -118,9 +125,9 @@ volume() {
 
     cmd setvol "$vol"
     write_config volume "$(fcmd status volume)" && {
+      write_config dim off
       [[ $NOTIFY ]] && notify_volume "$vol"
       [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
-      write_config dim off
       return 0
     }
     return 1
@@ -144,18 +151,18 @@ dim() {
     shift
   }
 
-  local dimmed
-  dimmed="$(read_config dim)"
+  [[ $(read_config dim) == "on" ]] &&
+    local DIM=1
 
-  if [[ $dimmed == "on" ]]; then
+  if [[ $DIM ]]; then
     local svol
     svol="$(read_config volume)"
     cmd setvol $((svol))
     write_config dim off
     [[ $NOTIFY ]] || __msg M "dim: off."
-    [[ $NOTIFY ]] && volume -n
+    [[ $NOTIFY ]] && notify_volume $((svol))
     return 0
-  elif [[ $dimmed == "off" ]]; then
+  else
     local cvol
     cvol="$(fcmd status volume)"
     ((cvol > 1)) && {
