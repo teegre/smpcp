@@ -37,7 +37,9 @@ list_queue() {
     return 1
   }
 
-  local _cmd
+  local len _cmd
+
+  len="$(fcmd status playlistlength)"
 
   if ((len > 50)); then
     _cmd="cmd -x playlistinfo"
