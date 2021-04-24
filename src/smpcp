@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/23
+# M │ 2021/04/24
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -61,7 +61,7 @@ case $1 in
   crop       ) crop ;;
   DEBUG      ) shift; "$@" ;;
   delete     ) shift; delete "$@" ;;
-  dim        ) dim ;;
+  dim        ) shift; dim "$@" ;;
   discog     ) shift; get_discography "$@" ;;
   findsticker) shift; find_sticker "$@" ;;
   getcurrent ) shift; get_current "$@" ;;

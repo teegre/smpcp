@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/04/16
+# M : 2021/04/24
 # D : Volume control.
 
 notify_volume() {
@@ -34,7 +34,6 @@ notify_volume() {
 
   [[ $vol ]] || return 1
 
-  local icon
   if ((vol < 35)); then
     icon="$SMPCP_ASSETS/volume-low.png"
   elif ((vol < 75)); then
@@ -43,7 +42,7 @@ notify_volume() {
     icon="$SMPCP_ASSETS/volume-high.png"
   fi
 
-  notify-send -i "$icon" -u low -t 1250 "[smpcp]" "volume: ${vol}%"
+  notify-send -i "$icon" -t 1500 "[smpcp]" "volume: ${vol}%"
 }
 
 volume() {
@@ -140,6 +139,11 @@ dim() {
   [[ $s == "stop" || $s == "pause" ]] &&
     return 1
 
+  [[ $1 == "-n" ]] && {
+    local NOTIFY=1
+    shift
+  }
+
   local dimmed
   dimmed="$(read_config dim)"
 
@@ -148,7 +152,8 @@ dim() {
     svol="$(read_config volume)"
     cmd setvol $((svol))
     write_config dim off
-    __msg M "dim: off."
+    [[ $NOTIFY ]] || __msg M "dim: off."
+    [[ $NOTIFY ]] && volume -n
     return 0
   elif [[ $dimmed == "off" ]]; then
     local cvol
@@ -156,9 +161,11 @@ dim() {
     ((cvol > 1)) && {
       cmd setvol $((cvol/2))
       write_config dim on
-      __msg M "dim: on."
+      [[ $NOTIFY ]] || __msg M "dim: on."
+      [[ $NOTIFY ]] && volume -n
       return 0
     }
-    __msg M "dim: off."
+    [[ $NOTIFY ]] || __msg M "dim: off."
+    [[ $NOTIFY ]] && volume -n
   fi
 }
