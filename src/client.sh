@@ -534,10 +534,17 @@ get_discography() {
     [[ $date ]] || echo "$album"
   done < <(fcmd list album "(artist==$(_quote "$artist"))" Album)
 
-  local alb
+  local duration songcount
+  duration="$(fcmd count "(artist==$(_quote "$artist"))" playtime)"
+  songcount="$(fcmd count "(artist==$(_quote "$artist"))" songs)"
+
+  local alb sng
   echo "---"
   ((count>1)) && alb="albums" || alb="album"
-  echo "$artist - $count ${alb}."
+  ((songcount>1)) && sng="songs" || sng="song"
+  echo "$artist - $count ${alb} / ${songcount} ${sng}."
+  echo "Total playtime: $(secs_to_hms "$duration")"
+
 }
 
 update_song_list() {
