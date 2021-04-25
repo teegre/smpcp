@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/22
+# M │ 2021/04/25
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -155,6 +155,7 @@ fcmd() {
   ((count)) && return 0 || return 1
 }
 
+# shellcheck disable=SC2120
 state() {
   # music player playback state.
   # usage: state [-p]
@@ -521,12 +522,15 @@ get_discography() {
   [[ $1 ]] && artist="$1" ||
     artist="$(get_current "%artist%")" || return 1
 
+  # shellcheck disable=SC2119
+  [[ $artist ]] || state || return 1
+
   local album date
   while read -r; do
     ((++count))
     album="$REPLY"
     date="$(fcmd list date "(album==$(_quote "$REPLY"))" Date)"
-    [[ $date ]] && echo "$album ($date)"
+    [[ $date ]] && echo "$album (${date:0:4})"
     [[ $date ]] || echo "$album"
   done < <(fcmd list album "(artist==$(_quote "$artist"))" Album)
 
