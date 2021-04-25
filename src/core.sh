@@ -48,13 +48,13 @@ secs_to_hms() {
 
   if ((dur>=86400)); then
     local weeks days w d
-    ((days=dur/3660/24))
+    ((days=dur/3600/24))
     ((weeks=days/7))
 
     ((weeks>0)) && ((days=days%7))
 
     ((weeks>1)) && w="weeks" || w="week"
-    ((days > 1)) && d="days" || d="day"
+    ((days>1))   && d="days" || d="day"
 
     if ((weeks>0)) && ((days>0)); then
       TZ=UTC _date "$((weeks)) ${w}, $((days)) ${d}, %H:%M:%S" $((dur))
