@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/23
+# M │ 2021/04/26
 # D │ Player functions.
 
 toggle() {
@@ -73,18 +73,23 @@ stop() {
 stop_after_current() {
   # stop playback when current song is over.
 
+  [[ $1 == "-n" ]] && local NOTIFY=1
+
   state || return 1
 
   [[ $(read_config single) == "on" ]] && {
     single 0 &> /dev/null || return 1
     write_config single off || return 1
-    __msg M "stop after current: off."
+    [[ $NOTIFY ]] &&
+      notify-send -i "$SMPCP_ASSETS/play-pause.png" -t 1500 "[smpcp]" "stop after current: off"
+    [[ $NOTIFY ]] || __msg M "stop after current: off."
     return 0
   }
 
   single 1 &> /dev/null || return 1
   write_config single on || return 1
-  __msg M "stop after current: on."
+  [[ $NOTIFY ]] && notify-send -i "$SMPCP_ASSETS/stop-circle.png" -t 1500 "[smpcp]" "stop after current: on"
+  [[ $NOTIFY ]] || __msg M "stop after current: on."
 }
 
 next() {
