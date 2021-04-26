@@ -330,6 +330,7 @@ _mode() {
   case $1 in
     song  ) write_config mode song;  __msg M "mode: song."   ;;
     album ) write_config mode album; __msg M "mode: album."  ;;
+    norm  ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
     normal) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
     off   ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
     ""    ) __msg M "mode: $(read_config mode)." ;;
@@ -371,10 +372,10 @@ pstatus() {
   mode="$(read_config mode)" || mode="off"
 
   case $mode in
-    off  ) mode="normal" ;;
+    off  ) mode="norm" ;;
     song ) mode="song" ;;
     album) mode="album" ;;
-    *    ) mode="normal" ;;
+    *    ) mode="norm" ;;
   esac
 
   status+=" [${mode}] "
