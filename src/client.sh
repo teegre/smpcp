@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/25
+# M │ 2021/04/27
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -255,7 +255,7 @@ _parse_song_info() {
       continue
     }
     [[ $REPLY =~ ^Date:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%date%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%date%"/${BASH_REMATCH[1]:0:4}}"
       continue
     }
     [[ $REPLY =~ ^Time:[[:space:]](.+)$ ]] && {
