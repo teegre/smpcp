@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/04/18
+# M : 2021/04/27
 # D : Help.
 
 _help() {
@@ -41,7 +41,7 @@ Commands:
   smpcp consume [off|on]                           set consume mode.
   smpcp crop                                       remove all songs from the queue except current one.
   smpcp delete <position> | <start-end>            delete song(s) from the queue.
-  smpcp dim                                        toggle volume dim.
+  smpcp dim [-n]                                   toggle volume dim.
   smpcp discog                                     display albums in the database from current artist.
   smpcp getcurrent [format]                        show info about current song.
   smpcp getduration [-h]                           display duration of current song.
@@ -75,11 +75,11 @@ Commands:
   smpcp skip                                       skip current track.
   smpcp status                                     print player status
   smpcp stop                                       stop playback.
-  smpcp stop_after                                 stop playback after current song.
+  smpcp stopafter [-n]                             stop playback after current song.
   smpcp toggle [pos]                               toggle play/pause. play if paused.
   smpcp update [uri]                               update database.
   smpcp version                                    show program version and exit.
-  smpcp vol [+|-]<vol>                             set volume.
+  smpcp vol [-n] [+|-]<vol>                        set volume.
   smpcp xfade [duration]                           set crossfade duration.
 EOB
 }
