@@ -200,6 +200,10 @@ _parse_song_info() {
     local source str i w dest
     
     source="$1"
+
+    [[ $source == *%*%* ]] || { echo "$source"; return; }
+
+    # FIXME: "A B  C D" becomes "A B C D"
     IFS=$'\n' read -d "" -ra str <<< "${source// /$'\n'}"
     for ((i==0;i<${#str[@]};i++)); do
       w="${str[$i]}"
@@ -219,7 +223,7 @@ _parse_song_info() {
   while IFS= read -r; do
 
     [[ $REPLY =~ ^file:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%file%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%file%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Last-Modified:[[:space:]](.+)$ ]] && {
