@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/26
+# M │ 2021/04/28
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -39,6 +39,8 @@ source "$SMPCP_LIB"/help.sh
 source "$SMPCP_LIB"/player.sh
 # shellcheck source=/usr/lib/smpcp/playlist.sh
 source "$SMPCP_LIB"/playlist.sh
+# shellcheck source=/usr/lib/smpcp/plugin.sh
+source "$SMPCP_LIB"/plugin.sh
 # shellcheck source=/usr/lib/smpcp/query.sh
 source "$SMPCP_LIB"/query.sh
 # shellcheck source=/usr/lib/smpcp/statistics.sh
@@ -105,5 +107,5 @@ case $1 in
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   ""         ) _print_version; status ;;
-  *          ) __msg E "invalid option '$1'."
+  *          ) if _do_plugin_exist "$@"; then exec_plugin "$@"; else __msg E "invalid command: ${1}."; fi
 esac
