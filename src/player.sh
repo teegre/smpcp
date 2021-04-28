@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/26
+# M │ 2021/04/28
 # D │ Player functions.
 
 toggle() {
@@ -62,6 +62,10 @@ play() {
   else
     cmd play
   fi
+}
+
+pause() {
+  cmd pause
 }
 
 stop() {

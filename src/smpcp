@@ -83,7 +83,7 @@ case $1 in
   move       ) shift; move "$@" ;;
   next       ) next ;;
   nextalbum  ) next_album ;;
-  pause      ) shift; pause "$@" ;;
+  pause      ) pause ;;
   play       ) shift; play "$@" ;;
   playalbum  ) shift; add_album -p "$@" ;;
   playtime   ) db_playtime ;;
