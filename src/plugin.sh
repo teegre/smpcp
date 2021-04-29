@@ -31,6 +31,8 @@
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
 # must be stored in separate directories.
 # Name of exposed plugin functions must start with "plug_".
+# If a plugin need to receive player events, a function named
+# "__plug_plugin_notify" must be created.
  
 
 declare SMPCP_PLUGINS_DIR="$HOME/.config/smpcp/plugins"
@@ -45,12 +47,20 @@ _get_plugin_list() {
 }
 
 _get_plugin_function() {
-  # get a plugin function and execute it.
+  # get a plugin function and execute it unless -x option is used.
+  # -x makes _get_plugin_function exit with status 0 if the function
+  # exists, 1 otherwise.
+  # -n search for __plug_plugin_notify function and execute it.
 
   [[ $1 ]] || return 1
 
   [[ $1 == "-x" ]] && {
     local EXIST=1
+    shift
+  }
+
+  [[ $1 == "-n" ]] && {
+    local NOTIFY=1
     shift
   }
 
@@ -64,14 +74,25 @@ _get_plugin_function() {
 
   [[ $* ]] || return 1
 
-  local func
-  func="$1"; shift
-
+  [[ $NOTIFY ]] || {
+    local func
+    func="$1"; shift
+  }
 
   [[ ${SOURCES[$plugin]} ]] || {
     # shellcheck disable=SC1090
     source "${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
     SOURCES[$plugin]=1
+  }
+
+  [[ $NOTIFY ]] && {
+    while read -r; do
+      [[ ${REPLY/declare -f} =~ __plug_${plugin}_notify ]] && {
+        __plug_"${plugin}"_notify "$@"
+        return $?
+      }
+    done < <(declare -F)
+    return 1
   }
 
   while read -r; do
@@ -85,6 +106,11 @@ _get_plugin_function() {
 }
 
 _do_plugin_exist() {
+  # check whether a plugin exists.
+  # exit status:
+  # 0 true
+  # 1 false
+
   while read -r; do
     _get_plugin_function -x "$REPLY" "$@" && return 0
   done < <(_get_plugin_list)
@@ -92,8 +118,19 @@ _do_plugin_exist() {
 }
 
 exec_plugin() {
+  # execute specified plugin function.
   while read -r; do
     _get_plugin_function "$REPLY" "$@" && return 0
   done < <(_get_plugin_list)
   return 1
+}
+
+plugin_notify() {
+  # notify all plugins on player event.
+  # this function is triggered by smpcpd.
+  # usage: plugin_notify <event>
+
+  while read -r; do
+    _get_plugin_function -n "$REPLY" "$@"
+  done < <(_get_plugin_list)
 }
