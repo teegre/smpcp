@@ -25,32 +25,46 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/04/28
+# M : 2021/04/29
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
 # must be stored in separate directories.
 # Name of exposed plugin functions must start with "plug_".
 # If a plugin need to receive player events, a function named
-# "__plug_plugin_notify" must be created.
+# "__plug_plugin-name_notify" must be created.
  
 
 declare SMPCP_PLUGINS_DIR="$HOME/.config/smpcp/plugins"
 
 declare -A SOURCES
 
-_get_plugin_list() {
+get_plugin_list() {
   local plugin
   for plugin in "${SMPCP_PLUGINS_DIR}"/*; do
     echo "${plugin##*/}"
   done
 }
 
-_get_plugin_function() {
+get_all_plugin_functions() {
+  local plugin pathname func
+  plugin="$1"
+  pathname="${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
+  # shellcheck disable=SC1090
+  source "$pathname"
+
+  while read -r func; do
+    [[ ${func/declare -f } =~ ^plug_.*|^help_.* ]] &&
+      echo "${func/declare -f }"
+  done < <(declare -F)
+}
+
+get_plugin_function() {
   # get a plugin function and execute it unless -x option is used.
-  # -x makes _get_plugin_function exit with status 0 if the function
+  # -x makes get_plugin_function exit with status 0 if the function
   # exists, 1 otherwise.
-  # -n search for __plug_plugin_notify function and execute it.
+  # -n search for __plug_plugin-name_notify function and execute it.
+  # -h search for help_ function.
 
   [[ $1 ]] || return 1
 
@@ -64,6 +78,11 @@ _get_plugin_function() {
     shift
   }
 
+  [[ $1 == "-h" ]] && {
+    local HELP=1
+    shift
+  }
+
   local plugin
   plugin="$1"; shift
 
@@ -72,7 +91,7 @@ _get_plugin_function() {
     return 1
   }
 
-  [[ $* ]] || return 1
+  # [[ $* ]] || return 1
 
   [[ $NOTIFY ]] || {
     local func
@@ -95,13 +114,15 @@ _get_plugin_function() {
     return 1
   }
 
+  local prefix
+  [[ $HELP ]] && prefix="help" || prefix="plug"
   while read -r; do
-    [[ ${REPLY/declare -f} =~ plug_${func} ]] && {
-      [[ $EXIST ]] || { plug_"${func}" "$@"; return $?; }
+    [[ ${REPLY/declare -f } =~ ^${prefix}_${func} ]] && {
+      [[ $EXIST ]] || { "${prefix}_${func}" "$@"; return $?; }
       [[ $EXIST ]] && return 0
     }
   done < <(declare -F)
-  __msg E "could not find any plugin command: ${func}"
+  # __msg E "could not find any plugin command: ${func}"
   return 1
 }
 
@@ -112,16 +133,16 @@ _do_plugin_exist() {
   # 1 false
 
   while read -r; do
-    _get_plugin_function -x "$REPLY" "$@" && return 0
-  done < <(_get_plugin_list)
+    get_plugin_function -x "$REPLY" "$@" && return 0
+  done < <(get_plugin_list)
   return 1
 }
 
 exec_plugin() {
   # execute specified plugin function.
   while read -r; do
-    _get_plugin_function "$REPLY" "$@" && return 0
-  done < <(_get_plugin_list)
+    get_plugin_function "$REPLY" "$@" && return 0
+  done < <(get_plugin_list)
   return 1
 }
 
@@ -131,6 +152,25 @@ plugin_notify() {
   # usage: plugin_notify <event>
 
   while read -r; do
-    _get_plugin_function -n "$REPLY" "$@"
-  done < <(_get_plugin_list)
+    get_plugin_function -n "$REPLY" "$@"
+  done < <(get_plugin_list)
+}
+
+plugin_help() {
+  # print help text for the given function.
+
+  local func sp helpstr args desc
+  sp="[[:space:]]"
+
+  while read -r plugin; do
+    while read -r func; do
+      helpstr="$(get_plugin_function -h "$plugin" "${func/help_}")"
+      [[ $helpstr ]] || continue
+      [[ $helpstr =~ ^args${sp}*=${sp}*(.*)${sp}*\;${sp}*desc${sp}*=${sp}*(.*)$ ]] && {
+        args="${BASH_REMATCH[1]}"
+        desc="${BASH_REMATCH[2]}"
+        echo -e "smpcp ${func/help_} $args $desc"
+      }
+    done < <(get_all_plugin_functions "$plugin")
+  done < <(get_plugin_list)
 }
