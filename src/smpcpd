@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/04/22
+# M : 2021/04/28
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -38,7 +38,9 @@ source "$SMPCP_LIB"/core.sh
 source "$SMPCP_LIB"/player.sh
 # shellcheck source=/usr/lib/smpcp/playlist.sh
 source "$SMPCP_LIB"/playlist.sh
-# shellcheck source=/usr/lib/smpcp/playlist.sh
+# shellcheck source=/usr/lib/smpcp/plugin.sh
+source "$SMPCP_LIB"/plugin.sh
+# shellcheck source=/usr/lib/smpcp/query.sh
 source "$SMPCP_LIB"/query.sh
 # shellcheck source=/usr/lib/smpcp/tracker.sh
 source "$SMPCP_LIB"/tracker.sh
@@ -176,7 +178,8 @@ quit_daemon() {
 
 loop() {
   logme "waiting for events."
-  while read -r; do
+  local event
+  while read -r event; do
     # react to player events
     # play
     # pause
@@ -184,15 +187,17 @@ loop() {
     # change
     # end
 
-    echo "$REPLY"
-    
-    case $REPLY in
+    echo "$event"
+
+    case $event in
       play  ) play_event ;;
       pause ) pause_event ;;
       stop  ) stop_event ;;
       change) change_event ;;
       end   ) end_event
     esac
+
+    plugin_notify "$event" 2> /dev/null
 
   done < <(tracker)
 }
