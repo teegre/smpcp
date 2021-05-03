@@ -100,7 +100,6 @@ case $1 in
   skip       ) shift; skip ;;
   status     ) status ;;
   stop       ) stop ;;
-  stopafter  ) shift; stop_after_current "$@" ;;
   toggle     ) shift; toggle "$@" ;;
   update     ) shift; update "$@" ;;
   version    ) message M "smpcp: version ${__version}." ;;
