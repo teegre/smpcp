@@ -83,8 +83,7 @@ add_songs() {
 
   get_mode &> /dev/null || return 1
 
-  # shellcheck disable=SC2119
-  get_next &> /dev/null && return 1
+  [[ $(queue_length) -gt 1 ]] && return 1
 
   local mode
   mode="$(get_mode)"
