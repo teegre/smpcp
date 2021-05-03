@@ -53,13 +53,9 @@ declare URI
 declare LOCK=0
 
 # check if an instance is already running.
-[[ -s "$SMPCPD_PID" ]] && {
-  pid="$(<"$SMPCPD_PID")"
-  check_pid "$pid" && {
-    message E "($pid) an instance is already running."
-    exit 1
-  }
-  unset pid
+_daemon && {
+  message E "an instance is already running."
+  exit 1
 }
 
 # save current pid.
