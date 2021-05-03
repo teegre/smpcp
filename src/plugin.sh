@@ -125,7 +125,7 @@ get_plugin_function() {
   return 1
 }
 
-do_plugin_exist() {
+plugin_exists() {
   # check whether a plugin exists.
   # exit status:
   # 0 true
