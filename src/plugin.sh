@@ -34,7 +34,6 @@
 # If a plugin need to receive player events, a function named
 # "__plug_plugin-name_notify" must be created.
  
-
 declare SMPCP_PLUGINS_DIR="$HOME/.config/smpcp/plugins"
 
 declare -A SOURCES
@@ -61,6 +60,8 @@ get_all_plugin_functions() {
 
 get_plugin_function() {
   # get a plugin function and execute it unless -x option is used.
+  # usage: get_plugin_function [-x | -n | -h] <plugin> <function>
+  # (function name without the "plug_" prefix)
   # -x makes get_plugin_function exit with status 0 if the function
   # exists, 1 otherwise.
   # -n search for __plug_plugin-name_notify function and execute it.
@@ -86,10 +87,8 @@ get_plugin_function() {
   local plugin
   plugin="$1"; shift
 
-  [[ -a ${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh ]] || {
-    __msg E "plugin not found: ${plugin}."
+  [[ -a ${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh ]] ||
     return 1
-  }
 
   # [[ $* ]] || return 1
 
@@ -141,7 +140,7 @@ do_plugin_exist() {
 exec_plugin() {
   # execute specified plugin function.
   while read -r; do
-    get_plugin_function "$REPLY" "$@" && return 0
+    get_plugin_function "$REPLY" "$@" && return $?
   done < <(get_plugin_list)
   return 1
 }
