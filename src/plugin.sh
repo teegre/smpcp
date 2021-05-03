@@ -36,7 +36,7 @@
  
 declare SMPCP_PLUGINS_DIR="$HOME/.config/smpcp/plugins"
 
-declare -A SOURCES
+# declare -A SOURCES
 
 get_plugin_list() {
   local plugin
@@ -99,15 +99,15 @@ get_plugin_function() {
     func="$1"; shift
   }
 
-  [[ ${SOURCES[$plugin]} ]] || {
-    # shellcheck disable=SC1090
-    source "${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
-    SOURCES[$plugin]=1
-  }
+  # [[ ${SOURCES[$plugin]} ]] || {
+  # shellcheck disable=SC1090
+  source "${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
+  # SOURCES[$plugin]=1
+  # }
 
   [[ $NOTIFY ]] && {
     while read -r; do
-      [[ ${REPLY/declare -f} =~ __plug_${plugin}_notify ]] && {
+      [[ ${REPLY/declare -f } =~ __plug_${plugin}_notify ]] && {
         __plug_"${plugin}"_notify "$@"
         return $?
       }
