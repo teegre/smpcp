@@ -46,6 +46,8 @@ get_plugin_list() {
 }
 
 get_all_plugin_functions() {
+  # print all functions for given plugin.
+  # usage: get_all_plugin_functions <plugin-name>
   local plugin pathname func
   plugin="$1"
   pathname="${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
