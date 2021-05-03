@@ -25,7 +25,7 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/04/29
+# M : 2021/05/03
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
@@ -122,11 +122,11 @@ get_plugin_function() {
       [[ $EXIST ]] && return 0
     }
   done < <(declare -F)
-  # __msg E "could not find any plugin command: ${func}"
+  # message E "could not find any plugin command: ${func}"
   return 1
 }
 
-_do_plugin_exist() {
+do_plugin_exist() {
   # check whether a plugin exists.
   # exit status:
   # 0 true

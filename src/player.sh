@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/04/28
+# M │ 2021/05/03
 # D │ Player functions.
 
 toggle() {
@@ -114,12 +114,12 @@ next_album() {
   }
 
   _daemon || {
-    __msg E "daemon is not running."
+    message E "daemon is not running."
     return 1
   }
 
   [[ $mode -ne 2 ]] && {
-    __msg E "not in album mode." 
+    message E "not in album mode." 
     return 1
   }
 }
@@ -155,7 +155,7 @@ seek() {
   # otherwise seek is performed from the start.
 
   state || {
-    __msg E "not playing."
+    message E "not playing."
     return 1
   }
 
@@ -177,7 +177,7 @@ seek() {
     p="${BASH_REMATCH[1]}"
 
     ((p < 0 || p > 100)) && {
-      __msg E "invalid number."
+      message E "invalid number."
       return 1
     }
 
@@ -201,7 +201,7 @@ seek() {
         h=0
         m=0
       else
-        __msg E "invalid number for secs."
+        message E "invalid number for secs."
         return 1
       fi
     # MM:SS
@@ -210,14 +210,14 @@ seek() {
       if [[ ${T[0]} =~ ^[0-9]+$ ]]; then
         m="${T[0]}"
       else
-        __msg E "invalid number for minutes."
+        message E "invalid number for minutes."
         return 1
       fi
       # S
       if [[ ${T[1]} =~ ^[0-9]+$ ]]; then
         s="${T[1]}"
       else
-        __msg E "invalid number for seconds."
+        message E "invalid number for seconds."
         return 1
       fi
       h=0
@@ -227,21 +227,21 @@ seek() {
       if [[ ${T[0]} =~ ^[0-9]+$ ]]; then
         h="${T[0]}"
       else
-        __msg E "invalid number for hours."
+        message E "invalid number for hours."
         return 1
       fi
       # MM
       if [[ ${T[1]} =~ ^[0-9]+$ ]]; then
         m="${T[1]}"
       else
-        __msg E "invalid number for minutes."
+        message E "invalid number for minutes."
         return 1
       fi
       # SS
       if [[ ${T[2]} =~ ^[0-9]+$ ]]; then
         s="${T[2]}"
       else
-        __msg E "invalid number for seconds."
+        message E "invalid number for seconds."
         return 1
       fi
     fi
@@ -272,18 +272,18 @@ _playback_mode() {
 
   if [[ -z $1 ]]; then
     case $value in
-      0) __msg M "${mode}: off" ;;
-      1) __msg M "${mode}: on"
+      0) message M "${mode}: off" ;;
+      1) message M "${mode}: on"
     esac
   elif [[ $1 == "on" || $1 == "1" ]]; then
     case $value in
-      0) cmd "$mode" 1 && __msg M "${mode}: on" ;;
-      1) __msg M "${mode}: on"
+      0) cmd "$mode" 1 && message M "${mode}: on" ;;
+      1) message M "${mode}: on"
     esac
   elif [[ $1 == "off" || $1 == "0" ]]; then
     case $value in
-      0) __msg M "${mode}: off" ;;
-      1) cmd "$mode" 0 && __msg M "${mode}: off"
+      0) message M "${mode}: off" ;;
+      1) cmd "$mode" 0 && message M "${mode}: off"
     esac
   fi
 }
@@ -299,16 +299,16 @@ xfade() {
 
   if [[ $1 =~ ^[0-9]+ ]]; then
     cmd crossfade "$1" || return 1
-    __msg M "xfade $1 second(s)"
+    message M "xfade $1 second(s)"
   elif [[ -z $1 ]]; then
     local value
     value="$(fcmd status xfade)"
     case $value in
-      "") __msg M "xfade off" ;;
-      * ) __msg M "xfade $value"
+      "") message M "xfade off" ;;
+      * ) message M "xfade $value"
     esac
   else
-    __msg E "invalid value."
+    message E "invalid value."
     return 1
   fi
 }
@@ -321,29 +321,29 @@ replaygain() {
     track) cmd replay_gain_mode track || return 1 ;;
     album) cmd replay_gain_mode album || return 1 ;;
     auto ) cmd replay_gain_mode auto  || return 1 ;;
-    *    ) __msg E "invalid parameter."; return 1
+    *    ) message E "invalid parameter."; return 1
   esac
 
-  __msg M "replay gain mode: $(fcmd replay_gain_status replay_gain_mode)"
+  message M "replay gain mode: $(fcmd replay_gain_status replay_gain_mode)"
 }
 
 _mode() {
   # set play mode or print status.
 
   _daemon || {
-    __msg W "mode: off (daemon not running.)"
+    message W "mode: off (daemon not running.)"
     write_config mode off
     return 1
   }
 
   case $1 in
-    song  ) write_config mode song;  __msg M "mode: song."   ;;
-    album ) write_config mode album; __msg M "mode: album."  ;;
-    norm  ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
-    normal) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
-    off   ) write_config mode off;   __msg M "mode: normal."; __normal_mode ;;
-    ""    ) __msg M "mode: $(read_config mode)." ;;
-    *     ) __msg E "invalid option."
+    song  ) write_config mode song;  message M "mode: song."   ;;
+    album ) write_config mode album; message M "mode: album."  ;;
+    norm  ) write_config mode off;   message M "mode: normal."; __normal_mode ;;
+    normal) write_config mode off;   message M "mode: normal."; __normal_mode ;;
+    off   ) write_config mode off;   message M "mode: normal."; __normal_mode ;;
+    ""    ) message M "mode: $(read_config mode)." ;;
+    *     ) message E "invalid option."
   esac
 }
 

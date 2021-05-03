@@ -229,11 +229,11 @@ clean_orphan_stickers() {
 local musicdir
 
 musicdir="$(get_music_dir)" || {
-  __msg E "could not find music directory."
+  message E "could not find music directory."
   return 1
 }
 
-__msg M "scanning sticker database."
+message M "scanning sticker database."
 
 local uris
 local -a _orphans
@@ -244,9 +244,9 @@ mapfile -t uris < <(_db_get_all_songs)
 
 ((t=${#uris[@]}))
 
-__msg M "found $t URI."
-__msg M "done."
-__msg M "processing."
+message M "found $t URI."
+message M "done."
+message M "processing."
 
 for uri in "${uris[@]}"; do
   [[ $QUIET ]] || ((++i))
@@ -258,7 +258,7 @@ done
 
 [[ $QUIET ]] || echo
 
-__msg M "found ${#_orphans[@]} orphan(s)."
+message M "found ${#_orphans[@]} orphan(s)."
 
 [[ ${_orphans[*]} ]] || return 0
 

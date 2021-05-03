@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/04/24
+# M : 2021/05/03
 # D : Volume control.
 
 notify_volume() {
@@ -110,7 +110,7 @@ volume() {
 
     ((vol==cvol)) && {
       [[ $NOTIFY ]] && notify_volume "$vol"
-      [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
+      [[ $NOTIFY ]] || message M "volume: ${vol}%"
       return 1
     }
 
@@ -119,7 +119,7 @@ volume() {
       write_config volume "$vol"
       write_config dim off
       [[ $NOTIFY ]] && notify_volume "$vol"
-      [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
+      [[ $NOTIFY ]] || message M "volume: ${vol}%"
       return 0
     }
 
@@ -127,12 +127,12 @@ volume() {
     write_config volume "$(fcmd status volume)" && {
       write_config dim off
       [[ $NOTIFY ]] && notify_volume "$vol"
-      [[ $NOTIFY ]] || __msg M "volume: ${vol}%"
+      [[ $NOTIFY ]] || message M "volume: ${vol}%"
       return 0
     }
     return 1
   }
-  __msg E "invalid value."
+  message E "invalid value."
   return 1
 }
 
@@ -159,7 +159,7 @@ dim() {
     svol="$(read_config volume)"
     cmd setvol $((svol))
     write_config dim off
-    [[ $NOTIFY ]] || __msg M "dim: off."
+    [[ $NOTIFY ]] || message M "dim: off."
     [[ $NOTIFY ]] && notify_volume $((svol))
     return 0
   else
@@ -168,11 +168,11 @@ dim() {
     ((cvol > 1)) && {
       cmd setvol $((cvol/2))
       write_config dim on
-      [[ $NOTIFY ]] || __msg M "dim: on."
+      [[ $NOTIFY ]] || message M "dim: on."
       [[ $NOTIFY ]] && volume -n
       return 0
     }
-    [[ $NOTIFY ]] || __msg M "dim: off."
+    [[ $NOTIFY ]] || message M "dim: off."
     [[ $NOTIFY ]] && volume -n
   fi
 }

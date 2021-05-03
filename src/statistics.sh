@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/04/23
+# M : 2021/05/03
 # D : Statistics management.
 
 get_sticker() {
@@ -158,14 +158,14 @@ rating() {
   [[ $1 =~ ^[0-9]+$ ]] && {
     local r="$1"
     ((r<0 || r>5)) && {
-      __msg E "invalid value."
+      message E "invalid value."
       return 1
     }
     set_sticker "$uri" rating $((r*2)) || return 1
-    __msg M "$(get_current "%artist%: %title%") [$cr → $r]"
+    message M "$(get_current "%artist%: %title%") [$cr → $r]"
     return 0
   }
-  __msg E "invalid value."
+  message E "invalid value."
   return 1
 }
 

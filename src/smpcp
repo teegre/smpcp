@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/04/28
+# M │ 2021/05/03
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -49,7 +49,7 @@ source "$SMPCP_LIB"/statistics.sh
 source "$SMPCP_LIB"/volume.sh
 
 __is_mpd_running || {
-  __msg E "MPD is not running."
+  message E "MPD is not running."
   exit 1
 }
 
@@ -103,9 +103,9 @@ case $1 in
   stopafter  ) shift; stop_after_current "$@" ;;
   toggle     ) shift; toggle "$@" ;;
   update     ) shift; update "$@" ;;
-  version    ) __msg M "smpcp: version ${__version}." ;;
+  version    ) message M "smpcp: version ${__version}." ;;
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   ""         ) _print_version; status ;;
-  *          ) if _do_plugin_exist "$@"; then exec_plugin "$@"; else __msg E "invalid command: ${1}."; fi
+  *          ) if plugin_exists "$@"; then exec_plugin "$@"; else message E "invalid command: ${1}."; fi
 esac

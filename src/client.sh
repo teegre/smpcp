@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/04/27
+# M │ 2021/05/03
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -39,7 +39,7 @@ __is_mpd_running() {
     pid="$(<"$pidfile")"
     check_pid "$pid" && return 0
   }
-  __msg E "mpd PID file not found."
+  message E "mpd PID file not found."
   return 1
 }
 
@@ -72,7 +72,7 @@ if [[ $1 =~ ^idle.*$ ]]; then
   return $?
 fi
 
-# __msg M "$*"
+# message M "$*"
 
 # preserve quoted arguments.
 local arg arglist
@@ -90,7 +90,7 @@ for arg in "${@}"; do
   fi
 done
 
-# __msg M "arglist: ${arglist[*]}"
+# message M "arglist: ${arglist[*]}"
 
 ${nccmd} << CMD
 ${arglist[@]:-}
@@ -109,7 +109,7 @@ cmd() {
     [[ $REPLY =~ ^ACK[[:space:]]\[.*\][[:space:]]\{.*\}[[:space:]](.+)$ ]] && {
       [[ ${FUNCNAME[-2]} == "loop" && $_cmd != "config" ]] &&
         logme "[ERROR] ${BASH_REMATCH[1],,}\ncommand: ${_cmd}\nfunctions: ${FUNCNAME[*]}"
-      __msg E "${BASH_REMATCH[1],,}"
+      message E "${BASH_REMATCH[1],,}"
       return 1
     }
     [[ $REPLY ]] && echo "$REPLY"

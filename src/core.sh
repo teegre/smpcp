@@ -25,13 +25,14 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/04/22
+# M │ 2021/05/03
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
-__version='0.1.1'
+__version='0.1.2'
 
 declare SMPCP_ASSETS="/etc/smpcp/assets"
+declare SMPCP_ICON="/etc/smpcp/assets/default.png"
 declare SMPCP_CACHE="$HOME/.config/smpcp/.cache"
 declare SMPCP_LOG="$HOME/.config/smpcp/log"
 declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
@@ -111,14 +112,14 @@ _max() {
   return 1
 }
 
-__msg() {
+message() {
   # error/message display.
 
   local _type msg
 
   case $1 in
     E) _type="error: "; msg="$2" ;;   # error
-    M) msg="${2,,}" ;;                    # message
+    M) msg="${2,,}" ;;                # message
     W) _type="warning: "; msg="$2" ;; # warning
   esac
 
@@ -182,7 +183,7 @@ check_pid() {
   # 1 otherwise.
 
   [[ $pid ]] || {
-    __msg E "check_pid: missing process id."
+    message E "check_pid: missing process id."
     return 1
   }
 

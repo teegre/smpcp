@@ -33,7 +33,7 @@ list_queue() {
   # usage: list_queue [-f [format]]
 
   queue_is_empty && {
-    >&2 __msg M "queue is empty."
+    >&2 message M "queue is empty."
     return 1
   }
 
@@ -116,7 +116,7 @@ delete() {
       cmd delete "$((start-1)):$((end))" || return 1
       return 0
     }
-    __msg E "bad song index."
+    message E "bad song index."
   }
 
   [[ $1 =~ ^[0-9]+$ ]] && {
@@ -125,11 +125,11 @@ delete() {
       cmd delete $((pos-1)) || return 1
       return 0
     }
-    __msg E "bad song index."
+    message E "bad song index."
     return 1
   }
 
-  __msg E "syntax error."
+  message E "syntax error."
   return 1
 }
 
@@ -143,7 +143,7 @@ move() {
     ((end=BASH_REMATCH[2]))
 
     ((start==0 || end==0)) && {
-      __msg E "bad song index."
+      message E "bad song index."
       return 1
     }
 
@@ -153,18 +153,18 @@ move() {
         cmd move "$((start-1)):$((end))" "$((to-1))" || return 1
         return 0
       }
-      __msg E "bad song index."
+      message E "bad song index."
       return 1
     }
 
-    __msg E "syntax error."
+    message E "syntax error."
     return 1
   }
 
   [[ $1 =~ ^[0-9]+$ ]] && {
     local pos="$1"
     ((pos==0)) && {
-      __msg E "bad song index."
+      message E "bad song index."
       return 1
     }
 
@@ -174,15 +174,15 @@ move() {
         cmd move "$((pos-1))" "$((to-1))" || return 1
         return 0
       }
-      __msg E "bad song index."
+      message E "bad song index."
       return 1
     }
 
-    __msg E "syntax error."
+    message E "syntax error."
     return 1
   }
 
-  __msg E "syntax error."
+  message E "syntax error."
   return 1
 }
 
@@ -254,7 +254,7 @@ add_album() {
       [[ $INSERT ]] && crop
       searchadd albumartist "$1" album "$2"
     else
-      __msg E "nothing found."
+      message E "nothing found."
       return 1
     fi
 
@@ -262,25 +262,25 @@ add_album() {
 
     [[ $PLAY ]] && { 
       play 1 || return 1
-      __msg M "$(get_current "now playing: %album%")"
+      message M "$(get_current "now playing: %album%")"
     }
     return 0
   }
 
   [[ $1 || $2 ]] && {
-    __msg E "missing option."
+    message E "missing option."
     return 1
   }
 
   local uri
   uri="$(_album_uri)" || {
-    __msg E "no current song."
+    message E "no current song."
     return 1
   }
 
   # does album contains other tracks?
   [[ $(fcmd -c lsinfo "$uri" file) -eq 1 ]] && {
-    __msg E "'$(get_current "%album%")' no more songs."
+    message E "'$(get_current "%album%")' no more songs."
     return 1
   }
 
@@ -305,7 +305,7 @@ add_album() {
 
   [[ $PLAY ]] && {
     play 1
-    __msg M "$(get_current "now playing: %album%")"
+    message M "$(get_current "now playing: %album%")"
   }
 
   return 0

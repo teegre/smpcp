@@ -57,9 +57,9 @@ Usage: `<command> | _max`
 
 Prints max value.
 
-`__msg`
+`message`
 
-Usage: `__msg <E|M|W> <message>`
+Usage: `message <E|M|W> <message>`
 
 Prints a message on stdout or stderr.
 
