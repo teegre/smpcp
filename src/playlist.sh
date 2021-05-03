@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/04/22
+# M │ 2021/05/03
 # D │ Queue management.
 
 list_queue() {
@@ -309,6 +309,10 @@ add_album() {
   }
 
   return 0
+}
+
+queue_length() {
+  fcmd status playlistlength
 }
 
 queue_is_empty() {
