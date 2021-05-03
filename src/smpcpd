@@ -92,18 +92,14 @@ add_songs() {
     LOCK=1
     local songcount
     songcount="$(read_config playlist_song_count)" || songcount=10
-    echo "adding $((songcount)) new songs..."
     get_rnd $((songcount)) | add
-    echo "new songs added."
     __song_mode
     LOCK=0
     state || play
     return 0
   elif [[ $mode -eq 2 ]]; then
     LOCK=1
-    echo "adding a new album..."
     get_rnd -a 1 | add
-    echo "new album added."
     __album_mode
     LOCK=0
     state || play
@@ -177,8 +173,6 @@ loop() {
     # change
     # end
 
-    echo "$event"
-
     case $event in
       play  ) play_event ;;
       pause ) pause_event ;;
@@ -192,8 +186,7 @@ loop() {
   done < <(tracker)
 }
 
-# use this trap if the queue is empty to add new 
-# songs when invoking play command.
+# use this trap to add new songs to the queue.
 trap update_daemon HUP
 
 trap quit_daemon INT QUIT TERM
