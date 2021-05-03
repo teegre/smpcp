@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/04/27
+# M : 2021/04/29
 # D : Help.
 
 _help() {
@@ -81,6 +81,7 @@ Commands:
   smpcp version                                    show program version and exit.
   smpcp vol [-n] [+|-]<vol>                        set volume.
   smpcp xfade [duration]                           set crossfade duration.
+  $(plugin_help)
 EOB
 }
 
