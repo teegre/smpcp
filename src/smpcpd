@@ -150,7 +150,6 @@ end_event() {
 }
 
 update_daemon() {
-  echo "received update signal."
   add_songs
 }
 
@@ -173,6 +172,8 @@ loop() {
     # change
     # end
 
+    plugin_notify "$event" 2> /dev/null
+
     case $event in
       play  ) play_event ;;
       pause ) pause_event ;;
@@ -180,8 +181,6 @@ loop() {
       change) change_event ;;
       end   ) end_event
     esac
-
-    plugin_notify "$event" 2> /dev/null
 
   done < <(tracker)
 }
