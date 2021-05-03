@@ -127,20 +127,11 @@ play_event() {
 pause_event() {
   notify_song
   media_update
-  [[ $(read_config single) == "on" ]] && {
-    single 0 &> /dev/null
-    write_config single off
-  }
 }
 
 stop_event() {
   get_mode &> /dev/null || notify_song
   media_update
-  [[ $(read_config single) == "on" ]] && {
-    single 0 &> /dev/null
-    write_config single off
-  }
-  write_config dim off
 }
 
 change_event() {
