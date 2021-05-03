@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/04/22
+# M │ 2021/05/03
 # D │ Music and sticker database query.
 
 # to achieve some advanced search we need to directly query
@@ -219,6 +219,7 @@ clean_orphan_stickers() {
 # its stats remain in the sticker database. Hence this function.
 # But when a file is renamed or moved, it would be great to
 # keep its stats in the sticker database and only update its uri...
+# it would imply storing some unique id for each file...
 
 [[ $1 == "-q" ]] && {
   shift
@@ -319,7 +320,12 @@ get_rnd() {
 
   mapfile -t QUEUE < <(list_queue -f 2> /dev/null)
 
+  logme "query: queue length: $(queue_length)"
+
   [[ $ALBUM ]] && {
+
+    logme "query: $(count) album(s)."
+
     while read -r; do
       _album_uri "$REPLY"
     done < <(get_random_song -a $((count)))
@@ -333,6 +339,9 @@ get_rnd() {
   
   ((C=count))
   ((RR5=C*R5/RT))
+
+  logme "query: ***** $RR5"
+
   ((RR5>0)) && {
     get_uri_by_rating 10 $((RR5))
     r=$?
@@ -340,11 +349,16 @@ get_rnd() {
   }
 
   ((RR4=C*R4/RT))
+
+  logme "query: ****- $RR4"
+
   ((RR4>0)) && {
     get_uri_by_rating 8 $((RR4))
     r=$?
     ((count-=r))
   }
+
+  logme "query: ----- $count"
 
   get_random_song $((count))
 }
