@@ -77,7 +77,7 @@ get_plugin_function() {
   }
 
   [[ $1 == "-n" ]] && {
-    local NOTF=1
+    local NOTIFY=1
     shift
   }
 
@@ -94,7 +94,7 @@ get_plugin_function() {
 
   # [[ $* ]] || return 1
 
-  [[ $NOTF ]] || {
+  [[ $NOTIFY ]] || {
     local func
     func="$1"; shift
   }
@@ -105,7 +105,8 @@ get_plugin_function() {
   # SOURCES[$plugin]=1
   # }
 
-  [[ $NOTF ]] && {
+  [[ $NOTIFY ]] && {
+    unset NOTIFY
     while read -r; do
       [[ ${REPLY/declare -f } =~ __plug_${plugin}_notify ]] && {
         __plug_"${plugin}"_notify "$@"
