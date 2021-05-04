@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/05/03
+# M │ 2021/05/04
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -79,6 +79,14 @@ now() { _date "%F %T"; }
 # a simple logger.
 logme() {
   [[ $1 == "--clear" ]] && {
+    [[ -s $SMPCP_LOG ]] && {
+      local index=1
+      # make a backup copy of log file.
+      while [[ -a ${SMPCP_LOG}.${index} ]]; do
+        ((index++))
+      done
+      cp "$SMPCP_LOG" "${SMPCP_LOG}.${index}"
+    }
     :> "$SMPCP_LOG"
     return
   }
