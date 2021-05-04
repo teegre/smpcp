@@ -107,7 +107,7 @@ get_plugin_function() {
   [[ $NOTIFY ]] && {
     unset NOTIFY
     while read -r; do
-      [[ ${REPLY/declare -f } =~ __plug_${plugin}_notify ]] && {
+      [[ ${REPLY/declare -f } =~ ^__plug_${plugin}_notify$ ]] && {
         __plug_"${plugin}"_notify "$@"
         return $?
       }
@@ -118,7 +118,7 @@ get_plugin_function() {
   local prefix
   [[ $HELP ]] && prefix="help" || prefix="plug"
   while read -r; do
-    [[ ${REPLY/declare -f } =~ ^${prefix}_${func} ]] && {
+    [[ ${REPLY/declare -f } =~ ^${prefix}_${func}$ ]] && {
       [[ $EXIST ]] || { "${prefix}_${func}" "$@"; return $?; }
       [[ $EXIST ]] && return 0
     }
@@ -164,7 +164,7 @@ plugin_notify() {
   local plugin
 
   while read -r plugin; do
-    get_plugin_function -n "$plugin"
+    get_plugin_function -n "$plugin" "$@"
   done < <(get_plugin_list)
 }
 
