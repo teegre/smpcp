@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/03
+# M │ 2021/05/04
 # D │ Queue management.
 
 list_queue() {
@@ -187,7 +187,7 @@ move() {
 }
 
 clear_queue() {
-  _daemon && get_mode &> /dev/null && {
+  _daemon && get_mode &> /dev/null && state && {
     cmd clear
     update_daemon
     return
