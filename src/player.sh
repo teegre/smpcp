@@ -237,11 +237,13 @@ seek() {
 
 _playback_mode() {
   # playback mode:
-  # enable/disable/show status.
+  # enable/disable/show state.
   # enable with on or 1.
   # disable with off or 0.
-  # print status otherwise.
   # exit status:
+  # 0 success
+  # 1 fail
+  # state + exit status:
   # 0 on
   # 1 off
 
@@ -258,13 +260,13 @@ _playback_mode() {
     esac
   elif [[ $1 == "on" || $1 == "1" ]]; then
     case $value in
-      0) cmd "$mode" 1 && { message M "${mode}: on"; return 0; } ;;
+      0) cmd "$mode" 1 && { message M "${mode}: on"; return 0; }; return 1 ;;
       1) message M "${mode}: on"; return 0
     esac
   elif [[ $1 == "off" || $1 == "0" ]]; then
     case $value in
-      0) message M "${mode}: off"; return 1 ;;
-      1) cmd "$mode" 0 && { message M "${mode}: off"; return 1; }
+      0) message M "${mode}: off"; return 0 ;;
+      1) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1
     esac
   fi
 }
