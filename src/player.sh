@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/03
+# M │ 2021/05/04
 # D │ Player functions.
 
 toggle() {
@@ -241,6 +241,9 @@ _playback_mode() {
   # enable with on or 1.
   # disable with off or 0.
   # print status otherwise.
+  # exit status:
+  # 0 on
+  # 1 off
 
   local mode value
   mode="$1"; shift
@@ -250,18 +253,18 @@ _playback_mode() {
 
   if [[ -z $1 ]]; then
     case $value in
-      0) message M "${mode}: off" ;;
-      1) message M "${mode}: on"
+      0) message M "${mode}: off"; return 1 ;;
+      1) message M "${mode}: on"; return 0
     esac
   elif [[ $1 == "on" || $1 == "1" ]]; then
     case $value in
-      0) cmd "$mode" 1 && message M "${mode}: on" ;;
-      1) message M "${mode}: on"
+      0) cmd "$mode" 1 && { message M "${mode}: on"; return 0; } ;;
+      1) message M "${mode}: on"; return 0
     esac
   elif [[ $1 == "off" || $1 == "0" ]]; then
     case $value in
-      0) message M "${mode}: off" ;;
-      1) cmd "$mode" 0 && message M "${mode}: off"
+      0) message M "${mode}: off"; return 1 ;;
+      1) cmd "$mode" 0 && { message M "${mode}: off"; return 1; }
     esac
   fi
 }
@@ -274,6 +277,9 @@ consume() { _playback_mode consume "$1"; }
 xfade() {
   # crossfade:
   # set/show status.
+  # exit status
+  # 0 on
+  # 1 off
 
   if [[ $1 =~ ^[0-9]+ ]]; then
     cmd crossfade "$1" || return 1
@@ -282,8 +288,8 @@ xfade() {
     local value
     value="$(fcmd status xfade)"
     case $value in
-      "") message M "xfade off" ;;
-      * ) message M "xfade $value"
+      "") message M "xfade off"; return 1 ;;
+      * ) message M "xfade $value"; return 0
     esac
   else
     message E "invalid value."
