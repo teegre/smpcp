@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/03
+# M : 2021/05/04
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -80,6 +80,8 @@ add_songs() {
   get_mode &> /dev/null || return 1
 
   [[ $(queue_length) -gt 1 ]] && return 1
+
+  logme "daemon: add songs."
 
   local mode
   mode="$(get_mode)"
