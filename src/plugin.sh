@@ -25,7 +25,7 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/05/03
+# M : 2021/05/04
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
@@ -62,12 +62,11 @@ get_all_plugin_functions() {
 
 get_plugin_function() {
   # get a plugin function and execute it unless -x option is used.
-  # usage: get_plugin_function [-x | -n | -h] <plugin> <function>
+  # usage: get_plugin_function [-x | -n | -h] <plugin-name> <function>
   # (function name without the "plug_" prefix)
-  # -x makes get_plugin_function exit with status 0 if the function
-  # exists, 1 otherwise.
+  # -x exits with status 0 if the function exists, 1 otherwise.
   # -n search for __plug_plugin-name_notify function and execute it.
-  # -h search for help_ function.
+  # -h search for "help_" prefixed function.
 
   [[ $1 ]] || return 1
 
@@ -129,21 +128,30 @@ get_plugin_function() {
 }
 
 plugin_exists() {
-  # check whether a plugin exists.
+  # check whether a function exists within a plugin.
   # exit status:
   # 0 true
   # 1 false
 
-  while read -r; do
-    get_plugin_function -x "$REPLY" "$@" && return 0
+  local plugin
+
+  while read -r plugin; do
+    get_plugin_function -x "$plugin" "$1" && return 0
   done < <(get_plugin_list)
   return 1
 }
 
 exec_plugin() {
   # execute specified plugin function.
-  while read -r; do
-    get_plugin_function "$REPLY" "$@" && return $?
+
+  local func plugin
+  func="$1"; shift
+
+  while read -r plugin; do
+    get_plugin_function -x "$plugin" "$func" && {
+      get_plugin_function "$plugin" "$func" "$@"
+      return $?
+    }
   done < <(get_plugin_list)
   return 1
 }
@@ -153,8 +161,10 @@ plugin_notify() {
   # this function is triggered by smpcpd.
   # usage: plugin_notify <event>
 
-  while read -r; do
-    get_plugin_function -n "$REPLY" "$@"
+  local plugin
+
+  while read -r plugin; do
+    get_plugin_function -n "$plugin"
   done < <(get_plugin_list)
 }
 
