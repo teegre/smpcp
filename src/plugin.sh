@@ -127,7 +127,7 @@ get_plugin_function() {
   return 1
 }
 
-plugin_exists() {
+plugin_function_exists() {
   # check whether a function exists within a plugin.
   # exit status:
   # 0 true
@@ -141,7 +141,7 @@ plugin_exists() {
   return 1
 }
 
-exec_plugin() {
+plugin_function_exec() {
   # execute specified plugin function.
 
   local func plugin

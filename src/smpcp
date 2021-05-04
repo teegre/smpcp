@@ -53,6 +53,15 @@ __is_mpd_running || {
   exit 1
 }
 
+try_plugin() {
+  if plugin_function_exists "$1"; then
+    plugin_function_exec "$@"
+  else
+    message E "invalid command: ${1}."
+    return 1
+  fi
+}
+
 case $1 in
   add        ) shift; add "$@" ;;
   addalbum   ) shift; add_album "$@" ;;
@@ -106,5 +115,5 @@ case $1 in
   vol        ) shift; volume "$@" ;;
   xfade      ) shift; xfade "$@" ;;
   ""         ) _print_version; status ;;
-  *          ) if plugin_exists "$@"; then exec_plugin "$@"; else message E "invalid command: ${1}."; fi
+  *          ) try_plugin "$@"
 esac
