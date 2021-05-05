@@ -1,11 +1,9 @@
 [Unit]
 Description=smpcp daemon
-Documentation=https://gitlab.com/teegre/smpcp
+Documentation=man:smpcp(1)
 
 [Service]
 ExecStart=/usr/bin/smpcpd
-Restart=on-failure
-RestartSec=30
 
 [Install]
 WantedBy=default.target
