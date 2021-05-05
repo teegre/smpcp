@@ -4,7 +4,7 @@ SERVICE   ?= smpcpd.service
 PREFIX    ?= /usr
 BINDIR    ?= $(PREFIX)/bin
 LIBDIR    ?= $(PREFIX)/lib
-SYSDUNIT  ?= $(LIBDIR)/systemd/system
+SYSDUNIT  ?= $(LIBDIR)/systemd/user
 SHAREDIR  ?= $(PREFIX)/share
 MANDIR    ?= $(SHAREDIR)/man/man1
 CONFIGDIR ?= /etc
@@ -21,12 +21,13 @@ install: src/$(DAEMON)
 	install -d  $(DESTDIR)$(BINDIR)
 	
 	install -m755 src/$(PROGNAME) $(DESTDIR)$(BINDIR)/$(PROGNAME)
-	install -m755 src/$(DAEMON) $(DESTDIR)$(BINDIR)
+	install -m755 src/$(DAEMON) $(DESTDIR)$(BINDIR)/$(DAEMON)
 	
 	${CC} src/idle.c $(LIBS) -o src/idlecmd
 	install -m755 src/idlecmd $(DESTDIR)$(BINDIR)
 
-	install -Dm644 $(SERVICE)  -t $(SYSDUNIT)/$(SERVICE)
+	install -m644 $(SERVICE) $(SYSDUNIT)/$(SERVICE)
+
 	install -Dm644 src/lib/*.* -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	install -Dm644 settings    -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/

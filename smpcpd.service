@@ -6,4 +6,4 @@ Documentation=man:smpcp(1)
 ExecStart=/usr/bin/smpcpd
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
