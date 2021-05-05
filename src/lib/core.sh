@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/05/04
+# M │ 2021/05/05
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -181,6 +181,12 @@ write_config() {
       sed -i "s/^\s*${param}\s*.*/${param} = ${value}/" "$SMPCP_SETTINGS"
     fi
   } || return 1
+}
+
+remove_config() {
+  # remove entry from config file
+  local param="$1"
+  sed -i "/^\s*${param}\s*.*$/d" "$SMPCP_SETTINGS"
 }
 
 check_pid() {
