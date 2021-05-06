@@ -96,7 +96,7 @@ media_update() {
   }
 
   local fmt
-  fmt="$(state -p);[[%name% | ][[%artist%: ]]%title%"
+  fmt="$(state -p);[[%name% | ]][[%artist%: ]]%title%"
 
   {
     get_current "$fmt"
