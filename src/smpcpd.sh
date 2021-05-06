@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/05
+# M : 2021/05/06
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -71,7 +71,7 @@ notify_song() {
   if state; then
     notify-send -i "$(get_albumart)" "$(status)"
   else
-    notify-send "$(pstatus)"
+    notify-send -i "$SMPCP_ICON" "$(pstatus)"
   fi
 }
 
