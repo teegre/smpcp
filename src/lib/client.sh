@@ -181,7 +181,7 @@ _parse_song_info() {
   # available tags:
   #
   # %file% %last-modified% %format%
-  # %artist% %title% %album% %albumartist% %genre% %date%
+  # %artist% %name% %title% %album% %albumartist% %genre% %date%
   # %time% %duration%
   # %pos% %id%
 
@@ -235,6 +235,10 @@ _parse_song_info() {
     }
     [[ $REPLY =~ ^Artist:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%artist%"/${BASH_REMATCH[1]}}"
+      continue
+    }
+    [[ $REPLY =~ ^Name:[[:space:]](.+)$ ]] && {
+      fmt="${fmt//"%name%"/${BASH_REMATCH[1]}}"
       continue
     }
     [[ $REPLY =~ ^Album:[[:space:]](.+)$ ]] && {
