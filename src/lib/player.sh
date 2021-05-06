@@ -410,15 +410,9 @@ status() {
   # stream?
   [[ $(get_current) =~ ^https?: ]] && {
     pstatus
-    get_current "%name%"
-    local artist title
-    artist="$(get_current "%artist%")"
-    title="$(get_current "%title%")"
-    [[ $artist ]] && echo "${artist}: ${title}"
-    [[ $artist ]] || echo "${title}"
-    return
+    printf "%s" "$(get_current "[[%name%\n]]")"
   }
-  echo "$(pstatus) $(rating) x$(playcount) [$(get_ext "$uri")]"
-  get_current "%artist%: %title%\n%album% | %date%"
+  echo "$(pstatus) $(rating) x$(playcount) $(get_current "[[[%ext%]]]")"
+  get_current "[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
 }
 
