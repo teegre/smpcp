@@ -180,7 +180,7 @@ _parse_song_info() {
   #
   # available tags:
   #
-  # %file% %last-modified% %format%
+  # %file% %ext% %last-modified% %format%
   # %artist% %name% %title% %album% %albumartist% %genre% %date%
   # %time% %duration%
   # %pos% %id%
@@ -241,7 +241,9 @@ _parse_song_info() {
   while IFS= read -r; do
 
     [[ $REPLY =~ ^file:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%file%"/"${BASH_REMATCH[1]}"}"
+      local f="${BASH_REMATCH[1]}"
+      fmt="${fmt//"%file%"/"$f"}"
+      fmt="${fmt//"%ext%"/"$(get_ext "$f")"}"
       continue
     }
     [[ $REPLY =~ ^Last-Modified:[[:space:]](.+)$ ]] && {
