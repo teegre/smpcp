@@ -91,23 +91,16 @@ delete_sticker() {
 
 media_update() {
   __is_mpd_running || {
-    echo > "$HOME/.config/currentmedia"
+    :> "/tmp/.currentmedia"
     return
   }
 
-  local uri fmt
-  uri="$(get_current)"
-
-  if [[ $uri =~ ^https?: ]]; then
-    fmt='artist %name% %artist%\ntitle %title%'
-  else
-    fmt='artist %artist%\ntitle %title%\nalbum %album%\ndate %date%'
-  fi
+  local fmt
+  fmt="$(state -p);[[%name% | ][[%artist%: ]]%title%"
 
   {
-    echo "status $(state -p)"
     get_current "$fmt"
-  } > "$HOME/.config/currentmedia"
+  } > "/tmp/.currentmedia"
 }
 
 clear_media() { :> "$HOME/.config/currentmedia"; }
