@@ -206,20 +206,34 @@ _parse_song_info() {
 
     src="$1"
 
-    [[ $src == *%*%* ]] || { echo "$src"; return; }
-
-    while [[ $src =~ .*%.+%.* ]]; do
-      [[ $src =~ .*(\[\[.*%.+%.*\]\]).* ]] &&
-        src="${src//"${BASH_REMATCH[1]}"}"
-      [[ $src =~ .*(%.+%).* ]] &&
-        src="${src//"${BASH_REMATCH[1]}"}"
+    local start=0 end=0
+    while [[ $src =~ .*\[\[.*%.+%.*\]\].* ]]; do
+      for ((i=start; i<${#src}; i++)); do
+        char="${src:$i:1}"
+        [[ $char == "[" ]] && [[ ${src:$((i+1)):1} == "[" ]] && ((start=i))
+        [[ $char == "]" ]] && [[ ${src:$((i+1)):1} == "]" ]] && ((end=i+1))
+        ((end>0)) && {
+          sub="${src:$((start)):$((end-start+1))}"
+          [[ $sub =~ .*%.+%.* ]] && {
+            src="${src/"$sub"}"
+            ((start=0))
+          }
+          unset end
+          ((start++))
+          break
+        }
+      done
     done
 
     src="${src//\[\[}"
     src="${src//\]\]}"
 
-    echo "$src"
+    while [[ $src == *%*%* ]]; do
+      [[ $src =~ .*(%.+%).* ]] &&
+        src="${src/"${BASH_REMATCH[1]}"}"
+    done
 
+    echo -e "$src"
   }
 
   local count=0
