@@ -25,7 +25,7 @@
 #
 # TRACKER
 # C : 2021/04/09
-# M : 2021/04/18
+# M : 2021/05/05
 # D : Player event tracker.
 
 _wait() {
@@ -44,6 +44,9 @@ _wait() {
     duration="$(get_duration)"
     elapsed="$(get_elapsed)"
   }
+
+  # stream?
+  [[ $duration ]] || return
 
   sleep $((duration-elapsed))
 
