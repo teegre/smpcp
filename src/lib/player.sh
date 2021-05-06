@@ -408,11 +408,12 @@ status() {
   uri="$(get_current)"
 
   # stream?
-  [[ $(get_current) =~ ^https?: ]] && {
+  if [[ $(get_current) =~ ^https?: ]]; then
     pstatus
     printf "%s" "$(get_current "[[%name%\n]]")"
-  }
-  echo "$(pstatus) $(rating) x$(playcount) $(get_current "[[[%ext%]]]")"
+  else
+    echo "$(pstatus) $(rating) x$(playcount) $(get_current "[[[%ext%]]]")"
+  fi
   get_current "[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
 }
 
