@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/05
+# M │ 2021/05/06
 # D │ Player functions.
 
 toggle() {
@@ -408,7 +408,7 @@ status() {
   uri="$(get_current)"
 
   # stream?
-  [[ $(get_current) =~ ^http ]] && {
+  [[ $(get_current) =~ ^https?: ]] && {
     pstatus
     get_current "%name%"
     local artist title

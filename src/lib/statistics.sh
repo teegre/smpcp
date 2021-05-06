@@ -25,14 +25,14 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/05/05
+# M : 2021/05/06
 # D : Statistics management.
 
 get_sticker() {
   local uri name value
   uri="$1"
 
-  [[ $uri =~ ^http ]] && return 1
+  [[ $uri =~ ^https?: ]] && return 1
 
   name="$2"
   [[ $uri && $name ]] && {
@@ -49,7 +49,7 @@ set_sticker() {
   local uri name value
   uri="$1"
 
-  [[ $uri =~ ^http ]] && return 1
+  [[ $uri =~ ^https?: ]] && return 1
 
   name="$2"
   value="$3"
@@ -64,7 +64,7 @@ find_sticker() {
   local uri name
   uri="$1"
 
-  [[ $uri =~ ^http ]] && return 1
+  [[ $uri =~ ^https?: ]] && return 1
 
   name="$2"
   while read -r; do
@@ -79,7 +79,7 @@ delete_sticker() {
   local uri name
   uri="$1"
 
-  [[ $uri =~ ^http ]] && return 1
+  [[ $uri =~ ^https?: ]] && return 1
 
   name="$2"
   [[ $uri && $name ]] && {
@@ -98,7 +98,7 @@ media_update() {
   local uri fmt
   uri="$(get_current)"
 
-  if [[ $uri =~ ^http ]]; then
+  if [[ $uri =~ ^https?: ]]; then
     fmt='artist %name% %artist%\ntitle %title%'
   else
     fmt='artist %artist%\ntitle %title%\nalbum %album%\ndate %date%'
@@ -121,7 +121,7 @@ update_stats() {
 
   [[ $uri ]] || return 1
 
-  [[ $uri =~ ^http ]] && return 0
+  [[ $uri =~ ^https?: ]] && return 0
 
   set_sticker "$uri" lastplayed "$(now)" || return 1
   
