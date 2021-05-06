@@ -58,7 +58,7 @@ list_queue() {
   local cpos
   cpos="$(get_current "%pos%")"
   
-  local pos=0 maxwidth entry artist title dur=0
+  local pos=0 maxwidth entry title dur=0
 
   shopt -s checkwinsize; (:;:)
 
@@ -67,15 +67,12 @@ list_queue() {
   while read -r; do
     ((++pos))
 
-    IFS=$'\n' read -d "" -ra entry <<< "${REPLY//|/$'\n'}"
+    IFS=$'\n' read -d "" -ra entry <<< "${REPLY//→/$'\n'}"
 
-    artist="${entry[1]}"
-    title="${entry[2]}"
+    title="${entry[1]}"
 
     # no title?
-    [[ $title =~ .*%title%/* ]] && title="${entry[0]##*#}"
-
-    [[ $artist =~ .*%artist%.* ]] || title="${artist}: ${title}"
+    [[ $title ]] || title="${entry[0]}"
 
     [[ ${entry[3]} =~ [0-9]+ ]] &&
       ((dur+=entry[3]))
@@ -86,7 +83,7 @@ list_queue() {
     else
       printf "%0${#len}d. │ %s\n" "$pos" "$title"
     fi
-  done < <(${_cmd} | _parse_song_info "%file%|%artist%|%title%|%time%")
+  done < <(${_cmd} | _parse_song_info "%file%→[[%artist%: ]]%title%→%time%")
 
   local trk
   ((pos>1)) && trk="tracks" || trk="track"
