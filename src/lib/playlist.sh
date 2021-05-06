@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/04
+# M │ 2021/05/05
 # D │ Queue management.
 
 list_queue() {
@@ -58,7 +58,7 @@ list_queue() {
   local cpos
   cpos="$(get_current "%pos%")"
   
-  local pos=0 maxwidth entry title dur=0
+  local pos=0 maxwidth entry artist title dur=0
 
   shopt -s checkwinsize; (:;:)
 
@@ -67,9 +67,18 @@ list_queue() {
   while read -r; do
     ((++pos))
 
-    IFS=$'\n' read -d "" -ra entry <<< "${REPLY/→/$'\n'}"
-    title="${entry[0]}"
-    ((dur+=${entry[1]%%.*}))
+    IFS=$'\n' read -d "" -ra entry <<< "${REPLY//|/$'\n'}"
+
+    artist="${entry[1]}"
+    title="${entry[2]}"
+
+    # no title?
+    [[ $title =~ .*%title%/* ]] && title="${entry[0]##*#}"
+
+    [[ $artist =~ .*%artist%.* ]] || title="${artist}: ${title}"
+
+    [[ ${entry[3]} =~ [0-9]+ ]] &&
+      ((dur+=entry[3]))
 
     ((${#title} > maxwidth)) && title="${title:0:$((maxwidth))}…"
     if ((pos == cpos)); then
@@ -77,7 +86,7 @@ list_queue() {
     else
       printf "%0${#len}d. │ %s\n" "$pos" "$title"
     fi
-  done < <(${_cmd} | _parse_song_info "%artist%: %title%→%duration%")
+  done < <(${_cmd} | _parse_song_info "%file%|%artist%|%title%|%time%")
 
   local trk
   ((pos>1)) && trk="tracks" || trk="track"
