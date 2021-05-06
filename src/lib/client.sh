@@ -184,6 +184,12 @@ _parse_song_info() {
   # %artist% %name% %title% %album% %albumartist% %genre% %date%
   # %time% %duration%
   # %pos% %id%
+  #
+  # if tag cannot be parsed, it is stripped.
+  # example: "now playing: %artist% - %title%"
+  # if %artist% is not present we get: "now playing:  - Title"
+  # to avoid this, use: "now playing:[[ %artist% -]] %title%"
+  # and we get: "now playing: Title"
 
   [[ $1 == "-s" ]] && {
     local search=1
@@ -196,25 +202,24 @@ _parse_song_info() {
   strip_unexpanded() {
     # strip un-expanded tags from string.
 
-    local source str i w dest
-    
-    source="$1"
+    local src
 
-    [[ $source == *%*%* ]] || { echo "$source"; return; }
+    src="$1"
 
-    # FIXME: "A B  C D" becomes "A B C D"
-    IFS=$'\n' read -d "" -ra str <<< "${source// /$'\n'}"
-    for ((i==0;i<${#str[@]};i++)); do
-      w="${str[$i]}"
-      [[ $w =~ ^%.+%(.*)$ ]] && {
-        dest+="${BASH_REMATCH[1]}"
-        continue
-      }
-      ((i==0)) && dest+="$w"
-      ((i>0)) && dest+=" $w"
+    [[ $src == *%*%* ]] || { echo "$src"; return; }
+
+    while [[ $src =~ .*%.+%.* ]]; do
+      [[ $src =~ .*(\[\[.*%.+%.*\]\]).* ]] &&
+        src="${src//"${BASH_REMATCH[1]}"}"
+      [[ $src =~ .*(%.+%).* ]] &&
+        src="${src//"${BASH_REMATCH[1]}"}"
     done
 
-    echo "$dest"
+    src="${src//\[\[}"
+    src="${src//\]\]}"
+
+    echo "$src"
+
   }
 
   local count=0
