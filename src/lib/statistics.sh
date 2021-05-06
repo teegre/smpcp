@@ -25,12 +25,15 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/05/03
+# M : 2021/05/05
 # D : Statistics management.
 
 get_sticker() {
   local uri name value
   uri="$1"
+
+  [[ $uri =~ ^http ]] && return 1
+
   name="$2"
   [[ $uri && $name ]] && {
     value="$(cmd sticker get song "$uri" "$name")" || return 1
@@ -45,6 +48,9 @@ get_sticker() {
 set_sticker() {
   local uri name value
   uri="$1"
+
+  [[ $uri =~ ^http ]] && return 1
+
   name="$2"
   value="$3"
   [[ $uri && $name && $value ]] && {
@@ -57,6 +63,9 @@ set_sticker() {
 find_sticker() {
   local uri name
   uri="$1"
+
+  [[ $uri =~ ^http ]] && return 1
+
   name="$2"
   while read -r; do
     [[ $REPLY =~ ^sticker:[[:space:]]${name}=(.+)$ ]] &&
@@ -69,6 +78,9 @@ find_sticker() {
 delete_sticker() {
   local uri name
   uri="$1"
+
+  [[ $uri =~ ^http ]] && return 1
+
   name="$2"
   [[ $uri && $name ]] && {
     cmd sticker delete song "$uri" "$name" || return 1
