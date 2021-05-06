@@ -409,8 +409,8 @@ status() {
 
   # stream?
   if [[ $(get_current) =~ ^https?: ]]; then
-    pstatus
-    printf "%s" "$(get_current "[[%name%\n]]")"
+    echo "$(pstatus) [stream]"
+    printf "%s\n" "$(get_current "%name%")"
   else
     echo "$(pstatus) $(rating) x$(playcount) $(get_current "[[[%ext%]]]")"
   fi
