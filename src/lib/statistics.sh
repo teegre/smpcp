@@ -95,7 +95,15 @@ media_update() {
     return
   }
 
-  local fmt='artist %artist%\ntitle %title%\nalbum %album%\ndate %date%'
+  local uri fmt
+  uri="$(get_current)"
+
+  if [[ $uri =~ ^http ]]; then
+    fmt='artist %name% %artist%\ntitle %title%'
+  else
+    fmt='artist %artist%\ntitle %title%\nalbum %album%\ndate %date%'
+  fi
+
   {
     echo "status $(state -p)"
     get_current "$fmt"
@@ -112,6 +120,8 @@ update_stats() {
   uri="$1"
 
   [[ $uri ]] || return 1
+
+  [[ $uri =~ ^http ]] && return 0
 
   set_sticker "$uri" lastplayed "$(now)" || return 1
   
