@@ -403,6 +403,12 @@ get_albumart() {
   local default musicdir
   default="$SMPCP_ASSETS/cover.jpg"
 
+  # stream?
+  [[ $(get_current) =~ ^http ]] && {
+    echo "$default"
+    return
+  }
+
   # locate music directory.
   musicdir="$(get_music_dir)" || {
     echo "$default"
