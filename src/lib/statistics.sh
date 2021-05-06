@@ -103,7 +103,7 @@ media_update() {
   } > "/tmp/.currentmedia"
 }
 
-clear_media() { :> "$HOME/.config/currentmedia"; }
+clear_media() { :> "/tmp/.currentmedia"; }
 
 update_stats() {
   
