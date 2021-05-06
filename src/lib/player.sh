@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/04
+# M │ 2021/05/05
 # D │ Player functions.
 
 toggle() {
@@ -404,7 +404,21 @@ status() {
   # display player status
   # and current song info.
 
-  echo "$(pstatus) $(rating) x$(playcount) [$(get_ext "$(get_current)")]"
+  local uri
+  uri="$(get_current)"
+
+  # stream?
+  [[ $(get_current) =~ ^http ]] && {
+    pstatus
+    get_current "%name%"
+    local artist title
+    artist="$(get_current "%artist%")"
+    title="$(get_current "%title%")"
+    [[ $artist ]] && echo "${artist}: ${title}"
+    [[ $artist ]] || echo "${title}"
+    return
+  }
+  echo "$(pstatus) $(rating) x$(playcount) [$(get_ext "$uri")]"
   get_current "%artist%: %title%\n%album% | %date%"
 }
 
