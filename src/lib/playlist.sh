@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/05
+# M │ 2021/05/06
 # D │ Queue management.
 
 list_queue() {
@@ -74,8 +74,8 @@ list_queue() {
     # no title?
     [[ $title ]] || title="${entry[0]}"
 
-    [[ ${entry[3]} =~ [0-9]+ ]] &&
-      ((dur+=entry[3]))
+    [[ ${entry[2]} =~ [0-9]+ ]] &&
+      ((dur+=entry[2]))
 
     ((${#title} > maxwidth)) && title="${title:0:$((maxwidth))}…"
     if ((pos == cpos)); then
