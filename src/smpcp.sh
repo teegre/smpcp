@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/05/03
+# M │ 2021/05/08
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -45,6 +45,8 @@ source "$SMPCP_LIB"/plugin.sh
 source "$SMPCP_LIB"/query.sh
 # shellcheck source=/usr/lib/smpcp/statistics.sh
 source "$SMPCP_LIB"/statistics.sh
+# shellcheck source=/usr/lib/smpcp/tracker.sh
+source "$SMPCP_LIB"/tracker.sh
 # shellcheck source=/usr/lib/smpcp/volume.sh
 source "$SMPCP_LIB"/volume.sh
 
@@ -110,6 +112,7 @@ case $1 in
   status     ) status ;;
   stop       ) stop ;;
   toggle     ) shift; toggle "$@" ;;
+  tracker    ) tracker ;;
   update     ) shift; update "$@" ;;
   version    ) message M "smpcp: version ${__version}." ;;
   vol        ) shift; volume "$@" ;;
