@@ -85,8 +85,6 @@ case $1 in
   getsticker ) shift; get_sticker "$@" ;;
   help       ) _help ;;
   history    ) _db_get_history ;;
-  idle       ) shift; cmd idle "$@" ;;
-  idleloop   ) shift; cmd idleloop "$@" ;;
   insertalbum) shift; add_album -i "$@" ;;
   fcmd       ) shift; fcmd "$@" ;;
   ls         ) shift; list_queue "$@" ;;
