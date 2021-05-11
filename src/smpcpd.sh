@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/06
+# M : 2021/05/08
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -65,6 +65,8 @@ logme --clear
 
 logme "daemon: started."
 echo "daemon started."
+
+clear_media
 
 notify_song() {
   # display a song change notification.
