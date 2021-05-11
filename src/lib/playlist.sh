@@ -83,7 +83,7 @@ list_queue() {
     else
       printf "%0${#len}d. │ %s\n" "$pos" "$title"
     fi
-  done < <(${_cmd} | _parse_song_info "%file%→[[%artist%: ]]%title%→%time%")
+  done < <(${_cmd} | _parse_song_info "%file%→[[%artist%: ]]%title%[[ (%name%)]]→%time%")
 
   local trk
   ((pos>1)) && trk="tracks" || trk="track"
