@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/06
+# M │ 2021/05/12
 # D │ Queue management.
 
 list_queue() {
@@ -209,10 +209,15 @@ crop() {
   local cur_id
   cur_id="$(get_current "%id%")" || return 1
 
+  local id
+
   while read -r id; do
     [[ $id != "$cur_id" ]] &&
       cmd deleteid "$id"
   done < <(fcmd playlistinfo "Id")
+
+  _daemon && get_mode &> /dev/null && state
+    update_daemon
 }
 
 __album_mode() {
