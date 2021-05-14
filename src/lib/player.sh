@@ -25,8 +25,10 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/06
+# M │ 2021/05/14
 # D │ Player functions.
+
+declare SMPCP_HISTORY_INDEX=0
 
 toggle() {
   # toggle music player playback state.
@@ -103,7 +105,24 @@ next_album() {
 }
 
 previous() {
-  # play previous song.
+  # go back to the beginning of the current song 
+  # or play previous song.
+
+  # if consume is on we have to check if daemon is enabled.
+  # if true, then we get a song back from the history.
+  # if current song is already in the history then we get
+  # the previous one... and so on...
+
+  # shellcheck disable=SC2119
+  state && consume &> /dev/null && _daemon && {
+    local uri id
+    uri="$(_db_get_previous_song $((SMPCP_HISTORY_INDEX)))"
+    id="$(fcmd addid "$uri" Id)"
+    cmd prio "$id" 1
+    ((++SMPCP_HISTORY_INDEX))
+    cmd next
+    return
+  }
 
   cmd previous
 }

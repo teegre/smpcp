@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/05/05
+# M │ 2021/05/14
 # D │ Music and sticker database query.
 
 # to achieve some advanced search we need to directly query
@@ -199,6 +199,25 @@ FROM sticker
 WHERE name="lastplayed" AND value BETWEEN "${from}" AND "$(now)"
 ORDER BY d DESC;
 SQL
+}
+
+_db_get_previous_song() {
+  # print a song URI from history.
+  # usage: _db_get_previous_song [index]
+
+  local index i=0
+  index="${1:-0}"
+
+  while read -r; do
+    ((i==index)) && {
+      [[ $REPLY =~ ^.*\|(.+)$ ]] && {
+        echo "${BASH_REMATCH[1]}"
+        return 0
+      }
+      ((i++))
+    }
+  done < <(_db_get_history 2> /dev/null)
+  return 1
 }
 
 _db_get_all_songs() {
