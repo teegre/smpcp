@@ -103,26 +103,60 @@ next_album() {
 }
 
 previous() {
-  # go back to the beginning of the current song 
-  # or play previous song.
+  # go back to the beginning of the current song
+  # if 10% mark has been passed, or play previous song.
 
-  # if consume is on we have to check if daemon is enabled.
-  # if true, then we get a song back from the history.
-  # if current song is already in the history then we get
-  # the previous one... and so on...
-
-  # shellcheck disable=SC2119
-  state && consume &> /dev/null && _daemon && {
-    local uri id
-    uri="$(_db_get_previous_song $((SMPCP_HISTORY_INDEX)))"
-    id="$(fcmd addid "$uri" Id)"
-    cmd prio "$id" 1
-    ((++SMPCP_HISTORY_INDEX))
-    cmd next
-    return
+  state || {
+    message E "not playing."
+    return 1
   }
 
-  cmd previous
+  # check 10% mark
+  local dur elapsed percent
+  dur="$(get_duration)"
+  [[ $dur ]] && {
+    elapsed="$(get_elapsed)"
+    ((percent=elapsed*100/dur))
+    ((percent>10)) && {
+      cmd previous
+      return
+    }
+  }
+
+  # get previous song.
+  local uri id
+  uri="$(get_previous)"
+
+  [[ $uri ]] || {
+    message E "no previous song."
+    return 1
+  }
+
+  if is_in_queue "$uri"; then
+    cmd previous
+  else
+    local index id
+    index="$(read_config history_index)" || index=0
+
+    # shellcheck disable=SC2119
+    random &> /dev/null || {
+      local pos=0
+    }
+
+    id="$(fcmd addid "$uri" "$pos" Id)" || return 1
+
+    write_config history_index $((++index))
+
+    [[ $pos ]] || {
+      local cid
+      cid="$(get_current "%id%")"
+      cmd playid $((id)) || return 1
+      cmd prioid $((index)) $((cid))
+      return 0
+    }
+
+    cmd previous
+  fi
 }
 
 skip() {
@@ -289,6 +323,7 @@ _playback_mode() {
 }
 
 _repeat() { _playback_mode repeat  "$1"; }
+# shellcheck disable=SC2120
 random()  { _playback_mode random  "$1"; }
 single()  { _playback_mode single  "$1"; }
 consume() { _playback_mode consume "$1"; }
