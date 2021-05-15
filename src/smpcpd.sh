@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/14
+# M : 2021/05/15
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -142,8 +142,6 @@ change_event() {
   URI="$(get_current)"
   notify_song
   media_update
-
-  ((SMPCP_HISTORY_INDEX=SMPCP_HISTORY_INDEX>0?SMPCP_HISTORY_INDEX-1:0))
 
   # handle playlist generator here vvv
   add_songs
