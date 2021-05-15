@@ -308,16 +308,18 @@ get_random_song() {
   skiplimit="$(read_config skip_limit)" || skiplimit=0
 
   while read -r; do
+    _is_in_playlist "$REPLY" && continue
+
     skipcount="$(get_sticker "$REPLY" skipcount 2> /dev/null)" ||
       skipcount=0
 
     ((skipcount>=skiplimit)) && continue
+
     if [[ $ALBUM ]]; then
       _is_in_history -a "$REPLY" && continue
     else
       _is_in_history "$REPLY" && continue
     fi
-    _is_in_playlist "$REPLY" && continue
 
     echo "$REPLY"
     QUEUE+=("$REPLY")
