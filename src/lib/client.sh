@@ -359,7 +359,7 @@ get_previous() {
     local cid id
     cid="$(get_current "%id%")"
     ((id=cid-1))
-    cmd playlistid "$id" | _parse_song_info "$fmt"
+    cmd playlistid "$id" 2> /dev/null | _parse_song_info "$fmt"
   fi
 }
 
