@@ -28,8 +28,6 @@
 # M │ 2021/05/14
 # D │ Player functions.
 
-declare SMPCP_HISTORY_INDEX=0
-
 toggle() {
   # toggle music player playback state.
   # if a track number is given, play it.
@@ -78,7 +76,7 @@ stop() {
 
 next() {
   # play next song.
-
+  update_stats --no-playcount "$(get_current)"
   cmd next
 }
 
