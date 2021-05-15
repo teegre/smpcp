@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/05/14
+# M │ 2021/05/15
 # D │ Music and sticker database query.
 
 # to achieve some advanced search we need to directly query
@@ -214,8 +214,8 @@ _db_get_previous_song() {
         echo "${BASH_REMATCH[1]}"
         return 0
       }
-      ((i++))
     }
+    ((i++))
   done < <(_db_get_history 2> /dev/null)
   return 1
 }
