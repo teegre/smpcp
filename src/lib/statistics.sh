@@ -117,6 +117,11 @@ update_stats() {
   
   __is_mpd_running || return 1
 
+  [[ $1 == "--no-playcount" ]] && {
+    local NO_PLAYCOUNT=1
+    shift
+  }
+
   local uri
   uri="$1"
 
@@ -124,14 +129,19 @@ update_stats() {
 
   [[ $uri =~ ^https?: ]] && return 0
 
+  update_history_index
+
   set_sticker "$uri" lastplayed "$(now)" || return 1
   
-  local playcount
-  playcount="$(get_sticker "$uri" playcount 2> /dev/null)" || playcount=0
+  [[ $NO_PLAYCOUNT ]] || {
+    local playcount
+    playcount="$(get_sticker "$uri" playcount 2> /dev/null)" || playcount=0
 
-  ((playcount++))
-  set_sticker "$uri" playcount "$playcount" ||
-    return 1
+    ((playcount++))
+    set_sticker "$uri" playcount "$playcount" ||
+      return 1
+  }
+
   get_sticker "$uri" rating &> /dev/null ||
     rating 0 &> /dev/null
   get_sticker "$uri" skipcount &> /dev/null ||
