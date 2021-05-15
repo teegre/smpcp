@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/06
+# M │ 2021/05/14
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -337,6 +337,30 @@ get_next() {
   songid="$(fcmd status nextsongid)"
   [[ $songid ]] || return 1
   cmd playlistid "$songid" | _parse_song_info "$fmt" 
+}
+
+get_previous() {
+  # display specific info about previous song.
+  # usage: get_previous [format]
+  # if no format is given, print URI.
+
+  local fmt
+  fmt="${1:-"%file%"}"
+
+  if consume &> /dev/null; then
+    _daemon && {
+      local index uri
+      index="$(read_config history_index)" || index=0
+      uri="$(_db_get_previous_song $((index)))"
+      [[ $uri ]] &&
+        cmd lsinfo "$uri" | _parse_song_info -s "$fmt"
+    }
+  else
+    local cid id
+    cid="$(get_current "%id%")"
+    ((id=cid-1))
+    cmd playlistid "$id" | _parse_song_info "$fmt"
+  fi
 }
 
 get_duration() {
