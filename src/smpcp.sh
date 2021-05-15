@@ -105,6 +105,7 @@ case $1 in
   search     ) shift; search "$@" ;;
   searchadd  ) shift; searchadd "$@" ;;
   seek       ) shift; seek "$@" ;;
+  songinfo   ) song_stats ;;
   setsticker ) shift; set_sticker "$@" ;;
   single     ) shift; single "$@" ;;
   skip       ) shift; skip ;;

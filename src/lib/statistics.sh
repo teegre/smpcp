@@ -236,7 +236,8 @@ skipcount() {
 song_stats() {
   # print current song statistics.
 
-  get_current "%artist%: %title%\n%album% (%date%)"
+  get_current "[[%name%\n]][[%artist%: ]]%title%[[\n%album%]][[ (%date%)]]"
+  echo "$(get_elapsed -h) / $(get_duration -h)"
   echo "===="
   echo "rating:      $(rating)"
   echo "last played: $(lastplayed)"
