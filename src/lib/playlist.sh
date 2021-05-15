@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/12
+# M │ 2021/05/15
 # D │ Queue management.
 
 list_queue() {
@@ -89,6 +89,20 @@ list_queue() {
   ((pos>1)) && trk="tracks" || trk="track"
   echo "---"
   echo "$((pos)) $trk - $(secs_to_hms $((dur)))"
+}
+
+is_in_queue() {
+  # check whether a URI is in the queue
+  # usage: is_in_queue <uri>
+
+  local uri
+  uri="$1"
+
+  while read -r; do
+    [[ $REPLY == "$uri" ]] && return 0
+  done < <(list_queue -f)
+
+  return 1
 }
 
 add() {
