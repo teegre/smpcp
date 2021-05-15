@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/05/08
+# M │ 2021/05/15
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -81,6 +81,7 @@ case $1 in
   getduration) shift; get_duration "$@" ;;
   getelapsed ) shift; get_elapsed "$@" ;;
   getnext    ) shift; get_next "$@" ;;
+  getprev    ) shift; get_previous "$@" ;;
   getrnd     ) shift; get_rnd "$@" ;;
   getsticker ) shift; get_sticker "$@" ;;
   help       ) _help ;;
