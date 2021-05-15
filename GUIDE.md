@@ -1,6 +1,6 @@
 # PROGRAMMER'S GUIDE
 
-This is a summary of available functions that can be useful when developping a plugin.
+This is a summary of available functions that can be useful when developing a plugin.
 
 Libraries are stored in `/usr/lib/smpcp`.
 
