@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/05/06
+# M : 2021/05/15
 # D : Statistics management.
 
 get_sticker() {
@@ -87,6 +87,14 @@ delete_sticker() {
     return 0
   }
   return 1
+}
+
+update_history_index() {
+  local index
+  index="$(read_config history_index)" || index=0
+
+  write_config history_index \
+    $((index>0?index-1:0))
 }
 
 media_update() {
