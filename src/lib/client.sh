@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/14
+# M │ 2021/05/16
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -509,7 +509,7 @@ get_album_info() {
   albumartist="${info[2]}"
   date="${info[3]}"
 
-  if [[ $albumartist != "%albumartist%" && $artist != "$albumartist" ]]; then
+  if [[ $albumartist && $artist != "$albumartist" ]]; then
     local VA=1 # stands for various artists
     fmt="%track%→%artist%→%title%→%duration%"
   else
