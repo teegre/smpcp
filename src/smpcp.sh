@@ -84,6 +84,7 @@ case $1 in
   help       ) _help ;;
   history    ) _db_get_history ;;
   insertalbum) shift; add_album -i "$@" ;;
+  load       ) shift; load "$@" ;;
   ls         ) shift; list_queue "$@" ;;
   mode       ) shift; _mode "$@" ;;
   move       ) shift; move "$@" ;;
@@ -93,6 +94,7 @@ case $1 in
   play       ) shift; play "$@" ;;
   playalbum  ) shift; add_album -p "$@" ;;
   playtime   ) db_playtime ;;
+  pls        ) shift; list_playlist "$@" ;;
   prev       ) previous ;;
   random     ) shift; random "$@";;
   rating     ) shift; rating "$@" ;;

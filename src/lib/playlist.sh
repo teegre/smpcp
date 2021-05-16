@@ -25,8 +25,8 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/15
-# D │ Queue management.
+# M │ 2021/05/16
+# D │ Queue/playlist management.
 
 list_queue() {
   # print queue.
@@ -345,4 +345,45 @@ queue_is_empty() {
   local count
   count="$(fcmd status playlistlength)"
   return $((count>0?1:0))
+}
+
+list_playlist() {
+  # list stored playlists or list songs in a given stored playlist.
+  # usage: list_playlist [name]
+
+  [[ $1 ]] && fcmd listplaylist "$1" file
+  [[ $1 ]] || fcmd listplaylists playlist
+}
+
+load() {
+  # load playlist into the queue.
+  # usage: load <name> [start-end]
+
+  local name
+  name="$1"
+  shift
+
+  [[ $1 =~ ^([0-9]+)-([0-9]+)$ ]] && {
+    local start end
+    ((start=BASH_REMATCH[1]))
+    ((end=BASH_REMATCH[2]))
+    ((start>0)) && ((end>0)) && {
+      cmd load "$name" "$((start-1)):$((end))" || return 1
+      return 0
+    }
+    message E "bad song index."
+    return 1
+  }
+
+  [[ $1 = ^[0-9]+$ ]] && {
+    local pos="$1"
+    ((pos>0)) && {
+      cmd load "$name" $((pos)) || return 1
+      return 0
+    }
+    message E "bad song index."
+    return 1
+  }
+
+  cmd load "$name"
 }

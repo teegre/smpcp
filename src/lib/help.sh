@@ -51,6 +51,7 @@ Commands:
   smpcp help                                       show this help screen.
   smpcp history                                    show playback history.
   smpcp insertalbum [<artist> <album>]             add album after current song.
+  smpcp load <name> [start-end]                    load playlist or specific songs into the queue.
   smpcp ls [-f [format]]                           print queue.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
@@ -59,6 +60,7 @@ Commands:
   smpcp pause                                      pause playback.
   smpcp play [pos]                                 play song.
   smpcp playalbum [<artist> <album>]               play album for current song.
+  smpcp pls [name]                                 list stored playlists or content of a given playlist.
   smpcp prev                                       play song from the start or play previous song.
   smpcp random [off|on]                            set repeat mode.
   smpcp rating [0..5]                              rate current song.
