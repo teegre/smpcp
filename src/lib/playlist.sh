@@ -376,10 +376,10 @@ load() {
     return 1
   }
 
-  [[ $1 = ^[0-9]+$ ]] && {
+  [[ $1 =~ ^[0-9]+$ ]] && {
     local pos="$1"
     ((pos>0)) && {
-      cmd load "$name" $((pos)) || return 1
+      cmd load "$name" $((pos-1)) || return 1
       return 0
     }
     message E "bad song index."
