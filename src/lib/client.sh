@@ -450,7 +450,7 @@ get_albumart() {
 
   # stream?
   [[ $(get_current) =~ ^https?: ]] && {
-    echo "$default"
+    echo "${SMPCP_ASSETS}/radio.png"
     return
   }
 
