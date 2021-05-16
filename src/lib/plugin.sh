@@ -25,18 +25,16 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/05/04
+# M : 2021/05/16
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
 # must be stored in separate directories.
-# Name of exposed plugin functions must start with "plug_".
+# Name of exposed plugin functions must be prefixed with "plug_".
 # If a plugin need to receive player events, a function named
 # "__plug_plugin-name_notify" must be created.
  
 declare SMPCP_PLUGINS_DIR="$HOME/.config/smpcp/plugins"
-
-# declare -A SOURCES
 
 get_plugin_list() {
   local plugin
@@ -48,6 +46,7 @@ get_plugin_list() {
 get_all_plugin_functions() {
   # print all functions for given plugin.
   # usage: get_all_plugin_functions <plugin-name>
+
   local plugin pathname func
   plugin="$1"
   pathname="${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
@@ -181,7 +180,7 @@ plugin_help() {
       [[ $helpstr =~ ^args${sp}*=${sp}*(.*)${sp}*\;${sp}*desc${sp}*=${sp}*(.*)$ ]] && {
         args="${BASH_REMATCH[1]}"
         desc="${BASH_REMATCH[2]}"
-        echo -e "smpcp ${func/help_} $args $desc"
+        printf "  smpcp %-42s %s\n" "${func/help_} $args" "$desc"
       }
     done < <(get_all_plugin_functions "$plugin")
   done < <(get_plugin_list)
