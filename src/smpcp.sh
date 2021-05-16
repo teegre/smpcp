@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/05/15
+# M │ 2021/05/16
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -68,26 +68,22 @@ case $1 in
   add        ) shift; add "$@" ;;
   addalbum   ) shift; add_album "$@" ;;
   albuminfo  ) get_album_info ;;
+  albums     ) shift; get_discography "$@" ;;
   clear      ) clear_queue ;;
-  cmd        ) shift; cmd "$@" ;;
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
   DEBUG      ) shift; "$@" ;;
   delete     ) shift; delete "$@" ;;
   dim        ) shift; dim "$@" ;;
-  discog     ) shift; get_discography "$@" ;;
-  findsticker) shift; find_sticker "$@" ;;
   getcurrent ) shift; get_current "$@" ;;
   getduration) shift; get_duration "$@" ;;
   getelapsed ) shift; get_elapsed "$@" ;;
   getnext    ) shift; get_next "$@" ;;
   getprev    ) shift; get_previous "$@" ;;
   getrnd     ) shift; get_rnd "$@" ;;
-  getsticker ) shift; get_sticker "$@" ;;
   help       ) _help ;;
   history    ) _db_get_history ;;
   insertalbum) shift; add_album -i "$@" ;;
-  fcmd       ) shift; fcmd "$@" ;;
   ls         ) shift; list_queue "$@" ;;
   mode       ) shift; _mode "$@" ;;
   move       ) shift; move "$@" ;;
@@ -106,7 +102,6 @@ case $1 in
   searchadd  ) shift; searchadd "$@" ;;
   seek       ) shift; seek "$@" ;;
   songinfo   ) song_stats ;;
-  setsticker ) shift; set_sticker "$@" ;;
   single     ) shift; single "$@" ;;
   skip       ) shift; skip ;;
   status     ) status ;;

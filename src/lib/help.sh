@@ -36,26 +36,22 @@ Commands:
   smpcp add <uri>                                  add song(s) to the queue.
   smpcp addalbum [<artist> <album>]                append album to the queue.
   smpcp albuminfo                                  display current album full info.
+  smpcp albums                                     display albums in the database from current artist.
   smpcp clear                                      remove all songs from the queue.
-  smpcp cmd [-x] <command> [args]                  -
   smpcp consume [off|on]                           set consume mode.
   smpcp crop                                       remove all songs from the queue except current one.
   smpcp delete <position> | <start-end>            delete song(s) from the queue.
   smpcp dim [-n]                                   toggle volume dim.
-  smpcp discog                                     display albums in the database from current artist.
   smpcp getcurrent [format]                        show info about current song.
   smpcp getduration [-h]                           display duration of current song.
   smpcp getelapsed [-h]                            display elapsed time for current song.
   smpcp getnext [format]                           show info about next song in the queue.
+  smpcp getprev [format]                           show info about previously played song.
   smpcp getrnd [-a] <count>                        print <count> random songs or albums (-a).
-  smpcp getsticker <uri> <name>                    print sticker.
   smpcp help                                       show this help screen.
-  smpcp history                                    show song history.
-  smpcp idle [event...]                            -
-  smpcp idleloop [event...]                        -
+  smpcp history                                    show playback history.
   smpcp insertalbum [<artist> <album>]             add album after current song.
-  smpcp fcmd [-x] <command> [args] <filter>        -
-  smpcp ls                                         print queue.
+  smpcp ls [-f [format]]                           print queue.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
   smpcp next                                       play next song in the queue.
@@ -65,23 +61,24 @@ Commands:
   smpcp playalbum [<artist> <album>]               play album for current song.
   smpcp prev                                       play song from the start or play previous song.
   smpcp random [off|on]                            set repeat mode.
-  smpcp rating [0..5]                              rate song.
+  smpcp rating [0..5]                              rate current song.
   smpcp repeat [off|on]                            set repeat mode.
-  smpcp replaygain [mode]                          set replay gain mode.
+  smpcp replaygain [auto|track|album]              set replay gain mode.
   smpcp search <type> <query>                      search for songs.
   smpcp searchadd <type> <query>                   search for songs and add them to queue.
   smpcp seek [+|-]<[HH:[MM:]]SS> | [+|-]<0-100%>   seek to specified position.
   smpcp single [off|on]                            set single mode.
+  smpcp songinfo                                   print info about current song.
   smpcp skip                                       skip current track.
   smpcp status                                     print player status
   smpcp stop                                       stop playback.
-  smpcp stopafter [-n]                             stop playback after current song.
-  smpcp toggle [pos]                               toggle play/pause. play if paused.
+  smpcp toggle [pos]                               toggle play/pause.
+  smpcp tracker                                    idle mode, print music player events.
   smpcp update [uri]                               update database.
   smpcp version                                    show program version and exit.
   smpcp vol [-n] [+|-]<vol>                        set volume.
   smpcp xfade [duration]                           set crossfade duration.
-  $(plugin_help)
+$(plugin_help)
 EOB
 }
 
