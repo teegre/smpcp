@@ -137,6 +137,7 @@ delete() {
       return 0
     }
     message E "bad song index."
+    return 1
   }
 
   [[ $1 =~ ^[0-9]+$ ]] && {
