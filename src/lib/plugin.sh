@@ -185,3 +185,22 @@ plugin_help() {
     done < <(get_all_plugin_functions "$plugin")
   done < <(get_plugin_list)
 }
+
+list_plugins() {
+  # print list of installed plugins.
+
+  local plugin count=0 version
+
+  while read -r plugin; do
+    ((++count))
+    # shellcheck disable=SC1090
+    source "${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
+    version="PLUG_${plugin^^}_VERSION"
+    echo "$plugin version ${!version}"
+  done < <(get_plugin_list)
+
+  ((count>1)) && local label="plugins"
+  ((count<2)) && local label="plugin"
+
+  echo -e "===\n$((count)) ${label}."
+}

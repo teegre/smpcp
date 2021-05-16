@@ -61,6 +61,7 @@ Commands:
   smpcp play [pos]                                 play song.
   smpcp playalbum [<artist> <album>]               play album for current song.
   smpcp pls [name]                                 list stored playlists or content of a given playlist.
+  smpcp plugins                                    list installed plugins.
   smpcp prev                                       play song from the start or play previous song.
   smpcp random [off|on]                            set repeat mode.
   smpcp rating [0..5]                              rate current song.

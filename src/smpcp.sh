@@ -95,6 +95,7 @@ case $1 in
   playalbum  ) shift; add_album -p "$@" ;;
   playtime   ) db_playtime ;;
   pls        ) shift; list_playlist "$@" ;;
+  plugins    ) shift; list_plugins ;;
   prev       ) previous ;;
   random     ) shift; random "$@";;
   rating     ) shift; rating "$@" ;;
