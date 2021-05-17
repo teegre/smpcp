@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/16
+# M │ 2021/05/17
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -358,33 +358,39 @@ list_playlist() {
 
 load() {
   # load playlist into the queue.
-  # usage: load <name> [start-end]
+  # usage: load <name> [[pos]|[start-end]...]
 
   local name
   name="$1"
   shift
 
-  [[ $1 =~ ^([0-9]+)-([0-9]+)$ ]] && {
-    local start end
-    ((start=BASH_REMATCH[1]))
-    ((end=BASH_REMATCH[2]))
-    ((start>0)) && ((end>0)) && {
-      cmd load "$name" "$((start-1)):$((end))" || return 1
-      return 0
-    }
-    message E "bad song index."
-    return 1
+  [[ $1 ]] || { 
+    cmd load "$name" || return 1
+    return 0
   }
 
-  [[ $1 =~ ^[0-9]+$ ]] && {
-    local pos="$1"
-    ((pos>0)) && {
-      cmd load "$name" $((pos-1)) || return 1
-      return 0
+  local pos
+  
+  for pos in "$@"; do
+    [[ $pos =~ ^([0-9]+)-([0-9]+)$ ]] && {
+      local start end
+      ((start=BASH_REMATCH[1]))
+      ((end=BASH_REMATCH[2]))
+      ((start>0)) && ((end>0)) && {
+        cmd load "$name" "$((start-1)):$((end))" || return 1
+        continue
+      }
+      message E "bad song index."
+      return 1
     }
-    message E "bad song index."
-    return 1
-  }
 
-  cmd load "$name"
+    [[ $pos =~ ^[0-9]+$ ]] && {
+      ((pos>0)) && {
+        cmd load "$name" $((pos-1)) || return 1
+        continue
+      }
+      message E "bad song index."
+      return 1
+    }
+  done
 }

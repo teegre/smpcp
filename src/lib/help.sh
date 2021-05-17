@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/05/16
+# M : 2021/05/17
 # D : Help.
 
 _help() {
@@ -51,7 +51,7 @@ Commands:
   smpcp help                                       show this help screen.
   smpcp history                                    show playback history.
   smpcp insertalbum [<artist> <album>]             add album after current song.
-  smpcp load <name> [start-end]                    load playlist or specific songs into the queue.
+  smpcp load <name> [[pos]|[start-end]...]         load playlist or specific songs into the queue.
   smpcp ls [-f [format]]                           print queue.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
