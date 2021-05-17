@@ -216,7 +216,7 @@ while ((RUN)); do
     }
     loop
   }
-  [[ $RUN ]] && { 
+  [[ $RUN ]] && {
     [[ $DETECT ]] || { DETECT=1; logme "daemon: paused (mpd?)"; }
     sleep 1
   }
