@@ -13,7 +13,7 @@
 **Smpcp** is a client for [Music Player Daemon](https://www.musicpd.org) written in Bash (and a little C), that includes some more advanced features like:
 
 *  Notification with album art on song change.
-*  Music non stop thanks to auto-generated playlists.
+*  Auto-generated playlists.
 *  Song rating.
 *  Playback statistics.
 *  Can be extended with plugins.
@@ -34,4 +34,6 @@ Finally: `make install`
 
 `make uninstall`
 
+## Usage
 
+**smpcp** consits of a client (**smpcp**) and a daemon (**smpcpd**).
