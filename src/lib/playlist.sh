@@ -364,13 +364,13 @@ load() {
   name="$1"
   shift
 
-  [[ $1 ]] || { 
+  [[ $1 ]] || {
     cmd load "$name" || return 1
     return 0
   }
 
   local pos
-  
+
   for pos in "$@"; do
     [[ $pos =~ ^([0-9]+)-([0-9]+)$ ]] && {
       local start end
