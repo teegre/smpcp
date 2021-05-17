@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/14
+# M │ 2021/05/17
 # D │ Player functions.
 
 toggle() {
@@ -76,6 +76,7 @@ stop() {
 
 next() {
   # play next song.
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   update_stats --no-playcount "$(get_current)"
   cmd next
 }
@@ -163,6 +164,8 @@ skip() {
   # skip current song.
 
   state || return 1
+
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
 
   local uri skipcount
 
