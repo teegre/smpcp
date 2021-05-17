@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/15
+# M : 2021/05/17
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -50,7 +50,6 @@ source "$SMPCP_LIB"/statistics.sh
 source "$SMPCP_LIB"/volume.sh
 
 declare URI
-declare LOCK=0
 
 # check if an instance is already running.
 _daemon && {
@@ -90,19 +89,19 @@ add_songs() {
   mode="$(get_mode)"
 
   if [[ $mode -eq 1 ]]; then
-    LOCK=1
+    touch "$SMPCPD_LOCK"
     local songcount
     songcount="$(read_config playlist_song_count)" || songcount=10
     get_rnd $((songcount)) | add
     __song_mode
-    LOCK=0
+    rm "$SMPCPD_LOCK"
     state || play
     return 0
   elif [[ $mode -eq 2 ]]; then
-    LOCK=1
+    touch "$SMPCPD_LOCK"
     get_rnd -a 1 | add
     __album_mode
-    LOCK=0
+    rm "$SMPCPD_LOCK"
     state || play
     return 0
   fi
@@ -111,7 +110,7 @@ add_songs() {
 }
 
 play_event() {
-  while ((LOCK)); do sleep 1; done
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   URI="$(get_current)"
   volume auto
   notify_song
@@ -138,7 +137,7 @@ stop_event() {
 }
 
 change_event() {
-  while ((LOCK)); do sleep 1; done
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   URI="$(get_current)"
   notify_song
   media_update
@@ -148,9 +147,9 @@ change_event() {
 }
 
 end_event() {
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   update_stats "$URI" ||
     logme "daemon: [ERROR] could not update song statistics. uri: $URI"
-  while ((LOCK)); do sleep 1; done
   add_songs && {
     state || play
   }
@@ -217,8 +216,10 @@ while ((RUN)); do
     }
     loop
   }
-  [[ $DETECT ]] || { DETECT=1; logme "daemon: paused (mpd?)"; }
-  sleep 1
+  [[ $RUN ]] && { 
+    [[ $DETECT ]] || { DETECT=1; logme "daemon: paused (mpd?)"; }
+    sleep 1
+  }
 done
 
 logme "daemon: stopped."
