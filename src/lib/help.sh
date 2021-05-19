@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/05/17
+# M : 2021/05/19
 # D : Help.
 
 _help() {
@@ -73,7 +73,8 @@ Commands:
   smpcp single [off|on]                            set single mode.
   smpcp songinfo                                   print info about current song.
   smpcp skip                                       skip current track.
-  smpcp status                                     print player status
+  smpcp state [-p]                                 playback state (-p to print).
+  smpcp status                                     print player status.
   smpcp stop                                       stop playback.
   smpcp toggle [pos]                               toggle play/pause.
   smpcp tracker                                    idle mode, print music player events.

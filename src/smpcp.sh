@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/05/16
+# M │ 2021/05/19
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -107,6 +107,7 @@ case $1 in
   songinfo   ) song_stats ;;
   single     ) shift; single "$@" ;;
   skip       ) shift; skip ;;
+  state      ) shift; state "$@" ;;
   status     ) status ;;
   stop       ) stop ;;
   toggle     ) shift; toggle "$@" ;;

@@ -79,7 +79,8 @@ Finally: `make install`
   smpcp single [off|on]                            set single mode.
   smpcp songinfo                                   print info about current song.
   smpcp skip                                       skip current track.
-  smpcp status                                     print player status
+  smpcp state [-p]                                 playback state (-p to print).
+  smpcp status                                     print player status.
   smpcp stop                                       stop playback.
   smpcp toggle [pos]                               toggle play/pause.
   smpcp tracker                                    idle mode, print music player events.
@@ -91,7 +92,8 @@ Finally: `make install`
 
 ## Daemon
 
-To enable auto-playlists and playback statistics, **smpcpd**, the **smpcp** daemon must be running. A systemd unit is provided for this purpose.
+To enable auto-playlists and playback statistics, **smpcpd** - the **smpcp** daemon - must be running.  
+A systemd unit is provided for this purpose.
 
 To enable the daemon: `systemctl user enable smpcpd`
 
