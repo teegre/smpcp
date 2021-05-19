@@ -362,6 +362,7 @@ replaygain() {
     track) cmd replay_gain_mode track || return 1 ;;
     album) cmd replay_gain_mode album || return 1 ;;
     auto ) cmd replay_gain_mode auto  || return 1 ;;
+    ""   ) : ;;
     *    ) message E "invalid parameter."; return 1
   esac
 
