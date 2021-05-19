@@ -160,10 +160,18 @@ Returns exit status 0 if playing or paused, 1 if stopped.
 
 Parses song information in the given format.
 
-declare -f __album_mode
-declare -f __is_mpd_running
-declare -f __normal_mode
-declare -f __song_mode
+This function is meant to be used with commands such as *playlistinfo*.
+Use `-s` option when using with *lsinfo*, *search* or similar commands.
+
+Examples:
+
+`cmd lsinfo "kraftwerk/the_man_machine" | _parse_song_info -s "%artist%: %title"`
+
+`
+
+
+Available tags are
+
 declare -f _album_uri
 declare -f _daemon
 declare -f _date
