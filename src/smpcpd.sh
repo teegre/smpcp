@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/17
+# M : 2021/05/19
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -67,15 +67,6 @@ echo "daemon started."
 
 clear_media
 
-notify_song() {
-  # display a song change notification.
-  if state; then
-    notify-send -i "$(get_albumart)" "$(status)"
-  else
-    notify-send -i "$SMPCP_ICON" "$(pstatus)"
-  fi
-}
-
 add_songs() {
   # add songs to the queue.
 
@@ -87,6 +78,8 @@ add_songs() {
 
   local mode
   mode="$(get_mode)"
+
+  plugin_notify "add"
 
   if [[ $mode -eq 1 ]]; then
     touch "$SMPCPD_LOCK"
@@ -113,7 +106,6 @@ play_event() {
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   URI="$(get_current)"
   volume auto
-  notify_song
   media_update
 
   # handle playlist generator here vvv
@@ -123,14 +115,12 @@ play_event() {
 }
 
 pause_event() {
-  notify_song
   media_update
 
   logme "daemon: pause."
 }
 
 stop_event() {
-  get_mode &> /dev/null || notify_song
   media_update
 
   logme "daemon: stop."
@@ -139,7 +129,6 @@ stop_event() {
 change_event() {
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   URI="$(get_current)"
-  notify_song
   media_update
 
   # handle playlist generator here vvv
