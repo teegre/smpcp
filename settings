@@ -1,5 +1,5 @@
 #
-# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· simple
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
 # ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
 # ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
@@ -8,7 +8,7 @@
 # SETTINGS
 
 # path to music library.
-music_library =
+music_directory =
 
 # sticker database location.
 sticker_db =
@@ -16,5 +16,5 @@ sticker_db =
 # how long a song should be kept in history.
 keep_in_history = 2 weeks
 
-# how many times a song can be skipped before being banned.
+# how many times a song can be skipped before being ignored from auto-playlists.
 skip_limit = 3
