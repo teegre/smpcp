@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/19
+# M : 2021/05/20
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -79,7 +79,7 @@ add_songs() {
   local mode
   mode="$(get_mode)"
 
-  plugin_notify "add"
+  plugin_notify "add" &> /dev/null
 
   if [[ $mode -eq 1 ]]; then
     touch "$SMPCPD_LOCK"
