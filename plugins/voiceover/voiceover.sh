@@ -60,6 +60,7 @@ voiceover() {
   [[ $(state -p) != "play" ]] && return 1
   [[ $(get_mode) != "1" ]] && return 1
   random &> /dev/null || return 1
+  [[ $(read_config dim) == "on" ]] && return 1
 
   local uri
   uri="$(get_current)"
