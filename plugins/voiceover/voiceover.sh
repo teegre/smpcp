@@ -41,12 +41,13 @@ __plug_voiceover_notify() {
         write_config voiceover on
       fi
     else
-      ((RANDOM%10==5)) &&
+      ((RANDOM%10==5)) && {
         if voiceover; then
           write_config voiceover off
         elif [[ $(get_mode) == "1" ]] && random &> /dev/null; then
           write_config voiceover on
         fi
+      }
     fi
   }
 }
