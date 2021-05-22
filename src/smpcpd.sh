@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/20
+# M : 2021/05/21
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -127,6 +127,7 @@ pause_event() {
 
 stop_event() {
   media_update
+  get_mode &> /dev/null || notify_player "stopped."
 
   logme "daemon: stop."
 }
