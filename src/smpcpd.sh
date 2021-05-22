@@ -34,6 +34,8 @@ declare SMPCP_LIB="/usr/lib/smpcp"
 source "$SMPCP_LIB"/client.sh
 # shellcheck source=/usr/lib/smpcp/core.sh
 source "$SMPCP_LIB"/core.sh
+# shellcheck source=/usr/lib/smpcp/notify.sh
+source "$SMPCP_LIB"/notify.sh
 # shellcheck source=/usr/lib/smpcp/player.sh
 source "$SMPCP_LIB"/player.sh
 # shellcheck source=/usr/lib/smpcp/playlist.sh
@@ -79,7 +81,7 @@ add_songs() {
   local mode
   mode="$(get_mode)"
 
-  plugin_notify "add" &> /dev/null
+  notify_player "Now adding songs..."
 
   if [[ $mode -eq 1 ]]; then
     touch "$SMPCPD_LOCK"
@@ -107,6 +109,7 @@ play_event() {
   URI="$(get_current)"
   volume auto
   media_update
+  notify_song "$(get_current)"
 
   # handle playlist generator here vvv
   add_songs
@@ -115,6 +118,8 @@ play_event() {
 }
 
 pause_event() {
+  notify_song "$(get_current)"
+
   media_update
 
   logme "daemon: pause."
@@ -129,6 +134,9 @@ stop_event() {
 change_event() {
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   URI="$(get_current)"
+
+  notify_song "$URI"
+
   media_update
 
   # handle playlist generator here vvv
