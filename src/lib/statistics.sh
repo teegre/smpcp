@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/05/15
+# M : 2021/05/20
 # D : Statistics management.
 
 get_sticker() {
@@ -171,8 +171,16 @@ rating() {
   # value must be an integer between 0 (unset) and 5.
   # if no given value, print actual rating.
 
-  local cr uri
-  uri="$(get_current)"
+  local uri
+
+  if [[ $1 ]]; then
+    uri="$1"
+    shift
+  else
+    uri="$(get_current)"
+  fi
+
+  local cr
   cr="$(get_sticker "$uri" rating 2> /dev/null)" || cr=0
   ((cr/=2))
 
@@ -203,28 +211,55 @@ rating() {
 }
 
 lastplayed() {
-  # print when current song was last played.
+  # print when song was last played.
+
+  local uri
+
+  if [[ $1 ]]; then
+    uri="$1"
+    shift
+  else
+    uri="$(get_current)"
+  fi
 
   local lsp
-  lsp="$(get_sticker "$(get_current)" lastplayed)" || lsp="-"
+  lsp="$(get_sticker "$uri" lastplayed)" || lsp="-"
 
   echo "$lsp"
 }
 
 playcount() {
-  # print current song playcount.
+  # print song playcount.
+
+  local uri
+
+  if [[ $1 ]]; then
+    uri="$1"
+    shift
+  else
+    uri="$(get_current)"
+  fi
 
   local plc
-  plc="$(get_sticker "$(get_current)" playcount 2> /dev/null)" || plc=0
+  plc="$(get_sticker "$uri" playcount 2> /dev/null)" || plc=0
 
   echo "$plc"
 }
 
 skipcount() {
-  # print current song skipcount.
+  # print song skipcount.
+
+  local uri
+
+  if [[ $1 ]]; then
+    uri="$1"
+    shift
+  else
+    uri="$(get_current)"
+  fi
 
   local skc
-  skc="$(get_sticker "$(get_current)" skipcount 2> /dev/null)" || {
+  skc="$(get_sticker "$uri" skipcount 2> /dev/null)" || {
     echo 0
     return 1
   }
