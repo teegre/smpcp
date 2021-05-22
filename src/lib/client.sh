@@ -450,9 +450,19 @@ get_music_dir() {
 
 get_albumart() {
 
+  local song_uri
+
+  if [[ $1 ]]; then
+    song_uri="$1"
+    shift
+  else
+    song_uri="$(get_current)"
+  fi
+
+
   # is album art in cache directory?
   local albumart
-  albumart="$(get_current "%album%" | sha1sum | cut -d' ' -f 1)"
+  albumart="$(get_info "$song_uri" "%albumartist%-%album%" | sha1sum | cut -d' ' -f 1)"
   albumart="${SMPCP_CACHE}/${albumart}.jpg"
 
   [[ -a $albumart ]] && {
@@ -489,7 +499,7 @@ get_albumart() {
   }
 
   local uri covers cover
-  uri="$(_album_uri)"
+  uri="$(_album_uri "$song_uri")"
 
   mapfile -t covers < <(fcmd listfiles "$uri" file | grep '^cover\..*$\|^folder\..*$')
 
