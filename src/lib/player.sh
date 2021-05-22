@@ -77,6 +77,7 @@ stop() {
 next() {
   # play next song.
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
+  get_next &> /dev/null || return 1
   update_stats --no-playcount "$(get_current)"
   cmd next
 }
