@@ -461,15 +461,21 @@ status() {
   # and current song info.
 
   local uri
-  uri="$(get_current)"
+
+  if [[ $1 ]]; then
+    uri="$1"
+    shift
+  else
+    uri="$(get_current)"
+  fi
 
   # stream?
-  if [[ $(get_current) =~ ^https?: ]]; then
+  if [[ $uri =~ ^https?: ]]; then
     echo "$(pstatus) [stream]"
-    printf "%s\n" "$(get_current "%name%")"
+    printf "%s\n" "$(get_current "%name%\n[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]")"
   else
-    echo "$(pstatus) $(rating) x$(playcount) $(get_current "[[[%ext%]]]")"
+    echo "$(pstatus) $(rating "$uri") x$(playcount "$uri") $(get_info "$uri" "[[[%ext%]]]")"
+    get_info "$uri" "[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
   fi
-  get_current "[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
 }
 
