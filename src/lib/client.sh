@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/17
+# M │ 2021/05/20
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -49,7 +49,7 @@ __cmd() {
 # it prevents netcat from prematurely returning while 
 # an expensive task is running (i.e listall).
 #
-# DON'T USE THIS. USE cmd INSTEAD.
+# DO NOT USE THIS FUNCTION DIRECTLY. USE cmd INSTEAD.
 
 local host port nccmd
 host="${MPD_HOST:-localhost}"
@@ -361,6 +361,21 @@ get_previous() {
     ((id=cid-1))
     cmd playlistid "$id" 2> /dev/null | _parse_song_info "$fmt"
   fi
+}
+
+get_info() {
+  # display specific info about given URI.
+  # usage: get_info <uri> <format>
+  # print artist and title if no format.
+
+  local uri
+  uri="$1"
+  shift
+
+  local fmt
+  fmt="${1:-"[[%artist% - ]]%title%"}"
+
+  cmd lsinfo "$uri" | _parse_song_info -s "$fmt"
 }
 
 get_duration() {
