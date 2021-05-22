@@ -25,8 +25,11 @@
 #
 # STOPAFTER
 # C : 2021/05/01
-# M : 2021/05/05
+# M : 2021/05/20
 # D : Stop playback after current song.
+
+# shellcheck source=/usr/lib/smpcp/notify.sh
+source "${SMPCP_LIB}/notify.sh"
 
 export PLUG_STOPAFTER_VERSION="0.1"
 
@@ -38,7 +41,7 @@ __plug_stopafter_notify() {
   local s
   s="$(read_config stopafter)" || s="off"
 
-  if [[ $1 == "pause" || $1 == "stop" ]]; then
+  if [[ $1 == "pause" || $1 == "stop" || $1 == "change" ]]; then
     [[ $s == "on" ]] && {
       plug_stopafter off &> /dev/null || return 1
       return 0
@@ -88,5 +91,5 @@ plug_stopafter() {
 }
 
 stopafter_notify() {
-  notify-send -i "$SMPCP_ICON" -t 1500 "stopafter: ${1}."
+  notify_player "stopafter: ${1}."
 }
