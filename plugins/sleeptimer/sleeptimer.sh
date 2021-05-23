@@ -25,7 +25,7 @@
 #
 # SLEEPTIMER
 # C : 2021/04/26
-# M : 2021/05/16
+# M : 2021/05/23
 # D : Pause playback after time out.
 
 export PLUG_SLEEPTIMER_VERSION="0.1"
@@ -57,7 +57,11 @@ sleeptimer() {
     sleep 60
 
     ((EPOCHSECONDS>=expire)) && {
-      pause
+      if [[ $(get_current) =~ ^https? ]]; then
+        stop
+      else
+        pause
+      fi
       write_config sleeptimer_duration 0
       write_config sleeptimer_expiration 0
       rm "$SLEEPTIMER_PID"
