@@ -173,7 +173,7 @@ rating() {
 
   local uri
 
-  if (( $# == 2 )); then
+  if ! [[ $1 =~ ^[0-9]+$ ]]; then
     uri="$1"
     shift
   else
