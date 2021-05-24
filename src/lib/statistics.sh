@@ -210,6 +210,7 @@ rating() {
   return 1
 }
 
+# shellcheck disable=SC2120
 lastplayed() {
   # print when song was last played.
 
@@ -228,6 +229,7 @@ lastplayed() {
   echo "$lsp"
 }
 
+# shellcheck disable=SC2120
 playcount() {
   # print song playcount.
 
@@ -246,6 +248,7 @@ playcount() {
   echo "$plc"
 }
 
+# shellcheck disable=SC2120
 skipcount() {
   # print song skipcount.
 
@@ -268,6 +271,7 @@ skipcount() {
   return 0
 }
 
+# shellcheck disable=SC2119
 song_stats() {
   # print current song statistics.
 
