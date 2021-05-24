@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/17
+# M │ 2021/05/24
 # D │ Queue/playlist management.
 
 list_queue() {
