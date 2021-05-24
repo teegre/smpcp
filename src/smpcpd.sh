@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/21
+# M : 2021/05/24
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -65,9 +65,16 @@ echo "$$" > "$SMPCPD_PID"
 logme --clear
 
 logme "daemon: started."
+
 echo "daemon started."
 
 clear_media
+
+while ! __is_mpd_running; do
+  sleep 1
+done
+
+restore_state
 
 add_songs() {
   # add songs to the queue.
@@ -161,6 +168,7 @@ quit_daemon() {
   logme "daemon: shutting down."
   echo "shutting down..."
   clear_media
+  save_state
   RUN=0
   logme "daemon: quit."
 }
@@ -201,7 +209,6 @@ update_song_list && {
   clean_orphan_stickers -q
 }
 echo "done."
-
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...
