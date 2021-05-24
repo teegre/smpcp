@@ -473,10 +473,10 @@ status() {
   # stream?
   if [[ $uri =~ ^https?: ]]; then
     echo "$(pstatus) [stream]"
-    printf "%s\n" "$(get_current "%name%\n[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]")"
+    printf "%s\n" "$(get_current "%name%\n[[%artist%\n]]%title%[[\n%album%]][[ | %date%]]")"
   else
     echo "$(pstatus) $(rating "$uri") x$(playcount "$uri") $(get_info "$uri" "[[[%ext%]]]")"
-    get_info "$uri" "[[%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
+    get_info "$uri" "[[%artist%\n]]%title%[[\n%album%]][[ | %date%]]"
   fi
 }
 
