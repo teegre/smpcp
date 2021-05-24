@@ -397,3 +397,71 @@ load() {
     }
   done
 }
+
+cload() {
+  # clear the current queue and load a playlist.
+
+  local pl="$1"
+  [[ $pl ]] || return 1
+  
+  list_playlist "$pl" > /dev/null || return 1
+
+  _mode off
+  
+  state && local PLAY=1
+
+  cmd clear
+
+  load "$pl"
+
+  [[ $PLAY ]] && play 1
+}
+
+save() {
+  # save the current queue as a playlist.
+  # usage: save <name>
+
+  cmd save "$1"
+}
+
+remove() {
+  # remove a stored playlist
+  # usage: remove <name>
+
+  cmd rm "$1"
+}
+
+save_state() {
+  # save queue and current playback state.
+
+  queue_is_empty && return 1
+  
+  save queue
+
+  [[ $(state -p) == "play" ]] && {
+    write_config STATE play
+    write_config TRACK $(($(fcmd status song)+1))
+    [[ $(get_current) =~ ^https? ]] || write_config ELAPSED "$(get_elapsed)"
+  }
+}
+
+restore_state() {
+  # restore previously saved state.
+
+  queue_is_empty || {
+    remove queue 2> /dev/null
+    return 1
+  }
+
+  load queue
+  read_config STATE &> /dev/null && {
+    local track elapsed
+    track="$(read_config TRACK)"
+    elapsed="$(read_config ELAPSED)" || elapsed=0
+    play $((track)) && seek $((elapsed))
+    remove queue
+    remove_config STATE
+    remove_config TRACK
+    remove_config ELAPSED
+  }
+}
