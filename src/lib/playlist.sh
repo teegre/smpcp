@@ -240,6 +240,7 @@ __album_mode() {
   cmd random 0
   cmd single 0
   cmd crossfade 0
+  cmd repeat 0
   cmd replay_gain_mode album
 }
 
@@ -248,6 +249,7 @@ __song_mode() {
   cmd random 1
   cmd single 0
   cmd crossfade 10
+  cmd repeat 0
   cmd replay_gain_mode track
 }
 
@@ -256,6 +258,7 @@ __normal_mode() {
   cmd random 0
   cmd single 0
   cmd crossfade 0
+  cmd repeat 0
   cmd replay_gain_mode auto
 }
 
