@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/05/19
+# M │ 2021/05/24
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -72,6 +72,7 @@ case $1 in
   clear      ) clear_queue ;;
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
+  dbplaytime ) db_playtime ;;
   DEBUG      ) shift; "$@" ;;
   delete     ) shift; delete "$@" ;;
   dim        ) shift; dim "$@" ;;
@@ -93,7 +94,7 @@ case $1 in
   pause      ) pause ;;
   play       ) shift; play "$@" ;;
   playalbum  ) shift; add_album -p "$@" ;;
-  playtime   ) db_playtime ;;
+  playtime   ) playtime ;;
   pls        ) shift; list_playlist "$@" ;;
   plugins    ) shift; list_plugins ;;
   prev       ) previous ;;
@@ -108,7 +109,7 @@ case $1 in
   single     ) shift; single "$@" ;;
   skip       ) shift; skip ;;
   state      ) shift; state "$@" ;;
-  status     ) status ;;
+  status     ) shift; status "$@" ;;
   stop       ) stop ;;
   toggle     ) shift; toggle "$@" ;;
   tracker    ) tracker ;;
