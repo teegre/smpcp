@@ -70,6 +70,7 @@ case $1 in
   albuminfo  ) get_album_info ;;
   albums     ) shift; get_discography "$@" ;;
   clear      ) clear_queue ;;
+  cload      ) shift; cload "$@" ;;
   consume    ) shift; consume "$@" ;;
   crop       ) crop ;;
   dbplaytime ) db_playtime ;;
@@ -100,8 +101,10 @@ case $1 in
   prev       ) previous ;;
   random     ) shift; random "$@";;
   rating     ) shift; rating "$@" ;;
+  remove     ) shift; remove "$@" ;;
   repeat     ) shift; _repeat "$@" ;;
   replaygain ) shift; replaygain "$@" ;;
+  save       ) shift; save "$@" ;;
   search     ) shift; search "$@" ;;
   searchadd  ) shift; searchadd "$@" ;;
   seek       ) shift; seek "$@" ;;
