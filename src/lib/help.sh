@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/05/19
+# M : 2021/05/24
 # D : Help.
 
 _help() {
@@ -36,10 +36,12 @@ Commands:
   smpcp add <uri>                                  add song(s) to the queue.
   smpcp addalbum [<artist> <album>]                append album to the queue.
   smpcp albuminfo                                  display current album full info.
-  smpcp albums                                     display albums in the database from current artist.
+  smpcp albums                                     display albums in the database for current artist.
   smpcp clear                                      remove all songs from the queue.
+  smpcp cload <name> [[pos]|[start-end]...]        clear queue and load a stored playlist (see 'load').
   smpcp consume [off|on]                           set consume mode.
-  smpcp crop                                       remove all songs from the queue except current one.
+  smpcp crop                                       remove all songs from the queue except the current one.
+  smpcp dbplaytime                                 display database playtime.
   smpcp delete <position> | <start-end>            delete song(s) from the queue.
   smpcp dim [-n]                                   toggle volume dim.
   smpcp getcurrent [format]                        show info about current song.
@@ -60,10 +62,11 @@ Commands:
   smpcp pause                                      pause playback.
   smpcp play [pos]                                 play song.
   smpcp playalbum [<artist> <album>]               play album for current song.
+  smpcp playtime                                   display user playtime.
   smpcp pls [name]                                 list stored playlists or content of a given playlist.
   smpcp plugins                                    list installed plugins.
   smpcp prev                                       play song from the start or play previous song.
-  smpcp random [off|on]                            set repeat mode.
+  smpcp random [off|on]                            set random mode.
   smpcp rating [0..5]                              rate current song.
   smpcp repeat [off|on]                            set repeat mode.
   smpcp replaygain [auto|track|album]              set replay gain mode.
