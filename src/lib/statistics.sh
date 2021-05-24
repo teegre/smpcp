@@ -293,3 +293,13 @@ db_playtime() {
   secs_to_hms $((t))
   echo
 }
+
+playtime() {
+  # print user playtime.
+
+  local t
+  t="$(fcmd stats playtime)"
+
+  secs_to_hms $((t))
+  echo
+}
