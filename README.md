@@ -10,9 +10,10 @@
 
 ## Description
 
-**Smpcp** is a client for [Music Player Daemon](https://www.musicpd.org) written in Bash (and a little C), that includes some more advanced features like:
+**Smpcp** is a command line client for [Music Player Daemon](https://www.musicpd.org) written in Bash (and a little C), that includes some more advanced features like:
 
-*  Auto-generated playlists.
+*  Auto-generated playlists (song and album modes).
+*  Notifications (with album art).
 *  Song rating.
 *  Playback statistics.
 *  Can be extended with plugins.
@@ -28,6 +29,7 @@ coreutils
 gnu-netcat
 imagemagick
 libmpdclient
+libnotify
 mpd
 sqlite3
 util-linux
@@ -53,17 +55,114 @@ You need to make a copy of the configuration file called **settings** that can b
 
 `cp /etc/smpcp/settings ~/.config/smpcp`
 
-Below are the settings that have to be modified:
+### Mandatory settings
 
-`music_library`: path to the music directory (tilde is expanded).
+Tilde in filesystem path is expanded.
 
-`sticker_db`: path to the sticker database.
+`music_library`: path to the music directory. (i.e. `~/music`)
 
-`keep_in_history = 2 weeks`: how long a song is kept in history. (If a song is in history it won't be added to the queue when an auto-playlist is generated.)
+`sticker_db`: path to the sticker database. (i.e `~/.config/mpd/sticker.sql`)
+
+### Optional settings
+
+`playlist_song_count`: how many songs have to be added when an auto-playlist is generated (defaults to 10).
+
+`keep_in_history = 2 weeks`: how long a song is kept in history.  
+(If a song is in history it won't be added to the queue when an auto-playlist is generated.)
 
 `skip_limit = 2`: how many times a song can be skipped before being ignored in auto-playlists.
 
-## Usage
+## Daemon
+
+To enable auto-playlists and playback statistics, **smpcpd** - the **smpcp** daemon - must be running. A systemd unit is provided for this purpose.
+
+To enable the daemon:
+
+`systemctl user enable smpcpd`
+
+To start the daemon:
+
+`systemctl user start smpcpd`.
+
+## Quick start
+
+Here we assume **smpcpd** is up and running with default settings.
+
+To execute a command: `smpcp <command> [options]`
+
+### Status
+
+The *status* command:
+
+```
+playback state
+|
+| mode
+| |      playback options
+| |      |
+| |      |      song rating
+| |      |      |
+| |      |      |     song playcount
+| |      |      |     |
+| |      |      |     |   file format
+| |      |      |     |   |
+v v      v      v     v   v
+ [song] -z-cx- ***** x13 [mp3]
+Beastie Boys
+Sabotage
+Ill Communication | 1994
+```
+### Playback options status
+
+It is displayed as one character:
+
+*  r - repeat
+*  z - random
+*  s - single
+*  c - consume
+*  x - crossfade
+*  d - dim
+
+### Playback control
+
+*  play pause toggle next skip prev seek
+
+*  playalbum: plays album for the currently playing song.
+
+### Volume control
+
+*  vol
+*  dim: -6dB dimmer.
+
+### Queue management
+
+* ls add del move crop clear
+
+### Song mode
+
+In song mode, **smpcpd** adds 10 random songs to the current queue and sets the following playback options: random, consume and 10 seconds crossfade. When there's only one song left in the queue, **smpcpd** adds 10 other songs.
+
+To enable song mode: `smpcp mode song`.
+
+### Album mode
+
+In album mode, a random album is added to the current queue. **smpcpd** adds another album when the last song starts.
+
+The *nextalbum* command starts playback of a new album.
+
+To enable album mode: `smpcp mode album`.
+
+### Normal mode
+
+In normal mode, songs have to be added manually.
+
+To enable normal mode: `smpcp mode normal` or `smpcp mode off`.
+
+### Stored playlists
+
+* load cload save remove
+
+## Available commands
 
 ```
   smpcp add <uri>                                  add song(s) to the queue.
@@ -101,6 +200,7 @@ Below are the settings that have to be modified:
   smpcp prev                                       play song from the start or play previous song.
   smpcp random [off|on]                            set random mode.
   smpcp rating [0..5]                              rate current song.
+  smpcp remove <name>                              remove given stored playlist.
   smpcp repeat [off|on]                            set repeat mode.
   smpcp replaygain [auto|track|album]              set replay gain mode.
   smpcp search <type> <query>                      search for songs.
@@ -118,21 +218,5 @@ Below are the settings that have to be modified:
   smpcp version                                    show program version and exit.
   smpcp vol [-n] [+|-]<vol>                        set volume.
   smpcp xfade [duration]                           set crossfade duration.
-  smpcp goodbye [name]                             say goodbye to someone or to the whole world.
-  smpcp hello [name]                               either greets someone or the whole world.
-  smpcp sleeptimer [0|off|1-120] [-t]              pause playback after time out.
-  smpcp stopafter [-n] [on|off]                    stop playback after current song.
 ```
-
-## Daemon
-
-To enable auto-playlists and playback statistics, **smpcpd** - the **smpcp** daemon - must be running. A systemd unit is provided for this purpose.
-
-To enable the daemon:
-
-`systemctl user enable smpcpd`
-
-To start the daemon:
-
-`systemctl user start smpcpd`.
 
