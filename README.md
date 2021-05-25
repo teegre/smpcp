@@ -107,7 +107,7 @@ playback state
 | |      |      |     |   file format
 | |      |      |     |   |
 v v      v      v     v   v
- [song] -z-cx- ***** x13 [mp3]
+▶️ [song] -z-cx- ***** x13 [mp3]
 Beastie Boys
 Sabotage
 Ill Communication | 1994
@@ -161,6 +161,117 @@ To enable normal mode: `smpcp mode normal` or `smpcp mode off`.
 ### Stored playlists
 
 * load cload save remove
+
+### Info and statistics
+
+It is possible to rate the songs with the *rating* command. In song mode, songs rated 4 or 5 are more likely to be picked when generating a playlist.
+
+The *songinfo* and *albuminfo* command prints information about the current song/album:
+
+```
+> smpcp songinfo
+Autechre: Foil
+Amber (1994)
+00:17 / 06:04
+====
+rating:      ****-
+last played: 2021-04-03 08:25:16
+play count:  11
+skip count:  0
+```
+
+```
+> smpcp albuminfo
+01. │ 06:05 │ Foil
+02. │ 07:16 │ Montreal
+03. │ 05:31 │ Silverside
+04. │ 06:21 │ Slip
+05. │ 06:16 │ Glitch
+06. │ 08:01 │ Piezo
+07. │ 03:40 │ Nine
+08. │ 10:07 │ Further
+09. │ 06:37 │ Yulquen
+10. │ 07:49 │ Nil
+11. │ 06:46 │ Teartear
+---
+Autechre: Amber (1994)
+11 tracks - 01:14:29
+```
+
+The *albums* command prints a list of albums in the music database for the current artist:
+
+```
+> smpcp albums
+AE_LIVE_BRUSSELS_031014 (2014)
+AE_LIVE_DOUR_180715 (2015)
+AE_LIVE_DUBLIN_150718 (2020)
+AE_LIVE_DUBLIN_191214 (2014)
+AE_LIVE_GRAFENHAINICHEN_170715 (2015)
+AE_LIVE_HELSINKI_141116 (2020)
+AE_LIVE_KATOWICE_210815 (2015)
+AE_LIVE_KRAKOW_200914 (2014)
+AE_LIVE_KREMS_020515 (2015)
+AE_LIVE_MELBOURNE_210618 (2020)
+AE_LIVE_NAGANO_300515 (2015)
+AE_LIVE_NIJMEGEN_221116 (2020)
+AE_LIVE_OSLO_171116 (2020)
+AE_LIVE_TALLINN_131116 (2020)
+AE_LIVE_UTRECHT_221114 (2014)
+AE_LIVE_ZAGREB_061116 (2020)
+ATP 3.0 - Autechre Curated (2003)
+Amber (1994)
+Anti EP (1994)
+Anvil Vapre (1995)
+Basscad, Ep (1994)
+Blech II:Blechsdöttir (1996)
+Bleep:10 (2014)
+Chiastic Slide (1997)
+Cichlisuite (1997)
+Confield (2001)
+Dekmantel Podcast (2015)
+Draft 7.30 (2003)
+Envane (1997)
+Ep7 (1999)
+Exai (2013)
+Gantz Graf (2002)
+Garbage (1995)
+Incunabula (1993)
+L-event (2013)
+Legacy of Dissolution (2005)
+Lp5 (1998)
+Move Of Ten (2010)
+NTS Session 1 (2018)
+NTS Session 2 (2018)
+NTS Session 3 (2018)
+NTS Session 4 (2018)
+Odd Jobs (1999)
+Oversteps (2010)
+PLUS (2020)
+Peel Session 08-09-99 (1999)
+Peel Session 13-10-95 (1998)
+Pi (1998)
+Quaristice (2007)
+Quaristice.Quadrange.ep.ae (2008)
+SIGN (2020)
+The Top 100 Tracks of 2010 (2010)
+Tri Repetae (1995)
+Untilted (2005)
+Warp Tapes 89-93 (2019)
+Warp20 [Chosen] (2009)
+Warp20 [Recreated] (2008)
+Warp20 [Unheard] (2009)
+We Are Reasonable People (Wap100) (1998)
+elseq 1 (2016)
+elseq 2 (2016)
+elseq 3 (2016)
+elseq 4 (2016)
+elseq 5 (2016)
+sinistrail sentinel (2018)
+---
+Autechre - 65 albums / 313 songs.
+Total playtime: 2 days, 14:17:24
+```
+Yeah, I like Autechre! 😂
 
 ## Available commands
 
