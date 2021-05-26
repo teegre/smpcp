@@ -25,8 +25,8 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/05/20
-# D │ Music and sticker database query.
+# M │ 2021/05/26
+# D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
 # the sticker database.
@@ -50,7 +50,7 @@ search() {
     fmt="%file%"
   fi
 
-  cmd search "$@" | _parse_song_info -s "$fmt" ||
+  cmd -x search "$@" | _parse_song_info -s "$fmt" ||
     return 1
 }
 
@@ -58,7 +58,7 @@ searchadd() {
   # case insensitive search + add result to queue.
   # usage: searchadd <tag> <value> [... <tag> <value>]
 
-  cmd searchadd "$@"
+  cmd -x searchadd "$@"
 }
 
 update() {
