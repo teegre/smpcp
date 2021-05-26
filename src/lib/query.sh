@@ -325,7 +325,7 @@ get_random_song() {
     QUEUE+=("$REPLY")
     ((count++))
     ((count==$1)) && break
-  done < <(shuf --random-source /dev/urandom "$SMPCP_SONG_LIST" 2> /dev/null)
+  done < <(shuf --random-source /dev/random "$SMPCP_SONG_LIST" 2> /dev/null)
 }
 
 get_rnd() {
