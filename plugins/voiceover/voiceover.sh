@@ -25,7 +25,7 @@
 #
 # VOICEOVER
 # C : 2021/05/20
-# M : 2021/05/20
+# M : 2021/05/25
 # D : Random track artist/title or current time voiceover.
 
 export PLUG_VOICEOVER_VERSION="0.1"
@@ -96,13 +96,15 @@ voiceover() {
   ((cvol=$(fcmd status volume)))
   ((vol=cvol-cvol*30/100))
 
-  volume $((vol)) &> /dev/null
+  (
+    volume $((vol)) &> /dev/null
   
-  paplay --volume $((65536*cvol/100)) "$wav"
+    paplay --volume $((65536*cvol/100)) "$wav"
 
-  volume $((cvol)) &> /dev/null
+    volume $((cvol)) &> /dev/null
 
-  rm "$wav"
+    rm "$wav"
+  ) &
 
   return 0
 }
