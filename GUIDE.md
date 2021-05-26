@@ -160,121 +160,134 @@ Returns exit status 0 if playing or paused, 1 if stopped.
 
 Parses song information in the given format.
 
-This function is meant to be used with commands such as *playlistinfo*.
+This function is meant to be used with queue related commands such as *playlistinfo*.  
 Use `-s` option when using with *lsinfo*, *search* or similar commands.
 
 Examples:
 
-`cmd lsinfo "kraftwerk/the_man_machine" | _parse_song_info -s "%artist%: %title"`
+`cmd lsinfo "kraftwerk/the_man_machine" | _parse_song_info -s "%track%. %title"`
 
-`
+```
+1. The Robots
+2. Spacelab
+3. Metropolis
+4. The Model
+5. Neon Lights
+6. The Man Machine
+```
+About formatting
+
+Format string can be anything and '%' enclosed tags are expanded  by *_parse_song_info*
+
+If a tag is empty or missing, it is stripped from the source string.  
+A substring surrounded by double square brackets `[[tag: %tag%]]` is also stripped if it contains a missing or empty tag.
+
+For instance:
+
+`[[tag: %missing-tag% ]]title: %title%`
+
+Since %missing-tag% doesn't exist, *_parse_song_info* prints:
+
+`title: song title`
+
+By default, if no format string is given, *_parse_song_info* displays song's filepath.  
+
+Available tags are:
+
+%file% %ext% %last-modified% %artist% %name% %album% %albumartist% %title% %track% %genre% %date% %time% %duration% %pos% %id%
+
+### get_current, get_next, get_previous
+
+Usage: `get_current [format]`  
+Usage: `get_next [format]`  
+Usage: `get_previous [format]`
+
+Display specific info about current, next or previous song in the current queue.
+
+### get_info
+
+Usage: `get_info <uri> [format]`
+
+Display specific info for given **uri**.
+
+### get_duration, get_elapsed
+
+Usage: `get_duration [-h]`  
+Usage: `get_elapsed [-h]`
+
+Display song duration or elapsed time in seconds.  
+`-h` print time in a human readable format.
+
+### _album_uri
+
+Usage: `_album_uri [uri]`
+
+Strip filename part from current song path or given **uri**.
+
+### get_music_dir
+
+Print music directory location from **mpd** config command. If it fails, reads from **smpcp** settings.
+
+Exit status: 0 success, 1 failed.
+
+### get_albumart
+
+Usage: `get_album_art [uri]`
+
+Searches for album art image files (cover.jpg, cover.png, folder.jpg, folder.png), creates a 64x64 pixels thumbnail and save it to `$XDG_HOME_CONFIG/smpcp/.cache` and print its path.
+
+If no image file could be found, the function prints the path of the default cover image file.
+
+If a thumbnail already exists for this album, *get_album_art* prints its path.
+
+Album covers are stored in `$XDG_HOME_CONFIG/smpcp/.cache`.
+
+### get_album_info
+
+Print current album info.
+
+Example:
+
+```
+01. │ 04:15 │ Shake Dog Shake (Live)
+02. │ 03:30 │ Primary (Live)
+03. │ 04:07 │ Charlotte Sometimes (Live)
+04. │ 04:05 │ The Hanging Garden (Live)
+05. │ 02:49 │ Give Me It (Live)
+06. │ 03:32 │ The Walk (Live)
+07. │ 06:49 │ One Hundred Years (Live)
+08. │ 06:46 │ A Forest (Live)
+09. │ 03:45 │ 10:15 Saturday Night (Live)
+10. │ 02:51 │ Killing An Arab (Live)
+---
+The Cure: Concert - The Cure Live (1984)
+10 tracks - 42:29
+```
+
+### get_discography
+
+Usage: `get_discography [artist]`
+
+Print albums featuring the given artist (warning: case sensitive).
+
+If no artist is provided, *get_discography* uses the current artist.
+
+# notify.sh
+
+**notify.sh** contains notification functions.
+
+## Functions
+
+### notify_song
+
+Usage: `notify_song [uri]`
+
+Displays a notification including album art for the current song or the given **uri**.
+
+## notify_player
+
+Usage: `notify_player <message>`
+
+Displays a notification with player status and a given message.
 
 
-Available tags are
-
-declare -f _album_uri
-declare -f _daemon
-declare -f _date
-declare -f _db_get_all_songs
-declare -f _db_get_history
-declare -f _db_get_previous_song
-declare -f _db_get_uri_by_rating
-declare -f _db_rating_count
-declare -f _help
-declare -f _is_in_history
-declare -f _is_in_playlist
-declare -f _mode
-declare -f _parse_song_info
-declare -f _playback_mode
-declare -f _print_version
-declare -f _quote
-declare -f _repeat
-declare -f _wait
-declare -f add
-declare -f add_album
-declare -f check_pid
-declare -f clean_orphan_stickers
-declare -f clear_media
-declare -f clear_queue
-declare -f cmd
-declare -f consume
-declare -f crop
-declare -f db_playtime
-declare -f delete
-declare -f delete_sticker
-declare -f dim
-declare -f fcmd
-declare -f find_sticker
-declare -f get_album_info
-declare -f get_albumart
-declare -f get_all_plugin_functions
-declare -f get_current
-declare -f get_discography
-declare -f get_duration
-declare -f get_elapsed
-declare -f get_ext
-declare -f get_mode
-declare -f get_music_dir
-declare -f get_next
-declare -f get_plugin_function
-declare -f get_plugin_list
-declare -f get_previous
-declare -f get_random_song
-declare -f get_rnd
-declare -f get_sticker
-declare -f get_uri_by_rating
-declare -f is_in_queue
-declare -f lastplayed
-declare -f list_playlist
-declare -f list_plugins
-declare -f list_queue
-declare -f load
-declare -f logme
-declare -f media_update
-declare -f message
-declare -f move
-declare -f next
-declare -f next_album
-declare -f notify_volume
-declare -f now
-declare -f pause
-declare -f play
-declare -f playcount
-declare -f plugin_function_exec
-declare -f plugin_function_exists
-declare -f plugin_help
-declare -f plugin_notify
-declare -f previous
-declare -f pstatus
-declare -f queue_is_empty
-declare -f queue_length
-declare -f random
-declare -f rating
-declare -f read_config
-declare -f remove_config
-declare -f replaygain
-declare -f reset_stats
-declare -f search
-declare -f searchadd
-declare -f secs_to_hms
-declare -f seek
-declare -f set_sticker
-declare -f single
-declare -f skip
-declare -f skipcount
-declare -f song_stats
-declare -f state
-declare -f status
-declare -f stop
-declare -f toggle
-declare -f tracker
-declare -f try_plugin
-declare -f update
-declare -f update_daemon
-declare -f update_history_index
-declare -f update_song_list
-declare -f update_stats
-declare -f volume
-declare -f wait_for_pid
-declare -f write_config
-declare -f xfade
