@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/20
+# M │ 2021/05/26
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -470,14 +470,14 @@ get_albumart() {
     return
   }
 
-  local default musicdir
-  default="$SMPCP_ASSETS/cover.jpg"
-
   # stream?
   [[ $(get_current) =~ ^https?: ]] && {
     echo "${SMPCP_ASSETS}/radio.png"
     return
   }
+
+  local default musicdir
+  default="$SMPCP_ASSETS/cover.jpg"
 
   # locate music directory.
   musicdir="$(get_music_dir)" || {
