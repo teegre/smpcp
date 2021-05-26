@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/05/24
+# M : 2021/05/26
 # D : Statistics management.
 
 get_sticker() {
@@ -173,7 +173,7 @@ rating() {
 
   local uri
 
-  if ! [[ $1 =~ ^[0-9]+$ ]]; then
+  if [[ $1 ]] && ! [[ $1 =~ ^[0-9]+$ ]]; then
     uri="$1"
     shift
   else
