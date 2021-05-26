@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/05/24
+# M : 2021/05/25
 # D : Help.
 
 _help() {
@@ -68,6 +68,7 @@ Commands:
   smpcp prev                                       play song from the start or play previous song.
   smpcp random [off|on]                            set random mode.
   smpcp rating [0..5]                              rate current song.
+  smpcp remove <name>                              delete given stored playlist.
   smpcp repeat [off|on]                            set repeat mode.
   smpcp replaygain [auto|track|album]              set replay gain mode.
   smpcp search <type> <query>                      search for songs.
