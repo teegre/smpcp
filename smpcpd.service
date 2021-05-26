@@ -1,9 +1,10 @@
 [Unit]
 Description=smpcp daemon
 Documentation=man:smpcp(1)
+After=mpd.service
 
 [Service]
 ExecStart=/usr/bin/smpcpd
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
