@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/17
+# M │ 2021/05/26
 # D │ Player functions.
 
 toggle() {
@@ -414,9 +414,9 @@ pstatus() {
   state="$(state -p)"
 
   case $state in
-    play ) status="" ;;
-    pause) status="" ;;
-    stop ) status=""
+    play ) status="$(read_config play_icon)"  || status="[>" ;;
+    pause) status="$(read_config pause_icon)" || status="||" ;;
+    stop ) status="$(read_config stop_icon)"  || status="[]"
   esac
 
   local options pbmode mode
@@ -470,13 +470,17 @@ status() {
     uri="$(get_current)"
   fi
 
+  local fmt
+  fmt="$(read_config status_format)" || 
+    fmt="[[\n%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
+
   # stream?
   if [[ $uri =~ ^https?: ]]; then
     echo "$(pstatus) [stream]"
-    printf "%s\n" "$(get_current "%name%\n[[%artist%\n]]%title%[[\n%album%]][[ | %date%]]")"
+    printf "%s\n" "$(get_current "%name%\n${fmt}")"
   else
     echo "$(pstatus) $(rating "$uri") x$(playcount "$uri") $(get_info "$uri" "[[[%ext%]]]")"
-    get_info "$uri" "[[%artist%\n]]%title%[[\n%album%]][[ | %date%]]"
+    get_info "$uri" "${fmt}"
   fi
 }
 
