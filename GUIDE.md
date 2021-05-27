@@ -133,6 +133,10 @@ Usage: `cmd [-x] <mpd_command> [options]`
 
 Send a command to MPD.
 
+Check MPD Protocol Documentation for the full list of commands:
+
+[https://mpd.readthedocs.io/en/stable/protocol.html](https://mpd.readthedocs.io/en/stable/protocol.html)
+
 `-x` sets netcat buffering output delay time to 1 second.  
 It prevents netcat from prematurely returning while an expensive task is running (i.e listall).
 
@@ -145,6 +149,10 @@ Filters command output by printing value for a given key.
 `-c` prints line count only.
 
 `-x` see `cmd`.
+
+Example: printing the current song bitrate:
+
+`fcmd status bitrate`
 
 ### state
 
@@ -241,36 +249,6 @@ If no image file could be found, the function prints the path of the default cov
 If a thumbnail already exists for this album, *get_album_art* prints its path.
 
 Album covers are stored in `$XDG_HOME_CONFIG/smpcp/.cache`.
-
-### get_album_info
-
-Print current album info.
-
-Example:
-
-```
-01. │ 04:15 │ Shake Dog Shake (Live)
-02. │ 03:30 │ Primary (Live)
-03. │ 04:07 │ Charlotte Sometimes (Live)
-04. │ 04:05 │ The Hanging Garden (Live)
-05. │ 02:49 │ Give Me It (Live)
-06. │ 03:32 │ The Walk (Live)
-07. │ 06:49 │ One Hundred Years (Live)
-08. │ 06:46 │ A Forest (Live)
-09. │ 03:45 │ 10:15 Saturday Night (Live)
-10. │ 02:51 │ Killing An Arab (Live)
----
-The Cure: Concert - The Cure Live (1984)
-10 tracks - 42:29
-```
-
-### get_discography
-
-Usage: `get_discography [artist]`
-
-Print albums featuring the given artist (warning: case sensitive).
-
-If no artist is provided, *get_discography* uses the current artist.
 
 # notify.sh
 
