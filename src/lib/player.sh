@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/26
+# M │ 2021/05/27
 # D │ Player functions.
 
 toggle() {
@@ -191,6 +191,17 @@ seek() {
     message E "not playing."
     return 1
   }
+
+  (( $# == 0 )) && {
+    if [[ $(get_current) =~ ^https? ]]; then
+      message M "$(get_elapsed)"
+    else
+      message M "$(get_elapsed -h)/$(get_duration -h)"
+    fi
+    return 1
+  }
+
+  [[ $(get_current) =~ ^https? ]] && return 1
 
   local pos sign rel sk
   pos="$1"
