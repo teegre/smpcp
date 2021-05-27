@@ -483,7 +483,7 @@ status() {
 
   local fmt
   fmt="$(read_config status_format)" || 
-    fmt="[[\n%artist%: ]]%title%[[\n%album%]][[ | %date%]]"
+    fmt="[[%artist% - ]]%title%"
 
   # stream?
   if [[ $uri =~ ^https?: ]]; then
