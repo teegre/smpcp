@@ -74,7 +74,7 @@ Tilde in filesystem path is expanded.
 
 `resume_state = off`: save/restore queue and playback state on startup/shutdown.
 
-Indicator for playback state shown in status/notification.
+Indicator for playback state shown in status/notification.  
 `play_icon`  (default [|>)  
 `pause_icon` (default [||)  
 `stop_icon`  (default [|])
@@ -148,7 +148,7 @@ It is displayed as one character:
 ### Volume control
 
 *  `vol [-n] [+|-][0-100]` - change volume.
-*  `dim [-n]: -6dB volume dim.
+*  `dim [-n]`: -6dB volume dim.
 
 ### Queue management
 
