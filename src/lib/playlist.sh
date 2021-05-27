@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/24
+# M │ 2021/05/27
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -435,6 +435,12 @@ save_state() {
   # save queue and current playback state.
 
   queue_is_empty && return 1
+
+  local savestate
+  savestate="$(read_config resume_state)" ||
+    savestate="off"
+
+  [[ $savestate == "off" ]] && return 1
   
   save queue
 
@@ -452,6 +458,12 @@ restore_state() {
     remove queue 2> /dev/null
     return 1
   }
+
+  local savestate
+  savestate="$(read_config resume_state)" ||
+    savestate="off"
+
+  [[ $savestate == "off" ]] && return 1
 
   load queue
   read_config STATE &> /dev/null && {

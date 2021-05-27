@@ -18,3 +18,7 @@ keep_in_history = 2 weeks
 
 # how many times a song can be skipped before being ignored from auto-playlists.
 skip_limit = 3
+
+# save/restore queue and playback state on startup/shutdown
+# may be needed when mpd is configured in satellite mode.
+resume_state = off
