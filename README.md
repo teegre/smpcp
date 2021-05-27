@@ -32,7 +32,7 @@ libmpdclient
 libnotify  
 mpd  
 sqlite3  
-util-linux  
+util-linux
 
 ## Install
 
@@ -70,17 +70,17 @@ Tilde in filesystem path is expanded.
 `keep_in_history = 2 weeks`: how long a song is kept in history.  
 (If a song is in history it won't be added to the queue when an auto-playlist is generated.)
 
-`skip_limit = 2`: how many times a song can be skipped before being ignored in auto-playlists.
+`skip_limit = 3`: how many times a song can be skipped before being ignored in auto-playlists.
 
 `resume_state = off`: save/restore queue and playback state on startup/shutdown.
 
-`play_icon`
+Indicator for playback state shown in status/notification.
+`play_icon`  (default [|>)  
+`pause_icon` (default [||)  
+`stop_icon`  (default [|])
 
-`pause_icon`
-
-`stop_icon`
-
-`status_format`
+`status_format` (default is `[[%artist% - ]]%title%`)  
+To learn more about formatting, see below: Output formatting.
 
 ## Daemon
 
@@ -102,7 +102,7 @@ To execute a command: `smpcp <command> [options]`
 
 ### Status
 
-The *status* command:
+The `status` command:
 
 ```
 playback state
@@ -130,7 +130,7 @@ It is displayed as one character:
 *  z - random    | command: `random [on|off]`
 *  s - single    | command: `single [on|off]`
 *  c - consume   | command: `consume [on|off]`
-*  x - crossfade | command: `xfade [duration-in_seconds]`
+*  x - crossfade | command: `xfade [duration_in_seconds]`
 *  d - dim       | command: `dim [-n]` (-n option to display a notification)
 
 ### Playback control
@@ -162,7 +162,7 @@ To enable song mode: `smpcp mode song`.
 
 ### Album mode
 
-In album mode, a random album is added to the current queue. **smpcpd** adds another album when the last song starts.
+In album mode, a random album is added to the current queue and consume is enabled. **smpcpd** adds another album when the last song starts.
 
 The *nextalbum* command starts playback of a new album.
 
@@ -186,108 +186,78 @@ The *songinfo* and *albuminfo* command prints information about the current song
 
 ```
 > smpcp songinfo
-Autechre: Foil
-Amber (1994)
-00:17 / 06:04
+Speedy J: Hayfever
+Public Energy No.1 (1997)
+00:37 / 05:36
 ====
 rating:      ****-
-last played: 2021-04-03 08:25:16
-play count:  11
+last played: 2021-03-13 19:53:59
+play count:  7
 skip count:  0
-```
 
-```
 > smpcp albuminfo
-01. │ 06:05 │ Foil
-02. │ 07:16 │ Montreal
-03. │ 05:31 │ Silverside
-04. │ 06:21 │ Slip
-05. │ 06:16 │ Glitch
-06. │ 08:01 │ Piezo
-07. │ 03:40 │ Nine
-08. │ 10:07 │ Further
-09. │ 06:37 │ Yulquen
-10. │ 07:49 │ Nil
-11. │ 06:46 │ Teartear
+01. │ 02:42 │ Tuning In
+02. │ 08:34 │ Patterns
+03. │ 02:38 │ Melanor
+04. │ 08:10 │ In-Formation
+05. │ 05:21 │ Pure Energy
+06. │ 04:34 │ Haywire
+07. │ 05:36 │ Hayfever
+08. │ 02:21 │ Tesla
+09. │ 07:48 │ Drainpipe
+10. │ 08:40 │ Canola
+11. │ 09:04 │ As The Bubble Expands
 ---
-Autechre: Amber (1994)
-11 tracks - 01:14:29
+Speedy J: Public Energy No.1 (1997)
+11 tracks - 01:05:28
 ```
 
 The *albums* command prints a list of albums in the music database for the current artist:
 
 ```
 > smpcp albums
-AE_LIVE_BRUSSELS_031014 (2014)
-AE_LIVE_DOUR_180715 (2015)
-AE_LIVE_DUBLIN_150718 (2020)
-AE_LIVE_DUBLIN_191214 (2014)
-AE_LIVE_GRAFENHAINICHEN_170715 (2015)
-AE_LIVE_HELSINKI_141116 (2020)
-AE_LIVE_KATOWICE_210815 (2015)
-AE_LIVE_KRAKOW_200914 (2014)
-AE_LIVE_KREMS_020515 (2015)
-AE_LIVE_MELBOURNE_210618 (2020)
-AE_LIVE_NAGANO_300515 (2015)
-AE_LIVE_NIJMEGEN_221116 (2020)
-AE_LIVE_OSLO_171116 (2020)
-AE_LIVE_TALLINN_131116 (2020)
-AE_LIVE_UTRECHT_221114 (2014)
-AE_LIVE_ZAGREB_061116 (2020)
-ATP 3.0 - Autechre Curated (2003)
-Amber (1994)
-Anti EP (1994)
-Anvil Vapre (1995)
-Basscad, Ep (1994)
-Blech II:Blechsdöttir (1996)
-Bleep:10 (2014)
-Chiastic Slide (1997)
-Cichlisuite (1997)
-Confield (2001)
-Dekmantel Podcast (2015)
-Draft 7.30 (2003)
-Envane (1997)
-Ep7 (1999)
-Exai (2013)
-Gantz Graf (2002)
-Garbage (1995)
-Incunabula (1993)
-L-event (2013)
-Legacy of Dissolution (2005)
-Lp5 (1998)
-Move Of Ten (2010)
-NTS Session 1 (2018)
-NTS Session 2 (2018)
-NTS Session 3 (2018)
-NTS Session 4 (2018)
-Odd Jobs (1999)
-Oversteps (2010)
-PLUS (2020)
-Peel Session 08-09-99 (1999)
-Peel Session 13-10-95 (1998)
-Pi (1998)
-Quaristice (2007)
-Quaristice.Quadrange.ep.ae (2008)
-SIGN (2020)
-The Top 100 Tracks of 2010 (2010)
-Tri Repetae (1995)
-Untilted (2005)
-Warp Tapes 89-93 (2019)
-Warp20 [Chosen] (2009)
-Warp20 [Recreated] (2008)
-Warp20 [Unheard] (2009)
-We Are Reasonable People (Wap100) (1998)
-elseq 1 (2016)
-elseq 2 (2016)
-elseq 3 (2016)
-elseq 4 (2016)
-elseq 5 (2016)
-sinistrail sentinel (2018)
+A Shocking Hobby (2000)
+Public Energy No.1 (1997)
 ---
-Autechre - 65 albums / 313 songs.
-Total playtime: 2 days, 14:17:24
+Speedy J - 2 albums / 22 songs.
+Total playtime: 02:01:35
 ```
-Yeah, I like Autechre! 😂
+
+## Output formatting
+
+Some commands (ie `ls` with -f option) can use a format to display songs.
+
+Available tags are
+
+Tag | Description
+:---|:-----------
+%file% | path of file relative to music directory
+%ext%  | lowercase file extension
+%last-modified | file modification date
+%artist% | artist name
+%albumartist% | artist of album; if not found, falls back to %artist%
+%name% | internet radio's name
+%album% | album's title
+%title% | song's title
+%track% | track number
+%disc%  | disc number
+%genre% | genre
+%date%  | date
+%time%  | song duration in seconds (integer)
+%duration% | song duration in seconds (floating point)
+%pos% | song position in the queue
+%id%  | unique song id in the queue
+
+If no format is given when a command expects one, it defaults to %file%.
+
+If a tag is empty or missing, it is stripped from the source string. 
+A substring surrounded by double square brackets is also stripped if it contains an empty or missing tag.  
+For example, `Now playing\n[[artist: %artist%\n]]title: %title%`, assuming %artist% tag is not found, would output:
+
+```
+Now playing
+title: song title
+```
 
 ## Available commands
 
