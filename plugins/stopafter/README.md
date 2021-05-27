@@ -2,7 +2,7 @@
 
 ## Description
 
-**stopafterr** is a plugin for smpcp.
+**stopafter** is a plugin for smpcp.
 
 It pauses playback after the current song.
 
