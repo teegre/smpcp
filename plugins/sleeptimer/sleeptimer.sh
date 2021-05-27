@@ -25,7 +25,7 @@
 #
 # SLEEPTIMER
 # C : 2021/04/26
-# M : 2021/05/23
+# M : 2021/05/27
 # D : Pause playback after time out.
 
 export PLUG_SLEEPTIMER_VERSION="0.1"
@@ -41,7 +41,7 @@ __plug_sleeptimer_notify() {
   dur="$(read_config sleeptimer_duration)" || return
   ((dur==0)) && return
  
-  if [[ $1 == "stop" ]] || [[ $1 == "pause" ]]; then
+  if [[ $1 == "stop" ]] || [[ $1 == "pause" ]] || [[ $1 == "quit" ]]; then
     plug_sleeptimer off
     logme "sleeptimer: turned off."
   fi
