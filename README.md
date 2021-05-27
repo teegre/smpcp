@@ -250,7 +250,7 @@ Tag | Description
 
 If no format is given when a command expects one, it defaults to %file%.
 
-If a tag is empty or missing, it is stripped from the source string. 
+If a tag is empty or missing, it is stripped from the source string.  
 A substring surrounded by double square brackets is also stripped if it contains an empty or missing tag.  
 For example, `Now playing\n[[artist: %artist%\n]]title: %title%`, assuming %artist% tag is not found, would output:
 
