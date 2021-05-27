@@ -25,7 +25,7 @@
 #
 # PLUGIN EXAMPLE
 # C : 2021/04/29
-# M : 2021/05/05
+# M : 2021/05/27
 # D : Basic plugin example.
 
 # set version
@@ -71,5 +71,7 @@ __plug_hello_notify() {
      stop  ) echo "hello: playback stopped"    ;;
      change) echo "hello: a new song is playing"   ;;
      end   ) echo "hello: reached the end of song" ;;
+     add   ) echo "hello: adding new songs" ;;
+     quit  ) echo "goodbye"
    esac
 }
