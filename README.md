@@ -24,15 +24,15 @@
 
 Latest version of these packages are needed:
 
-bash
-coreutils
-gnu-netcat
-imagemagick
-libmpdclient
-libnotify
-mpd
-sqlite3
-util-linux
+bash  
+coreutils  
+gnu-netcat  
+imagemagick  
+libmpdclient  
+libnotify  
+mpd  
+sqlite3  
+util-linux  
 
 ## Install
 
@@ -72,17 +72,27 @@ Tilde in filesystem path is expanded.
 
 `skip_limit = 2`: how many times a song can be skipped before being ignored in auto-playlists.
 
+`resume_state = off`: save/restore queue and playback state on startup/shutdown.
+
+`play_icon`
+
+`pause_icon`
+
+`stop_icon`
+
+`status_format`
+
 ## Daemon
 
 To enable auto-playlists and playback statistics, **smpcpd** - the **smpcp** daemon - must be running. A systemd unit is provided for this purpose.
 
 To enable the daemon:
 
-`systemctl user enable smpcpd`
+`systemctl --user enable smpcpd`
 
 To start the daemon:
 
-`systemctl user start smpcpd`.
+`systemctl --user start smpcpd`.
 
 ## Quick start
 
@@ -112,27 +122,33 @@ Beastie Boys
 Sabotage
 Ill Communication | 1994
 ```
-### Playback options status
+### Playback options status and associated commands
 
 It is displayed as one character:
 
-*  r - repeat
-*  z - random
-*  s - single
-*  c - consume
-*  x - crossfade
-*  d - dim
+*  r - repeat    | command: `repeat [on|off]`
+*  z - random    | command: `random [on|off]`
+*  s - single    | command: `single [on|off]`
+*  c - consume   | command: `consume [on|off]`
+*  x - crossfade | command: `xfade [duration-in_seconds]`
+*  d - dim       | command: `dim [-n]` (-n option to display a notification)
 
 ### Playback control
 
-*  play pause toggle next skip prev seek
-
-*  playalbum: plays album for the currently playing song.
+*  `play [pos]`
+*  `pause`
+*  `toggle [pos]`
+*  `next`
+*  `skip` - increments the current song's skipcount and play the next song in the queue.
+*  `prev`
+*  `seek [+|-]<[[HH:]MM:]SS>|[+|-]<0-100%>`
+*  `playalbum [<artist> <album>]` - plays given album or play the current song's album.
+*  `insertalbum [<artist> <album>]` - add given album or current song's album after the current song.
 
 ### Volume control
 
-*  vol
-*  dim: -6dB dimmer.
+*  `vol [-n] [+|-][0-100]` - change volume.
+*  `dim [-n]: -6dB volume dim.
 
 ### Queue management
 
