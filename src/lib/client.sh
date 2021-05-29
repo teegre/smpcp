@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/26
+# M │ 2021/05/29
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -643,4 +643,55 @@ update_song_list() {
     
   fcmd -x list file file > "$SMPCP_SONG_LIST"
   return 0
+}
+
+list_dir() {
+  # print (sub)directory or file list relative to music_directory.
+  # print partial matches for sub-directories or files.
+  # usage: list_dir [uri]
+
+  [[ $1 ]] && {
+    local dircount filecount
+    dircount="$(fcmd -c -x listfiles "$1" directory 2> /dev/null)"
+    filecount="$(fcmd -c -x listfiles "$1" file 2> /dev/null)"
+
+    ((dircount == 0 && filecount == 0)) && {
+      while read -r; do
+        [[ $REPLY =~ ^${1##*/} ]] && {
+          local DOK=1
+          echo "${1%%/*}/$REPLY"
+        }
+      done < <(fcmd -x listfiles "${1%/*}" directory)
+    }
+
+    ((dircount > 0)) && {
+      while read -r; do
+        local DOK=1
+        echo "${1%/*}/$REPLY"
+      done < <(fcmd -x listfiles "$1" directory)
+    }
+
+    ((filecount == 0)) && {
+      while read -r; do
+        [[ $REPLY =~ ^${1##*/} ]] && {
+          local FOK=1
+          echo "${1%/*}/$REPLY"
+        }
+      done < <(fcmd -x listfiles "${1%/*}" file)
+    }
+
+    ((filecount > 0 )) && {
+      while read -r; do
+        local FOK=1
+        echo "${1%%/*}/$REPLY"
+      done < <(fcmd -x listfiles "$1" file)
+    }
+
+    [[ $DOK ]] && return 0
+    [[ $FOK ]] && return 0
+    message E "$1: no such file or directory."
+    return 1
+  }
+
+  [[ $1 ]] || fcmd -x lsinfo directory
 }
