@@ -661,14 +661,14 @@ list_dir() {
           local DOK=1
           echo "${1%%/*}/$REPLY"
         }
-      done < <(fcmd -x listfiles "${1%/*}" directory)
+      done < <(fcmd -x listfiles "${1%/*}" directory 2> /dev/null)
     }
 
     ((dircount > 0)) && {
       while read -r; do
         local DOK=1
         echo "${1%/*}/$REPLY"
-      done < <(fcmd -x listfiles "$1" directory)
+      done < <(fcmd -x listfiles "$1" directory 2> /dev/null)
     }
 
     ((filecount == 0)) && {
@@ -677,14 +677,14 @@ list_dir() {
           local FOK=1
           echo "${1%/*}/$REPLY"
         }
-      done < <(fcmd -x listfiles "${1%/*}" file)
+      done < <(fcmd -x listfiles "${1%/*}" file 2> /dev/null)
     }
 
     ((filecount > 0 )) && {
       while read -r; do
         local FOK=1
-        echo "${1%%/*}/$REPLY"
-      done < <(fcmd -x listfiles "$1" file)
+        echo "${1%/*}/$REPLY"
+      done < <(fcmd -x listfiles "$1" file 2> /dev/null)
     }
 
     [[ $DOK ]] && return 0
