@@ -647,7 +647,7 @@ update_song_list() {
 
 list_dir() {
   # print (sub)directory or file list relative to music_directory.
-  # print partial matches for sub-directories or files.
+  # print partial matches for directories or files.
   # usage: list_dir [uri]
 
   [[ $1 ]] && {
@@ -656,12 +656,19 @@ list_dir() {
     filecount="$(fcmd -c -x listfiles "$1" file 2> /dev/null)"
 
     ((dircount == 0 && filecount == 0)) && {
+      local command
+      if ! [[ $1 =~ ^.*/.*$ ]]; then
+        command="fcmd -x lsinfo directory"
+      else
+        command='fcmd -x listfiles '"${1%/*}"' directory'
+      fi
       while read -r; do
         [[ $REPLY =~ ^${1##*/} ]] && {
           local DOK=1
-          echo "${1%%/*}/$REPLY"
+          [[ $1 =~ ^.*/.*$ ]] && { echo "${1%/*}/$REPLY"; continue; }
+          echo "$REPLY"
         }
-      done < <(fcmd -x listfiles "${1%/*}" directory 2> /dev/null)
+      done < <(${command} 2> /dev/null)
     }
 
     ((dircount > 0)) && {
