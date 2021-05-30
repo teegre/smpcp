@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/29
+# M │ 2021/05/30
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -650,6 +650,10 @@ list_dir() {
   # print partial matches for directories or files.
   # usage: list_dir [uri]
 
+  __escape() {
+    sed "s/\([&<>()\";\`' ]\)/\\\\\\1/g"
+  }
+
   [[ $1 ]] && {
     local dircount filecount
     dircount="$(fcmd -c -x listfiles "$1" directory 2> /dev/null)"
@@ -665,8 +669,8 @@ list_dir() {
       while read -r; do
         [[ $REPLY =~ ^${1##*/} ]] && {
           local DOK=1
-          [[ $1 =~ ^.*/.*$ ]] && { echo "${1%/*}/$REPLY"; continue; }
-          echo "$REPLY"
+          [[ $1 =~ ^.*/.*$ ]] && { echo "${1%/*}/$REPLY" | __escape; continue; }
+          echo "$REPLY" | __escape
         }
       done < <(${command} 2> /dev/null)
     }
@@ -674,7 +678,7 @@ list_dir() {
     ((dircount > 0)) && {
       while read -r; do
         local DOK=1
-        echo "${1%/*}/$REPLY"
+        echo "${1%/*}/$REPLY" | __escape
       done < <(fcmd -x listfiles "$1" directory 2> /dev/null)
     }
 
@@ -682,15 +686,17 @@ list_dir() {
       while read -r; do
         [[ $REPLY =~ ^${1##*/} ]] && {
           local FOK=1
-          echo "${1%/*}/$REPLY"
+          echo "${1%/*}/$REPLY" | __escape
         }
       done < <(fcmd -x listfiles "${1%/*}" file 2> /dev/null)
     }
 
     ((filecount > 0 )) && {
+      [[ $1 =~ /$ ]] && local dir="$1"
+      [[ $1 =~ /$ ]] || local dir="${1}/"
       while read -r; do
         local FOK=1
-        echo "${1%/*}/$REPLY"
+        echo "${dir%/*}/$REPLY" | __escape
       done < <(fcmd -x listfiles "$1" file 2> /dev/null)
     }
 
