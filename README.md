@@ -75,9 +75,9 @@ Tilde in filesystem path is expanded.
 `resume_state = off`: save/restore queue and playback state on startup/shutdown.
 
 Indicator for playback state shown in status/notification.  
-`play_icon`  (default [|>)  
-`pause_icon` (default [||)  
-`stop_icon`  (default [|])
+`play_icon`  (default [>)  
+`pause_icon` (default ||)  
+`stop_icon`  (default [])
 
 `status_format` (default is `[[%artist% - ]]%title%`)  
 To learn more about formatting, see below: Output formatting.
@@ -233,7 +233,7 @@ Tag | Description
 :---|:-----------
 %file% | path of file relative to music directory
 %ext%  | lowercase file extension
-%last-modified | file modification date
+%last-modified% | file modification date
 %artist% | artist name
 %albumartist% | artist of album; if not found, falls back to %artist%
 %name% | internet radio's name
@@ -262,10 +262,10 @@ title: song title
 ## Plugins
 
 As stated at the beginning of this document, **smpcp** can be extended with plugins.  
-For now three plugins are available:
+For now these plugins are available:
 
 *  sleeptimer - pause playback after a user-defined duration (in minutes).
-*  stopafter - pause playback after current song (very basic: it enables single mode when invoked, and disables it when the song is over...).
+*  stopafter - pause playback after current song.
 *  voiceover - occasionally tells what's playing or the current time.
 
 Until I find a convenient way to manage plugin installation, a plugin must be installed manually by copying or symlinking its directory over to `$XDG_CONFIG_HOME/plugins`.
@@ -306,6 +306,7 @@ A lot.
   smpcp insertalbum [<artist> <album>]             add album after current song.
   smpcp load <name> [[pos]|[start-end]...]         load playlist or specific songs into the queue.
   smpcp ls [-f [format]]                           print queue.
+  smpcp lsdir [uri]                                print directories/files relative to music directory.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
   smpcp next                                       play next song in the queue.
