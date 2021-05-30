@@ -25,7 +25,7 @@
 #
 # STOPAFTER
 # C : 2021/05/01
-# M : 2021/05/27
+# M : 2021/05/30
 # D : Stop playback after current song.
 
 # shellcheck source=/usr/lib/smpcp/notify.sh
@@ -39,19 +39,26 @@ help_stopafter() {
 
 __plug_stopafter_notify() {
   local s
-  s="$(read_config stopafter)" || s="off"
+  s="$(read_config stopafter)" || return
+  [[ $s == "off" ]] && return
 
   if [[ $1 == "pause" || $1 == "stop" || $1 == "change" || $1 == "quit" ]]; then
-    [[ $s == "on" ]] && {
-      plug_stopafter off &> /dev/null || return 1
-      return 0
-    }
+    plug_stopafter off &> /dev/null
+  elif [[ $1 == "end" ]]; then
+    pause
+    plug_stopafter off &> /dev/null
   fi
 }
 
 plug_stopafter() {
+
   state || {
     message E "not playing."
+    return 1
+  }
+
+  _daemon || {
+    message E "stopafter: daemon is not running."
     return 1
   }
 
@@ -62,14 +69,29 @@ plug_stopafter() {
 
   [[ $1 ]] && {
     if [[ $1 == "on" ]]; then
-      single 1 &> /dev/null || return 1
       write_config stopafter on || return 1
+
+      local xf
+      xf="$(xfade | cut -d' ' -f 2)"
+      [[ $xf != "off" ]] && {
+        write_config stopafter_xfade $((xf))
+        cmd crossfade 0
+      }
+
       [[ $NOTIFY ]] && stopafter_notify "on"
       [[ $NOTIFY ]] || message M "stop after current: on."
       return 0
+
     elif [[ $1 == "off" ]]; then
-      single 0 &> /dev/null || return 1
+
+      local xf
+      xf="$(read_config stopafter_xfade)" && {
+        cmd crossfade $((xf))
+        remove_config stopafter_xfade
+      }
+
       write_config stopafter off || return 1
+
       [[ $NOTIFY ]] && stopafter_notify "off"
       [[ $NOTIFY ]] || message M "stop after current: off."
       return 0
@@ -77,15 +99,28 @@ plug_stopafter() {
   }
 
   [[ $(read_config stopafter) == "on" ]] && {
-    single 0 &> /dev/null || return 1
+    local xf
+    xf="$(read_config stopafter_xfade)" && {
+      cmd crossfade $((xf))
+      remove_config stopafter_xfade
+    }
+
     write_config stopafter off || return 1
+
     [[ $NOTIFY ]] && stopafter_notify "off"
     [[ $NOTIFY ]] || message M "stop after current: off."
     return 0
   }
 
-  single 1 &> /dev/null || return 1
   write_config stopafter on || return 1
+
+  local xf
+  xf="$(xfade | cut -d' ' -f 2)"
+  [[ $xf != "off" ]] && {
+    write_config stopafter_xfade $((xf))
+    cmd crossfade 0
+  }
+
   [[ $NOTIFY ]] && stopafter_notify "on"
   [[ $NOTIFY ]] || message M "stop after current: on."
 }
