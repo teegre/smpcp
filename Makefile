@@ -9,6 +9,7 @@ SHAREDIR  ?= $(PREFIX)/share
 MANDIR    ?= $(SHAREDIR)/man/man1
 CONFIGDIR ?= /etc
 ASSETSDIR ?= $(CONFIGDIR)/$(PROGNAME)/assets
+BASHCOMP  ?= $(SHAREDIR)/bash-completion/completions
 MANPAGE    = $(PROGNAME).1
 
 CC         = gcc
@@ -31,6 +32,7 @@ install: src/$(DAEMON)
 	install -Dm644 src/lib/*.* -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	install -Dm644 settings    -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/
+	install -m644 autocomplete/smpcp-complete.sh $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
 	install -Dm644 $(MANPAGE)  -t $(DESTDIR)$(MANDIR)
 	install -Dm644 LICENSE     -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
 
@@ -46,5 +48,6 @@ uninstall:
 	rm $(SYSDUNIT)/$(SERVICE)
 	rm -rf $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	rm -rf $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
+	rm $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
 	rm $(DESTDIR)$(MANDIR)/$(MANPAGE)
 	rm -rf $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
