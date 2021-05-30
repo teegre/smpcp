@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/05/26
+# M │ 2021/05/30
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -325,7 +325,7 @@ get_random_song() {
     QUEUE+=("$REPLY")
     ((count++))
     ((count==$1)) && break
-  done < <(shuf --random-source /dev/random "$SMPCP_SONG_LIST" 2> /dev/null)
+  done < <(shuf --random-source /dev/urandom "$SMPCP_SONG_LIST" 2> /dev/null)
 }
 
 get_rnd() {
