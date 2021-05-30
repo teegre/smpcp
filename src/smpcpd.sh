@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/27
+# M : 2021/05/30
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -91,6 +91,7 @@ add_songs() {
   if [[ $mode -eq 1 ]]; then
     local songcount
     songcount="$(read_config playlist_song_count)" || songcount=10
+    plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding songs..."
     get_rnd $((songcount)) | add
@@ -99,6 +100,7 @@ add_songs() {
     state || play
     return 0
   elif [[ $mode -eq 2 ]]; then
+    plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding album..."
     get_rnd -a 1 | add
