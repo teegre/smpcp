@@ -235,7 +235,7 @@ Tag | Description
 %ext%  | lowercase file extension
 %last-modified% | file modification date
 %artist% | artist name
-%albumartist% | artist of album; if not found, falls back to %artist%
+%albumartist% | artist of album
 %name% | internet radio's name
 %album% | album's title
 %title% | song's title
