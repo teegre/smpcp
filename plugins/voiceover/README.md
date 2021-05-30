@@ -11,7 +11,7 @@ Note: **voiceover** won't activate if **smpcpd** is not running.
 ## Dependencies
 
 espeak  
-libnotify
+libpulse
 
 ## Configuration
 
