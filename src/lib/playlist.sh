@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/27
+# M │ 2021/05/30
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -248,7 +248,11 @@ __song_mode() {
   cmd consume 1
   cmd random 1
   cmd single 0
-  cmd crossfade 10
+
+  local xf
+  xf="$(read_config song_mode_xfade_duration)" || xf=10
+  cmd crossfade $((xf))
+
   cmd repeat 0
   cmd replay_gain_mode track
 }
