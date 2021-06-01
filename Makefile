@@ -10,6 +10,7 @@ MANDIR    ?= $(SHAREDIR)/man/man1
 CONFIGDIR ?= /etc
 ASSETSDIR ?= $(CONFIGDIR)/$(PROGNAME)/assets
 BASHCOMP  ?= $(SHAREDIR)/bash-completion/completions
+ZSHCOMP   ?= $(SHAREDIR)/zsh/functions/Completion/Unix
 MANPAGE    = $(PROGNAME).1
 
 CC         = gcc
@@ -33,6 +34,7 @@ install: src/$(DAEMON)
 	install -Dm644 settings    -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/
 	install -m644 autocomplete/smpcp-complete.sh $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
+	install -m644 autocomplete/zsh-smpcp-complete.sh $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
 	install -Dm644 $(MANPAGE)  -t $(DESTDIR)$(MANDIR)
 	install -Dm644 LICENSE     -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
 
@@ -49,5 +51,6 @@ uninstall:
 	rm -rf $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	rm -rf $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	rm $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
+	rm $(DESTDIR)$(BASHCOMP)/_$(PROGNAME)
 	rm $(DESTDIR)$(MANDIR)/$(MANPAGE)
 	rm -rf $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
