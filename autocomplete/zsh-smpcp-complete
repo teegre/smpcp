@@ -1,0 +1,67 @@
+#compdef smpcp
+
+#
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
+# ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
+# ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
+# ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
+#  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
+#
+# This file is part of smpcp.
+# Copyright (C) 2021, Stéphane MEYER.
+#
+# Smpcp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>
+#
+# SMPCP-AUTOCOMPLETE
+# C : 2021/05/31
+# M : 2021/06/01
+# D : Zsh completion for smpcp.
+
+
+_smpcp() {
+  local commands
+  commands=(${(f)"$(smpcp help | awk '/^ *smpcp [a-z]+ /{print $2}')"})
+  
+  if (( CURRENT == 2 )); then
+    _describe -t commands "smpcp commands" commands
+  elif (( CURRENT == 3 )); then
+    local cur="$words[3]"
+    case $words[2] in
+      add | lsdir )
+        local directories
+        directories=(${(f)"$(smpcp lsdir --no-escape "$cur" 2> /dev/null)"})
+        _arguments '*:directories:($directories)'
+      ;;
+      playalbum | lsalbums)
+        local artists
+        artists=(${(f)"$(smpcp lsartists --no-escape 2> /dev/null)"})
+        _arguments '*:artists:($artists)'
+
+      ;;
+    esac
+  elif (( CURRENT == 4 )); then
+    case $words[2] in
+      playalbum)
+        local cur="$words[3]"
+        local albums
+        albums=(${(f)"$(smpcp lsalbums --no-escape "$cur" 2> /dev/null)"})
+        _arguments '*:albums:($albums)'
+      ;;
+    esac
+  fi
+
+  return
+}
+
+_smpcp

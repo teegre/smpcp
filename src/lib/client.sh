@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/05/30
+# M │ 2021/06/01
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -650,8 +650,18 @@ list_dir() {
   # print partial matches for directories or files.
   # usage: list_dir [uri]
 
+  [[ $1 == "--no-escape" ]] && {
+    local NOESCAPE=1
+    shift
+  }
+
   __escape() {
-    sed "s/\([&<>()\";\`' ]\)/\\\\\\1/g"
+    [[ $NOESCAPE ]] && {
+      while IFS= read -r; do
+        echo "$REPLY"
+      done
+    }
+    [[ $NOESCAPE ]] || sed "s/\([&<>()\";\`' ]\)/\\\\\\1/g"
   }
 
   [[ $1 ]] && {
@@ -707,4 +717,45 @@ list_dir() {
   }
 
   [[ $1 ]] || fcmd -x lsinfo directory
+}
+
+list_artists() {
+  [[ $1 == "--no-escape" ]] && {
+    local NOESCAPE=1
+    shift
+  }
+
+  __escape() {
+    [[ $NOESCAPE ]] && {
+      while IFS= read -r; do
+        echo "$REPLY"
+      done
+    }
+    [[ $NOESCAPE ]] || sed "s/\([&<>()\";\`' ]\)/\\\\\\1/g"
+  }
+
+ fcmd -x list albumartist AlbumArtist | __escape
+
+}
+
+list_albums() {
+  [[ $1 == "--no-escape" ]] && {
+    local NOESCAPE=1
+    shift
+  }
+
+  __escape() {
+    [[ $NOESCAPE ]] && {
+      while IFS= read -r; do
+        echo "$REPLY"
+      done
+    }
+    [[ $NOESCAPE ]] || sed "s/\([&<>()\";\`' ]\)/\\\\\\1/g"
+  }
+  
+  local artist
+  artist="$1"
+
+  [[ $artist ]] || fcmd -x list album group albumartist Album | __escape
+  [[ $artist ]] && fcmd -x list album "(AlbumArtist==$(_quote "$artist"))" Album | __escape
 }
