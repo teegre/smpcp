@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/05/29
+# M : 2021/06/01
 # D : Help.
 
 _help() {
@@ -55,6 +55,8 @@ Commands:
   smpcp insertalbum [<artist> <album>]             add album after current song.
   smpcp load <name> [[pos]|[start-end]...]         load playlist or specific songs into the queue.
   smpcp ls [-f [format]]                           print queue.
+  smpcp lsalbums [artist]                          print albums.
+  smpcp lsartists                                  print artists.
   smpcp lsdir [uri]                                print (sub)directory/file list.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
