@@ -306,6 +306,8 @@ A lot.
   smpcp insertalbum [<artist> <album>]             add album after current song.
   smpcp load <name> [[pos]|[start-end]...]         load playlist or specific songs into the queue.
   smpcp ls [-f [format]]                           print queue.
+  smpcp lsalbums [artist]                          list albums.
+  smpcp lsartists                                  list all artists.
   smpcp lsdir [uri]                                print directories/files relative to music directory.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
