@@ -25,11 +25,11 @@
 #
 # SMPCP-AUTOCOMPLETE
 # C : 2021/05/31
-# M : 2021/06/01
+# M : 2021/06/02
 # D : Zsh completion for smpcp.
 
 _smpcp_args() {
-  local args="$@"
+  local args=($*)
   _arguments '*:args:($args)'
 }
 
