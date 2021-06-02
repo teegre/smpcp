@@ -28,6 +28,10 @@
 # M : 2021/06/01
 # D : Zsh completion for smpcp.
 
+_smpcp_args() {
+  local args="$@"
+  _arguments '*:args:($args)'
+}
 
 _smpcp() {
   local commands
@@ -38,21 +42,34 @@ _smpcp() {
   elif (( CURRENT == 3 )); then
     local cur="$words[3]"
     case $words[2] in
-      add | lsdir )
+      add | lsdir | update )
         local directories
         directories=(${(f)"$(smpcp lsdir --no-escape "$cur" 2> /dev/null)"})
         _arguments '*:directories:($directories)'
       ;;
-      playalbum | lsalbums)
+      addalbum | insertalbum | lsalbums | playalbum )
         local artists
         artists=(${(f)"$(smpcp lsartists --no-escape 2> /dev/null)"})
         _arguments '*:artists:($artists)'
-
+      ;;
+      consume | random | repeat | single )
+        _smpcp_args "on" "off"
+      ;;
+      cload | load | pls )
+        local playlists
+        playlists=(${(f)"$(smpcp pls 2> /dev/null)"})
+        _arguments '*:playlists:($playlists)'
+      ;;
+      mode )
+        _smpcp_args "album" "normal" "song"
+      ;;
+      replaygain )
+        _smpcp_args "album" "auto" "track"
       ;;
     esac
   elif (( CURRENT == 4 )); then
     case $words[2] in
-      playalbum)
+      addalbum | insertalbum | playalbum )
         local cur="$words[3]"
         local albums
         albums=(${(f)"$(smpcp lsalbums --no-escape "$cur" 2> /dev/null)"})
