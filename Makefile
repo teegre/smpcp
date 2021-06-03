@@ -33,8 +33,8 @@ install: src/$(DAEMON)
 	install -Dm644 src/lib/*.* -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
 	install -Dm644 settings    -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/
-	install -m644 autocomplete/smpcp-complete.sh $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
-	install -m644 autocomplete/zsh-smpcp-complete.sh $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
+	install -m644 autocomplete/bash-smpcp-complete $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
+	install -m644 autocomplete/zsh-smpcp-complete $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
 	install -Dm644 $(MANPAGE)  -t $(DESTDIR)$(MANDIR)
 	install -Dm644 LICENSE     -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
 
