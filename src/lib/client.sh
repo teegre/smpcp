@@ -692,7 +692,7 @@ list_dir() {
       [[ $1 =~ /$ ]] || local dir="${1}/"
       while read -r; do
         local FOK=1
-        echo "${dir%/*}/$REPLY" | __escape
+        echo "${dir%/*}/$REPLY"
       done < <(fcmd -x listfiles "$1" file 2> /dev/null)
     }
 
