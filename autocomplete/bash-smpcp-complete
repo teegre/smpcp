@@ -1,0 +1,92 @@
+# shellcheck shell=bash
+
+#
+# .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
+# ▐█ ▀. ·██ ▐███▪▐█ ▄█▐█ ▌▪▐█ ▄█ music
+# ▄▀▀▀█▄▐█ ▌▐▌▐█· ██▀·██ ▄▄ ██▀· player
+# ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
+#  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
+#
+# This file is part of smpcp.
+# Copyright (C) 2021, Stéphane MEYER.
+#
+# Smpcp is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>
+#
+# SMPCP-AUTOCOMPLETE
+# C : 2021/04/13
+# M : 2021/06/03
+# D : Bash completion for smpcp.
+
+__escape() {
+  sed "s/\([&<>()\";\`' ]\)/\\\\\\1/g"
+}
+
+_smpcp_cmd() {
+  local cmds
+  cmds="$(smpcp help | awk '/^ *smpcp [a-z]+ /{print $2" "}')"
+  mapfile -t COMPREPLY < <(compgen -W "$cmds" -- "$cur")
+}
+
+_smpcp_dir() {
+  local dirs
+  dirs="$(smpcp lsdir "$cur" 2> /dev/null)"
+  mapfile -t COMPREPLY < <(compgen -W "$dirs" -- "$cur" | __escape | sort -u)
+}
+
+_smpcp_artists() {
+  artists="$(smpcp lsartists 2> /dev/null)"
+  mapfile -t COMPREPLY < <(compgen -W "$artists" -- "$cur" | __escape)
+}
+
+_smpcp_albums() {
+  albums="$(smpcp lsalbums "$prev" 2> /dev/null)"
+  mapfile -t COMPREPLY < <(compgen -W "$albums" -- "$cur" | __escape)
+}
+
+_smpcp_opt() {
+  mapfile -t COMPREPLY < <(compgen -W "$*" -- "$cur")
+}
+
+_smpcp_pls() {
+  local playlists
+  playlists="$(smpcp pls 2> /dev/null)"
+  mapfile -t COMPREPLY < <(compgen -W "$playlists" -- "$cur" | __escape)
+}
+
+_smpcp() {
+  local cur prev
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  echo -e "\nc=$((COMP_CWORD))\ncur=$cur\nprev=$prev\n"
+  _init_completion
+  if (( COMP_CWORD == 1 )); then
+    _smpcp_cmd
+  elif (( COMP_CWORD == 2 )); then
+    case $prev in
+      add | lsdir | update ) _smpcp_dir ;;
+      addalbum | albums | insertalbum | playalbum ) _smpcp_artists ;;
+      cload | load ) _smpcp_pls ;;
+      consume | random | repeat | single ) _smpcp_opt "on" "off" ;;
+      mode ) _smpcp_opt "album" "song" "normal" ;;
+      replaygain) _smpcp_opt "auto" "album" "track" ;;
+    esac
+  elif (( COMP_CWORD == 3 )); then
+    local command="${COMP_WORDS[1]}"
+    case $command in
+      addalbum | insertalbum | playalbum ) _smpcp_albums ;;
+    esac
+  fi
+}
+
+complete -o nospace -F _smpcp smpcp
