@@ -40,7 +40,8 @@ _smpcp_cmd() {
 
 _smpcp_dir() {
   local dirs
-  dirs="$(smpcp lsdir "$cur" 2> /dev/null)"
+  cur="${cur//\\}"
+  dirs="$(smpcp lsdir "$cur" | __escape)"
   mapfile -t COMPREPLY < <(compgen -W "$dirs" -- "$cur" | __escape | sort -u)
 }
 
@@ -68,7 +69,6 @@ _smpcp() {
   local cur prev
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
-  echo -e "\nc=$((COMP_CWORD))\ncur=$cur\nprev=$prev\n"
   _init_completion
   if (( COMP_CWORD == 1 )); then
     _smpcp_cmd

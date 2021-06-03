@@ -44,6 +44,7 @@ _smpcp() {
     case $words[2] in
       add | lsdir | update )
         local directories
+        cur="${cur//\\}"
         directories=(${(f)"$(smpcp lsdir "$cur" 2> /dev/null)"})
         _arguments '*:directories:($directories)'
       ;;
