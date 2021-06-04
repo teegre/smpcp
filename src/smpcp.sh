@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/06/01
+# M │ 2021/06/04
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -91,10 +91,12 @@ case $1 in
   lsalbums   ) shift; list_albums "$@" ;;
   lsartists  ) shift; list_artists "$@" ;;
   lsdir      ) shift; list_dir "$@" ;;
+  lsoutputs  ) list_outputs ;;
   mode       ) shift; _mode "$@" ;;
   move       ) shift; move "$@" ;;
   next       ) next ;;
   nextalbum  ) next_album ;;
+  output     ) shift; set_output "$@" ;;
   pause      ) pause ;;
   play       ) shift; play "$@" ;;
   playalbum  ) shift; add_album -p "$@" ;;

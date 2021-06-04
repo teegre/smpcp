@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/06/01
+# M : 2021/06/04
 # D : Help.
 
 _help() {
@@ -58,10 +58,12 @@ Commands:
   smpcp lsalbums [artist]                          print albums.
   smpcp lsartists                                  print artists.
   smpcp lsdir [uri]                                print (sub)directory/file list.
+  smpcp lsoutputs                                  print available outputs.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
   smpcp next                                       play next song in the queue.
   smpcp nextalbum                                  play another random album (album mode only).
+  smpcp output <name> <on|off>                     enable/disable an output.
   smpcp pause                                      pause playback.
   smpcp play [pos]                                 play song.
   smpcp playalbum [<artist> <album>]               play album for current song.
