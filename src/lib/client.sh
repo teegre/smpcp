@@ -719,3 +719,60 @@ list_albums() {
   [[ $artist ]] || fcmd -x list album group albumartist Album
   [[ $artist ]] && fcmd -x list album "(AlbumArtist==$(_quote "$artist"))" Album
 }
+
+list_outputs() {
+  # list available outputs
+
+  while read -r; do
+    [[ $REPLY =~ ^outputname:[[:space:]](.+)$ ]] && echo -n "${BASH_REMATCH[1]} "
+    [[ $REPLY =~ ^outputenabled:[[:space:]](.+)$ ]] && {
+      case ${BASH_REMATCH[1]} in
+        0 ) echo "off" ;;
+        1 ) echo "on" ;;
+      esac
+    }
+  done < <(cmd outputs)
+}
+
+_get_output_id() {
+  # print output id for <name>
+  # usage: _get_output_id <name>
+
+  local name line id
+
+  name="$1"
+
+  while read -r line; do
+    [[ $line =~ ^outputid:[[:space:]](.+)$ ]] && id="${BASH_REMATCH[1]}"
+    [[ $line =~ ^outputname:[[:space:]](.+)$ ]] &&
+      [[ ${BASH_REMATCH[1]} == "$name" ]] && {
+        echo "$id"
+        return 0
+      }
+  done < <(cmd outputs)
+  return 1
+}
+
+set_output() {
+ # enable/disable an output.
+ # usage: set_output <name> <on|off>
+
+ local name state id
+ name="$1"
+ state="$2"
+
+ id="$(_get_output_id "$name")" || {
+   message E "'$1' no such output."
+    return 1
+  }
+
+ case $state in
+   on ) cmd enableoutput $((id))  || return 1 ;;
+   off) cmd disableoutput $((id)) || return 1
+ esac
+
+ message M "${name}: ${state}."
+
+ return 0
+
+}
