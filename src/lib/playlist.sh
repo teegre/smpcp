@@ -357,10 +357,29 @@ queue_is_empty() {
 
 list_playlist() {
   # list stored playlists or list songs in a given stored playlist.
-  # usage: list_playlist [name]
+  # usage: list_playlist [name [index]]
 
-  [[ $1 ]] && fcmd listplaylist "$1" file
-  [[ $1 ]] || fcmd listplaylists playlist
+  local name index
+  name="$1"; shift
+  index="$1"; shift
+
+  [[ $name ]] || { fcmd listplaylists playlist; return; }
+
+  [[ $name ]] && {
+    [[ $index ]] && {
+      local count=0
+      while read -r; do
+        ((++count))
+        (( count == index )) && {
+          echo "$REPLY"
+          return 0
+        }
+      done < <(fcmd listplaylist "$name" file)
+      return 1
+    }
+
+    fcmd listplaylist "$name" file
+  }
 }
 
 load() {
