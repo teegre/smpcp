@@ -197,7 +197,7 @@ _parse_song_info() {
   }
 
   local fmt
-  fmt="${1:-%artist% - %title%}"
+  fmt="${1:-%file%}"
 
   strip_unexpanded() {
     # strip un-expanded tags from string.
@@ -216,7 +216,7 @@ _parse_song_info() {
           sub="${src:$((start)):$((end-start+1))}"
           [[ $sub =~ .*%.+%.* ]] && {
             src="${src/"$sub"}"
-            ((start=0))
+            ((start=-1))
           }
           unset end
           ((start++))
@@ -241,9 +241,9 @@ _parse_song_info() {
   while IFS= read -r; do
 
     [[ $REPLY =~ ^file:[[:space:]](.+)$ ]] && {
-      local f="${BASH_REMATCH[1]}"
-      fmt="${fmt//"%file%"/"$f"}"
-      fmt="${fmt//"%ext%"/"$(get_ext "$f")"}"
+      local filename="${BASH_REMATCH[1]}"
+      fmt="${fmt//"%file%"/"$filename"}"
+      fmt="${fmt//"%ext%"/"$(get_ext "$filename")"}"
       continue
     }
     [[ $REPLY =~ ^Last-Modified:[[:space:]](.+)$ ]] && {
@@ -294,7 +294,7 @@ _parse_song_info() {
       fmt="${fmt//"%duration%"/${BASH_REMATCH[1]}}"
       if [[ $search ]]; then 
         echo -e "$(strip_unexpanded "$fmt")"
-        fmt="${1:-%artist% - %title%}"
+        fmt="${1:-%file%}"
         ((count++))
       else
         continue
@@ -307,7 +307,7 @@ _parse_song_info() {
     [[ $REPLY =~ ^Id:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%id%"/${BASH_REMATCH[1]}}"
       echo -e "$(strip_unexpanded "$fmt")"
-      fmt="${1:-%artist% - %title%}"
+      fmt="${1:-%file%}"
       ((count++))
     }
   done
