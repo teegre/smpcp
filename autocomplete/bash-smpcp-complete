@@ -25,7 +25,7 @@
 #
 # SMPCP-AUTOCOMPLETE
 # C : 2021/04/13
-# M : 2021/06/03
+# M : 2021/06/05
 # D : Bash completion for smpcp.
 
 __escape() {
@@ -76,7 +76,7 @@ _smpcp() {
     case $prev in
       add | lsdir | update ) _smpcp_dir ;;
       addalbum | albums | insertalbum | playalbum ) _smpcp_artists ;;
-      cload | load ) _smpcp_pls ;;
+      cload | load | pls | remove | save ) _smpcp_pls ;;
       consume | random | repeat | single ) _smpcp_opt "on" "off" ;;
       mode ) _smpcp_opt "album" "song" "normal" ;;
       replaygain) _smpcp_opt "auto" "album" "track" ;;
