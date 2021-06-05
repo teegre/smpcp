@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/05/26
+# M : 2021/06/05
 # D : Statistics management.
 
 get_sticker() {
@@ -103,12 +103,12 @@ media_update() {
     return
   }
 
-  local fmt
-  fmt="$(state -p);[[%name% | ]][[%artist%: ]]%title%"
+  local fmt info
+  fmt="[[%name% - ]][[%artist%: ]]%title%"
+  info="$(get_current "$fmt")"
+  info="${info:-$(get_current)}"
 
-  {
-    get_current "$fmt"
-  } > "/tmp/.currentmedia"
+  echo "$(state -p);${info}" > "/tmp/.currentmedia"
 }
 
 clear_media() { :> "/tmp/.currentmedia"; }
