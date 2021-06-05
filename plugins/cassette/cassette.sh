@@ -96,6 +96,19 @@ __plug_cassette_notify() {
 }
 
 cassette_status() {
+  [[ $(get_output_state recorder) == "1" ]] && {
+    local filename
+    filename="$(read_config cassette_filename)" || unset filename
+    [[ $filename ]] && {
+      local duration _time
+      duration="$(read_config cassette_duration)" || unset duration
+      _time="$(read_config cassette_date)" || unset _time
+      message M "cassette: recording ${filename}."
+      [[ $duration ]] && message M "$(secs_to_hms $((_time+duration-EPOCHSECONDS))) left."
+    }
+    return 0
+  }
+
   local duration date
   duration="$(read_config cassette_duration)" || unset duration
   date="$(read_config cassette_date)"
@@ -103,13 +116,6 @@ cassette_status() {
     message M "a C$((duration/60)) cassette is scheduled for recording."
     message M "recording will start on $(LC_TIME=C _date "%A" "$date") at $(_date "%H:%M" "$date")."
     message M "url: $(read_config cassette_url)"
-    return 0
-  }
-
-  [[ $(get_output_state recorder) == "1" ]] && {
-    local filename
-    filename="$(read_config cassette_filename)"
-    message M "cassette: recording ${filename}."
     return 0
   }
 
