@@ -491,7 +491,10 @@ status() {
     printf "%s\n" "$(get_current "%name%\n${fmt}")"
   else
     echo "$(pstatus) $(rating "$uri") x$(playcount "$uri") $(get_info "$uri" "[[[%ext%]]]")"
-    get_info "$uri" "${fmt}"
+    local info
+    info="$(get_info "$uri" "$fmt")"
+    [[ $info ]] || get_info "$uri" "%file%"
+    [[ $info ]] && echo "$info"
   fi
 }
 
