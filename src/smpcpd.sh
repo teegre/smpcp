@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/05/30
+# M : 2021/06/06
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -170,7 +170,7 @@ quit_daemon() {
   logme "daemon: shutting down."
   echo "shutting down..."
   plugin_notify "quit"
-  state || clear_media
+  clear_media
   save_state
   RUN=0
   logme "daemon: quit."
@@ -220,12 +220,12 @@ while ((RUN)); do
   __is_mpd_running && {
     [[ $DETECT ]] && {
       unset DETECT
-      logme "daemon: unpaused (mpd!)."
+      logme "daemon: unpaused."
     }
     loop
   }
   [[ $RUN ]] && {
-    [[ $DETECT ]] || { DETECT=1; logme "daemon: paused (mpd?)"; }
+    [[ $DETECT ]] || { DETECT=1; logme "daemon: paused"; }
     sleep 1
   }
 done
