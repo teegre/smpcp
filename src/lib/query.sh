@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/05/30
+# M │ 2021/06/06
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -136,16 +136,15 @@ SQL
 }
 
 _db_get_uri_by_rating() {
-# return a list of (count) uri that matches given rating.
-# usage: _db_get_uri_by_rating <rating> <count>
+# return a list of uri that matches given rating.
+# usage: _db_get_uri_by_rating <rating>
 # example: _db_get_uri_by_rating '>6' 2
 # comparison operators are:
 #  = equal, > greater, < lesser, >= greater or equal
 #  <= lesser or equal, <> or != different
 
-local val count
+local val
 val="$1"
-count="$2"
 
 [[ $val =~ ^[0-9]+ ]] && val="=$val"
 
@@ -345,7 +344,7 @@ get_rnd() {
 
   [[ $ALBUM ]] && {
 
-    logme "query: $(count) album(s)."
+    logme "query: $((count)) album(s)."
 
     while read -r; do
       _album_uri "$REPLY"
