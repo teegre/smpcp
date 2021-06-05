@@ -69,7 +69,7 @@ plug_cassette() {
   }
 
   local pid
-  pid="$(read_config cassette_pid &> /dev/null)" && {
+  pid="$(read_config cassette_pid)" && {
     message W "a recording is already scheduled - removing."
     kill "$pid" 2> /dev/null
   }
@@ -82,7 +82,7 @@ plug_cassette() {
 }
 
 help_cassette() {
-  echo "args=<start|stop|[set <dur> <date> <url>]|cancel>;desc=audio recorder."
+  echo "args=[start|stop|set|cancel];desc=audio recorder."
 }
 
 __plug_cassette_notify() {
@@ -102,6 +102,7 @@ cassette_status() {
   [[ $duration ]] && {
     message M "a C$((duration/60)) cassette is scheduled for recording."
     message M "recording will start on $(LC_TIME=C _date "%A" "$date") at $(_date "%H:%M" "$date")."
+    message M "url: $(read_config cassette_url)"
     return 0
   }
 
@@ -160,9 +161,7 @@ cassette_schedule() {
   local _time duration url
   _time="$(read_config cassette_date)" || return 1
 
-  while (( EPOCHSECONDS < _time )); do
-    sleep 60
-  done
+  sleep $((_time - EPOCHSECONDS)) 2>/dev/null
 
   # start recording
   save_state
@@ -175,9 +174,7 @@ cassette_schedule() {
 
   duration="$(read_config cassette_duration)"
   
-  while (( EPOCHSECONDS < _time+duration )); do
-    sleep 60
-  done
+  sleep $((_time+duration-EPOCHSECONDS))
 
   cassette_stop &> /dev/null
   logme "cassette: end."
