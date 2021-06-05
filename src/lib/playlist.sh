@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/05/30
+# M │ 2021/06/05
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -443,6 +443,9 @@ cload() {
 save() {
   # save the current queue as a playlist.
   # usage: save <name>
+
+  list_playlist "$1" &> /dev/null &&
+    remove "$1"
 
   cmd save "$1"
 }
