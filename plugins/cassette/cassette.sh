@@ -63,6 +63,11 @@ plug_cassette() {
     return 1
   }
 
+  ((date+(duration*60) <= EPOCHSECONDS)) && {
+    message E "invalid date: $(_date "%F %H:%M" "$date")"
+    return 1
+  }
+
   [[ $url ]] || {
     message E "no url."
     return 1
