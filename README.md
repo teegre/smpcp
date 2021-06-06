@@ -31,6 +31,7 @@ imagemagick
 libmpdclient  
 libnotify  
 mpd  
+sed  
 sqlite3  
 util-linux
 
@@ -309,10 +310,12 @@ A lot.
   smpcp lsalbums [artist]                          list albums.
   smpcp lsartists                                  list all artists.
   smpcp lsdir [uri]                                print directories/files relative to music directory.
+  smpcp lsoutputs                                  print available outputs.
   smpcp mode [song|album|off]                      set mode or print status.
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
   smpcp next                                       play next song in the queue.
   smpcp nextalbum                                  play another random album (album mode only).
+  smpcp output <name> [on|off]                     enable/disable output or show its status.
   smpcp pause                                      pause playback.
   smpcp play [pos]                                 play song.
   smpcp playalbum [<artist> <album>]               play album for current song.
