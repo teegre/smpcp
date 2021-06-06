@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/06/05
+# M │ 2021/06/06
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -768,28 +768,38 @@ get_output_state() {
     [[ $line =~ ^outputname:[[:space:]](.+)$ ]] &&
       [[ ${BASH_REMATCH[1]} == "$name" ]] && local OK=1
   done < <(cmd outputs)
+  return 1
 }
 
 set_output() {
  # enable/disable an output.
  # usage: set_output <name> [on|off]
 
- local name state id
- name="$1"
- state="$2"
+  local name state id
+  name="$1"
+  state="$2"
 
- id="$(_get_output_id "$name")" || {
-   message E "'$1' no such output."
+  [[ $name ]] || {
+    message E "missing output."
     return 1
   }
 
- case $state in
-   on ) cmd enableoutput $((id))  || return 1 ;;
-   off) cmd disableoutput $((id)) || return 1 ;;
- esac
+  id="$(_get_output_id "$name")" || {
+    message E "'$1' no such output."
+    return 1
+  }
 
- message M "${name}: ${state}."
+  case $state in
+    on ) cmd enableoutput $((id))  || return 1 ;;
+    off) cmd disableoutput $((id)) || return 1 ;;
+    "" )
+      state="$(get_output_state "$name")"
+      ((state==0)) && state="off"
+      ((state==1)) && state="on"
+  esac
 
- return 0
+  message M "${name}: ${state}"
+
+  return 0
 
 }
