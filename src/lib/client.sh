@@ -467,11 +467,9 @@ get_albumart() {
 
 
   # is album art in cache directory?
-  local albumart albumartist
-  albumartist="$(get_info "$song_uri" "%albumartist%")"
-  albumartist="${albumartist:-$(get_info "$song_uri" "%artist%")}"
-  albumart="$(get_info "$song_uri" "${albumartist}-%album%" | sha1sum | cut -d' ' -f 1)"
-  albumart="${SMPCP_CACHE}/${albumart}.jpg"
+  local albumhash albumart
+  albumhash="$(get_info "$song_uri" "%albumartist%-%album%" | sha1sum | cut -d' ' -f 1)"
+  albumart="${SMPCP_CACHE}/${albumhash}.jpg"
 
   [[ -a $albumart ]] && {
     echo "$albumart"
