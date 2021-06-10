@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/06/06
+# M │ 2021/06/10
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -255,6 +255,8 @@ _parse_song_info() {
       continue
     }
     [[ $REPLY =~ ^Artist:[[:space:]](.+)$ ]] && {
+      local artist
+      artist="${BASH_REMATCH[1]}"
       fmt="${fmt//"%artist%"/${BASH_REMATCH[1]}}"
       continue
     }
@@ -292,7 +294,9 @@ _parse_song_info() {
     }
     [[ $REPLY =~ ^duration:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%duration%"/${BASH_REMATCH[1]}}"
-      if [[ $search ]]; then 
+      if [[ $search ]]; then
+        [[ $fmt == *%albumartist%* ]] &&
+          fmt="${fmt//%albumartist%/"$artist"}"
         echo -e "$(strip_unexpanded "$fmt")"
         fmt="${1:-%file%}"
         ((count++))
@@ -306,6 +310,8 @@ _parse_song_info() {
     }
     [[ $REPLY =~ ^Id:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%id%"/${BASH_REMATCH[1]}}"
+      [[ $fmt == *%albumartist%* ]] &&
+        fmt="${fmt//%albumartist%/"$artist"}"
       echo -e "$(strip_unexpanded "$fmt")"
       fmt="${1:-%file%}"
       ((count++))
