@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/06/04
+# M │ 2021/06/10
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -64,67 +64,76 @@ try_plugin() {
   fi
 }
 
-case $1 in
-  add        ) shift; add "$@" ;;
-  addalbum   ) shift; add_album "$@" ;;
-  albuminfo  ) get_album_info ;;
-  albums     ) shift; get_discography "$@" ;;
-  clear      ) clear_queue ;;
-  cload      ) shift; cload "$@" ;;
-  consume    ) shift; consume "$@" ;;
-  crop       ) crop ;;
-  dbplaytime ) db_playtime ;;
-  DEBUG      ) shift; "$@" ;;
-  delete     ) shift; delete "$@" ;;
-  dim        ) shift; dim "$@" ;;
-  getcurrent ) shift; get_current "$@" ;;
-  getduration) shift; get_duration "$@" ;;
-  getelapsed ) shift; get_elapsed "$@" ;;
-  getnext    ) shift; get_next "$@" ;;
-  getprev    ) shift; get_previous "$@" ;;
-  getrnd     ) shift; get_rnd "$@" ;;
-  help       ) _help ;;
-  history    ) _db_get_history ;;
-  insertalbum) shift; add_album -i "$@" ;;
-  load       ) shift; load "$@" ;;
-  ls         ) shift; list_queue "$@" ;;
-  lsalbums   ) shift; list_albums "$@" ;;
-  lsartists  ) shift; list_artists "$@" ;;
-  lsdir      ) shift; list_dir "$@" ;;
-  lsoutputs  ) list_outputs ;;
-  mode       ) shift; _mode "$@" ;;
-  move       ) shift; move "$@" ;;
-  next       ) next ;;
-  nextalbum  ) next_album ;;
-  output     ) shift; set_output "$@" ;;
-  pause      ) pause ;;
-  play       ) shift; play "$@" ;;
-  playalbum  ) shift; add_album -p "$@" ;;
-  playtime   ) playtime ;;
-  pls        ) shift; list_playlist "$@" ;;
-  plugins    ) shift; list_plugins ;;
-  prev       ) previous ;;
-  random     ) shift; random "$@";;
-  rating     ) shift; rating "$@" ;;
-  remove     ) shift; remove "$@" ;;
-  repeat     ) shift; _repeat "$@" ;;
-  replaygain ) shift; replaygain "$@" ;;
-  save       ) shift; save "$@" ;;
-  search     ) shift; search "$@" ;;
-  searchadd  ) shift; searchadd "$@" ;;
-  seek       ) shift; seek "$@" ;;
-  songinfo   ) song_stats ;;
-  single     ) shift; single "$@" ;;
-  skip       ) shift; skip ;;
-  state      ) shift; state "$@" ;;
-  status     ) shift; status "$@" ;;
-  stop       ) stop ;;
-  toggle     ) shift; toggle "$@" ;;
-  tracker    ) tracker ;;
-  update     ) shift; update "$@" ;;
-  version    ) message M "smpcp: version ${__version}." ;;
-  vol        ) shift; volume "$@" ;;
-  xfade      ) shift; xfade "$@" ;;
-  ""         ) _print_version; status ;;
-  *          ) try_plugin "$@"
-esac
+cmds="$*"
+mapfile -t commands <<< "${cmds// ++ /$'\n'}"
+
+for _command in "${commands[@]}"; do
+
+  # shellcheck disable=SC2086
+  set -- ${_command}
+
+  case $1 in
+    add        ) shift; add "$@" ;;
+    addalbum   ) shift; add_album "$@" ;;
+    albuminfo  ) get_album_info ;;
+    albums     ) shift; get_discography "$@" ;;
+    clear      ) clear_queue ;;
+    cload      ) shift; cload "$@" ;;
+    consume    ) shift; consume "$@" ;;
+    crop       ) crop ;;
+    dbplaytime ) db_playtime ;;
+    DEBUG      ) shift; "$@" ;;
+    delete     ) shift; delete "$@" ;;
+    dim        ) shift; dim "$@" ;;
+    getcurrent ) shift; get_current "$@" ;;
+    getduration) shift; get_duration "$@" ;;
+    getelapsed ) shift; get_elapsed "$@" ;;
+    getnext    ) shift; get_next "$@" ;;
+    getprev    ) shift; get_previous "$@" ;;
+    getrnd     ) shift; get_rnd "$@" ;;
+    help       ) _help ;;
+    history    ) _db_get_history ;;
+    insertalbum) shift; add_album -i "$@" ;;
+    load       ) shift; load "$@" ;;
+    ls         ) shift; list_queue "$@" ;;
+    lsalbums   ) shift; list_albums "$@" ;;
+    lsartists  ) shift; list_artists "$@" ;;
+    lsdir      ) shift; list_dir "$@" ;;
+    lsoutputs  ) list_outputs ;;
+    mode       ) shift; _mode "$@" ;;
+    move       ) shift; move "$@" ;;
+    next       ) next ;;
+    nextalbum  ) next_album ;;
+    output     ) shift; set_output "$@" ;;
+    pause      ) pause ;;
+    play       ) shift; play "$@" ;;
+    playalbum  ) shift; add_album -p "$@" ;;
+    playtime   ) playtime ;;
+    pls        ) shift; list_playlist "$@" ;;
+    plugins    ) shift; list_plugins ;;
+    prev       ) previous ;;
+    random     ) shift; random "$@";;
+    rating     ) shift; rating "$@" ;;
+    remove     ) shift; remove "$@" ;;
+    repeat     ) shift; _repeat "$@" ;;
+    replaygain ) shift; replaygain "$@" ;;
+    save       ) shift; save "$@" ;;
+    search     ) shift; search "$@" ;;
+    searchadd  ) shift; searchadd "$@" ;;
+    seek       ) shift; seek "$@" ;;
+    songinfo   ) song_stats ;;
+    single     ) shift; single "$@" ;;
+    skip       ) shift; skip ;;
+    state      ) shift; state "$@" ;;
+    status     ) shift; status "$@" ;;
+    stop       ) stop ;;
+    toggle     ) shift; toggle "$@" ;;
+    tracker    ) tracker ;;
+    update     ) shift; update "$@" ;;
+    version    ) message M "smpcp: version ${__version}." ;;
+    vol        ) shift; volume "$@" ;;
+    xfade      ) shift; xfade "$@" ;;
+    ""         ) _print_version; status ;;
+    *          ) try_plugin "$@"
+  esac
+done
