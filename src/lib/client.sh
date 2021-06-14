@@ -71,8 +71,6 @@ if [[ $1 =~ ^idle.*$ ]]; then
   return $?
 fi
 
-# message M "$*"
-
 # preserve quoted arguments.
 local arg arglist
 for arg in "${@}"; do
@@ -88,8 +86,6 @@ for arg in "${@}"; do
     arglist+=("$arg")
   fi
 done
-
-# message M "arglist: ${arglist[*]}"
 
 ${nccmd} << CMD
 ${arglist[@]:-}
