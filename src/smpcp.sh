@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/06/10
+# M │ 2021/06/13
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -64,14 +64,7 @@ try_plugin() {
   fi
 }
 
-cmds="$*"
-mapfile -t commands <<< "${cmds// ++ /$'\n'}"
-
-for _command in "${commands[@]}"; do
-
-  # shellcheck disable=SC2086
-  set -- ${_command}
-
+exec_command() {
   case $1 in
     add        ) shift; add "$@" ;;
     addalbum   ) shift; add_album "$@" ;;
@@ -136,4 +129,16 @@ for _command in "${commands[@]}"; do
     ""         ) _print_version; status ;;
     *          ) try_plugin "$@"
   esac
+}
+
+for arg in "$@"; do
+  [[ $arg == "++" ]] || IFS= arglist+=("$arg")
+  [[ $arg == "++" ]] && {
+    # shellcheck disable=SC2068
+    set -- ${arglist[@]}
+    IFS=' ' exec_command "$@"
+    unset arglist
+  }
 done
+
+[[ ${arglist[*]} ]] && { IFS=' ' exec_command "${arglist[@]}"; }
