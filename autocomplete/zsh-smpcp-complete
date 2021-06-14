@@ -25,59 +25,82 @@
 #
 # SMPCP-AUTOCOMPLETE
 # C : 2021/05/31
-# M : 2021/06/05
+# M : 2021/06/14
 # D : Zsh completion for smpcp.
+
+_smpcp_commands() {
+  local commands
+  commands=(${(f)"$(smpcp help | awk '/^ *smpcp [a-z]+ /{print $2}')"})
+  _describe -t commands "smpcp commands" commands
+}
 
 _smpcp_args() {
   local args=($*)
   _arguments '*:args:($args)'
 }
 
+_smpcp_directories() {
+  local directories
+  directories=(${(f)"$(smpcp lsdir "$cur" 2> /dev/null)"})
+  _arguments '*:directories:($directories)'
+}
+
+_smpcp_artists() {
+  local artists
+  artists=(${(f)"$(smpcp lsartists 2> /dev/null)"})
+  _arguments '*:artists:($artists)'
+}
+
+_smpcp_albums() {
+  local artist albums
+  artist="$*"
+  albums=(${(f)"$(smpcp lsalbums "$artist" 2> /dev/null)"})
+  _arguments '*:albums:($albums)'
+}
+
+_smpcp_playlists() {
+  local playlists
+  playlists=(${(f)"$(smpcp pls 2> /dev/null)"})
+  _arguments '*:playlists:($playlists)'
+}
+
 _smpcp() {
-  local commands
-  commands=(${(f)"$(smpcp help | awk '/^ *smpcp [a-z]+ /{print $2}')"})
-  
-  if (( CURRENT == 2 )); then
-    _describe -t commands "smpcp commands" commands
-  elif (( CURRENT == 3 )); then
-    local cur="$words[3]"
-    case $words[2] in
-      add | lsdir | update )
-        local directories
-        cur="${cur//\\}"
-        directories=(${(f)"$(smpcp lsdir "$cur" 2> /dev/null)"})
-        _arguments '*:directories:($directories)'
-      ;;
-      addalbum | albums | insertalbum | lsalbums | playalbum )
-        local artists
-        artists=(${(f)"$(smpcp lsartists 2> /dev/null)"})
-        _arguments '*:artists:($artists)'
-      ;;
-      consume | random | repeat | single )
-        _smpcp_args "on" "off"
-      ;;
-      cload | load | pls | remove | save )
-        local playlists
-        playlists=(${(f)"$(smpcp pls 2> /dev/null)"})
-        _arguments '*:playlists:($playlists)'
-      ;;
-      mode )
-        _smpcp_args "album" "normal" "song"
-      ;;
-      replaygain )
-        _smpcp_args "album" "auto" "track"
-      ;;
-    esac
-  elif (( CURRENT == 4 )); then
-    case $words[2] in
-      addalbum | insertalbum | playalbum )
-        local cur="$words[3]"
-        local albums
-        albums=(${(f)"$(smpcp lsalbums "$cur" 2> /dev/null)"})
-        _arguments '*:albums:($albums)'
-      ;;
-    esac
+  local prev="$words[$((CURRENT-1))]"
+
+  if [[ $prev == "++" ]] || (( CURRENT == 2 )); then
+    _smpcp_commands
+    return
   fi
+
+  local cur="$words[$CURRENT]"
+
+  case $prev in
+    add | lsdir | update )
+      cur="${cur//\\}"
+      _smpcp_directories
+    ;;
+    addalbum | albums | insertalbum | lsalbums | playalbum )
+      _smpcp_artists
+    ;;
+    consume | random | repeat | single )
+      _smpcp_args "on" "off"
+    ;;
+    cload | load | pls | remove | save )
+      _smpcp_playlists
+    ;;
+    mode )
+      _smpcp_args "album" "normal" "song"
+    ;;
+    replaygain )
+      _smpcp_args "album" "auto" "track"
+  esac
+
+  case $words[$((CURRENT-2))] in
+    addalbum | insertalbum | playalbum )
+    local cur="$words[$((CURRENT-1))]"
+    cur="${cur//\\}"
+    _smpcp_albums "$cur"
+  esac
 
   return
 }
