@@ -126,10 +126,15 @@ exec_command() {
     version    ) message M "smpcp: version ${__version}." ;;
     vol        ) shift; volume "$@" ;;
     xfade      ) shift; xfade "$@" ;;
-    ""         ) _print_version; status ;;
     *          ) try_plugin "$@"
   esac
 }
+
+if ! [[ $1 ]]; then
+  _print_version
+  status
+  exit 0
+fi
 
 for arg in "$@"; do
   [[ $arg == "++" ]] || IFS= arglist+=("$arg")
