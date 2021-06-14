@@ -113,7 +113,7 @@ cmd() {
 
 fcmd() {
   # filter command output by printing value for a given key.
-  # usage: fcmd [-c] [-x] <command> [options] <key>
+  # usage: fcmd [-c] [-x] <command> [options] <key[+key2+...+keyN]>
   # options:
   # -c print line count only (must be 1st argument).
   # -x see "__cmd".
@@ -132,7 +132,7 @@ fcmd() {
   for ((i=1;i<$#;i++)); do
     arglist+=("${!i}")
   done
-  
+
   local count=0
 
   while read -r; do
