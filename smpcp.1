@@ -1,4 +1,293 @@
-.TH "SMPCP" "1" "0.1" "April 2021" "General Commands"
+.TH "SMPCP" "1" "0.1.5" "June 2021" "General Commands"
 .SH NAME
 \fB\fCsmpcp\fR \- Super Music Player Client Plus\.
+.SH "SYNOPSIS"
+.B smpcp [<\fICOMMAND\fR> [\fIOPTIONS\fR] [++ <\fICOMMAND\fR> [\fIOPTIONS\fR] ++ ...]
+.SH "DESCRIPTION"
+.PP
+\fBsmpcp\fR is a command line client for MPD.
+.SH "COMMANDS"
+If no command is given, \fBsmpcp\fR prints its version and the current status.
 
+Commands can be chained with \fB++\fR operator.
+
+.SS Player Commands
+
+\fBplay\fR [pos]
+  Starts playing the specified song by its position in the queue.
+
+\fBplayalbum\fR [<\fIartist\fR> <\fIalbum\fR>]
+  Starts playing given album or starts playing album for current song. If \fIsong\fR or \fIalbum\fR mode is enabled, new songs are added to the queue when the last song starts playing.
+
+\fBpause\fR
+  Pauses or unpauses playback.
+
+\fBtoggle\fR [\fIpos\fR]
+  Same as play. Pauses if currently playing.
+
+\fBnext\fR
+  Plays the next song in the queue.
+
+\fBnextalbum\fR
+  Plays another random album (see \fBMODES\fR for more info).
+
+\fBskip\fR
+  Same as next. Increments skip count (see \fBMODES\fR for more info).
+
+\fBprev\fR
+  Plays previous song or plays the current song from the start.
+
+\fBseek\fR <[\fI+\fR|\fI-\fR][[\fIHH:\fR]\fIMM:\fR]\fISS\fR>|[\fI+\fR|\fI-\fR]<\fI0-100%\fR>
+  seeks within the current song by hours, minutes, seconds (hours and minutes are optional) or by percentage. If + or - is used, seek is performed relatively to the current song position.
+
+.SS Playback Options
+
+If no option is given for the following commands, \fBsmpcp\fR prints their current status.
+
+\fBrepeat\fR [\fIon\fR|\fIoff\fR]
+  Sets repeat mode.
+
+\fBrandom\fR [\fIon\fR|\fIoff\fR]
+  Sets random mode.
+
+\fBsingle\fR [\fIon\fR|\fIoff\fR]
+  Sets single mode.
+
+\fBconsume\fR [\fIon\fR|\fIoff\fR]
+  Sets consume mode.
+
+\fBxfade\fR [\fIduration\fR]
+  Sets crossfade duration (in seconds).
+
+\fBreplaygain\fR [\fItrack\fR|\fIalbum\fR|\fIauto\fR]
+  Sets replay gain mode.
+
+.SS Modes
+
+\fBmode\fR [\fIsong\fR|\fIalbum\fR|\fInormal\fR]
+  Sets mode (see \fBMODES\fR for more info.)
+
+.SS Volume Control
+\fBvol\fR [\fI-n\fR] [\fI+\fR|\fI-\fR][\fI0-100\fR]
+  Sets volume. If no value is given, prints current volume. \fI-n\fR option displays a notification.
+
+\fBdim\fR [\fI-n\fR]
+  Toggles volume dimmer. If on, volume is dimmed by 50%. \fI-n\fR option displays a notification.
+
+.SS Queue Management
+
+\fBls\fR [\fI-f\fR]|[\fI-f\fR <\fIformat\fR>]
+Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \fIformat\fR (see \fBOUTPUT FORMATTING\fR).
+
+\fBadd\fR <\fIuri\fR>
+  Adds songs to the queue. \fBadd\fR command can also read from stdin.
+
+\fBgetrnd\fR [\fI-a\fR] <\fIcount\fR>
+  Prints <\fIcount\fR> random songs or albums (\fI-a\fB).
+
+\fBdelete\fR <\fIpos\fR>|<\fIstart-end\fR>
+  Deletes songs from the queue.
+
+\fBmove\fR <\fIpos\fR>|<\fIstart-end\fR> <\fIto\fR>
+  Moves songs within the queue.
+
+\fBcrop\fR
+  Deletes all songs from the queue except the current one.
+
+\fBclear\fR
+  Clears the queue.
+
+.SS Stored Playlists
+\fBpls\fR [\fIname\fR]
+  Prints available stored playlists or prints content of the given playlist.
+
+\fBload\fR <\fIname\fR> [\fIpos1\fR|\fIstart-end\fR ... \fIposN\fR|\fIstart-end\fR]
+  Adds a playlist or the specified entries to the current queue.
+
+\fBcload\fR <\fIname\fR> [\fIpos1\fR|\fIstart-end\fR ... \fIposN\fR|\fIstart-end\fR]
+  Same as load. Clears the queue first and starts playing when the playlist is loaded.
+  (similar to \fBsmpcp clear ++ load my_playlist ++ play)
+
+\fBsave\fR <\fIname\fR>
+  Saves the current queue to a playlist. If <\fIname\fR> already exists, it is overwritten.
+
+\fBremove\fR <\fIname\fR>
+  Removes a playlist.
+
+.SS Status and Info
+\fBstatus\fR
+  Shows status.
+
+\fBstate\fR [\fI-p\fR]
+  Playback state. Returns 0 if playing or paused, 1 if stopped. If \fI-p\fR option is used, prints actual playback state (play, pause or stop).
+
+\fBsonginfo\fR
+  Prints info about current song.
+
+\fBalbuminfo\fR
+  Prints info about current album.
+
+\fBalbums\fR
+  Prints available albums for current artist.
+
+\fBgetcurrent\fR [\fIformat\fR]
+  Prints current song in the given format or its uri.
+
+\fBgetnext\fR [\fIformat\fR]
+  Prints next song in the given format or its uri.
+
+\fBgetprev\fR [\fIformat\fR]
+  Prints previous song in the given format or its uri.
+
+\fBgetduration\fR [\fI-h\fR]
+  Prints current song duration in seconds or in a human readable format (\fI-h\fB).
+
+\fBgetelapsed\fR [\fI-h\fR]
+  Prints elapsed time for current song in seconds or in a human readable format (\fI-h\fB).
+
+\fBlsalbums\fR [\fIartist\fR]
+  Prints all albums or albums for the given artist.
+
+\fBlsartists\fR
+  Prints all album artists.
+
+\fBlsdir\fR [\fIuri\fR]
+  Lists directory contents.
+
+\fBhistory\fR
+  Prints playback history.
+
+\fBhelp\fR
+  Shows a help screen.
+
+.SS Outputs
+\fBlsoutputs\fR
+  Prints available outputs.
+
+\fBoutput\fR <\fIname\fR> [\fIon\fR|\fIoff\fR]
+  Sets output. If no option is given, display output current status.
+
+.SS Statistics
+
+\fBdbplaytime\fR
+  Prints sum of all song durations in the database.
+
+\fBplaytime\fR
+  Prints total time played.
+
+.SS Plugins
+More commands may be available if plugins are installed. When invoking \fBhelp\fR, new commands are shown at the end of the list.
+
+\fBplugins\fR
+  Prints a list of installed plugins.
+
+.SH "MODES"
+\fBsmpcp\fR has three modes: \fInormal\fR, \fIsong\fR and \fIalbum\fR.
+
+In order to use \fIalbum\fR and \fIsong\fR modes, the \fBsmpcp\fR daemon (\fBsmpcpd\fR) must be up and running.
+
+.SS Song Mode
+
+In this mode, random songs are automatically and continuously added to the queue and the following playback options are turned on: random, consume and 10 seconds crossfade. New songs are added when the last song in the queue starts playing.
+
+Songs are discarded if they apply these rules:
+.IP "" 4
+.nf
+Song is in the playback history.
+
+Song skip count is greater or equal to the limit.
+.fi
+.IP "" 0
+(see \fBINFO AND STATISTICS\fR and read \fIsmpcp.settings\fR for more info.)
+
+To enable \fIsong\fR mode: \fBmode song\fR
+
+.SS Album Mode
+
+In this mode, a random album is added to the queue and consume is enabled. Another album is added when the last song starts playing.
+
+To enable \fIalbum\fR mode: \fBmode album\fR
+
+.SS Normal Mode
+
+\fINormal\fR mode is the default. In this mode, you have to manage the queue manually.
+
+To enable \fInormal\fR mode: \fBmode normal\fR
+
+.SH OUTPUT FORMATTING
+Some commands can use a format to display songs (i.e \fBgetcurrent\fR).
+.PP
+Interpreted metadata are:
+.IP "" 4
+.nf
+.TP
+\fB%file%\fR
+file path relative to music directory
+.TP
+\fB%ext%\fR
+lowercase file extension
+.TP
+\fB%last-modified%\fR
+file modification date
+.TP
+\fB%artist%\fR
+artist name
+.TP
+\fB%albumartist%\fR
+artist of album (defaults to %artist% if not found)
+.TP
+\fB%name%\fR
+internet radio name
+.TP
+\fB%album%\fR
+album title
+.TP
+\fB%title%\fR
+song title
+.TP
+\fB%track%\fR
+track number
+.TP
+\fB%disc%\fR
+disc number
+.TP
+\fB%genre%\fR
+genre
+.TP
+\fB%date%\fR
+date
+.TP
+\fB%time%\fR
+song duration in seconds (integer)
+.TP
+\fB%duration%\fR
+song duration in seconds (float)
+.TP
+\fB%pos%\fR
+song position in the queue
+.TP
+\fB%id%\fR
+unique song id in the queue
+.if
+.IP "" 0
+.PP
+If no format is given when a command expects one, it defaults to \fB%file%\fR.
+
+If a tag is empty or missing, it is stripped from the source string.
+
+A substring enclosed in double square brackets is also stripped if it contains an empty or missing tag.
+
+For example:
+.IP "" 4
+.nf
+Now playing\\n[[artist: %artist%\\n]]title: %title%
+.IP "" 0
+.if
+.PP
+assuming %artist% tag is not found, would output:
+.IP "" 4
+.nf
+Now playing
+title: song title
+.IP "" 0
+.if
