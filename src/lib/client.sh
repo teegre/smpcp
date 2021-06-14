@@ -652,59 +652,33 @@ list_dir() {
   # print partial matches for directories or files.
   # usage: list_dir [uri]
 
-  [[ $1 ]] && {
-    local dircount filecount
-    dircount="$(fcmd -c -x listfiles "$1" directory 2> /dev/null)"
-    filecount="$(fcmd -c -x listfiles "$1" file 2> /dev/null)"
-
-    ((dircount == 0 && filecount == 0)) && {
-      local command
-      if ! [[ $1 =~ ^.*/.*$ ]]; then
-        command="fcmd -x lsinfo directory"
-      else
-        command='fcmd -x listfiles '"${1%/*}"' directory'
-      fi
-      while read -r; do
-        [[ $REPLY =~ ^${1##*/} ]] && {
-          local DOK=1
-          [[ $1 =~ ^.*/.*$ ]] && { echo "${1%/*}/$REPLY"; continue; }
-          echo "$REPLY"
-        }
-      done < <(${command} 2> /dev/null)
-    }
-
-    ((dircount > 0)) && {
-      while read -r; do
-        local DOK=1
-        echo "${1%/*}/$REPLY"
-      done < <(fcmd -x listfiles "$1" directory 2> /dev/null)
-    }
-
-    ((filecount == 0)) && {
-      while read -r; do
-        [[ $REPLY =~ ^${1##*/} ]] && {
-          local FOK=1
-          echo "${1%/*}/$REPLY"
-        }
-      done < <(fcmd -x listfiles "${1%/*}" file 2> /dev/null)
-    }
-
-    ((filecount > 0 )) && {
-      [[ $1 =~ /$ ]] && local dir="$1"
-      [[ $1 =~ /$ ]] || local dir="${1}/"
-      while read -r; do
-        local FOK=1
-        echo "${dir%/*}/$REPLY"
-      done < <(fcmd -x listfiles "$1" file 2> /dev/null)
-    }
-
-    [[ $DOK ]] && return 0
-    [[ $FOK ]] && return 0
-    message E "$1: no such file or directory."
-    return 1
+  [[ $1 ]] || {
+    fcmd -x listfiles directory+file
+    return $?
   }
 
-  [[ $1 ]] || fcmd -x lsinfo directory
+  dir="$1"
+  musicdir="$(get_music_dir)"
+  local OK
+
+  if ! [[ -d ${musicdir}/${dir} ]]; then
+    [[ $dir == */* ]] || unset dir
+    [[ $dir == */* ]] && dir="${dir%/*}/"
+    while read -r; do
+      [[ $REPLY == ${dir##*/}* ]] && {
+        OK=1
+        [[ $dir == */* ]] && { echo "${dir%/*}/$REPLY"; continue; }
+        echo "$REPLY"
+      }
+    done < <(fcmd -x listfiles "${dir%/*}" directory+file)
+  else
+    while read -r; do
+      OK=1
+      echo "${dir%/*}/$REPLY"
+    done < <(fcmd -x listfiles "$dir" directory+file)
+  fi
+
+  [[ $OK ]] && return 0 || return 1
 }
 
 list_artists() {
