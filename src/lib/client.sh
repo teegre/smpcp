@@ -133,6 +133,11 @@ fcmd() {
     arglist+=("${!i}")
   done
 
+  [[ ${arglist[*]} ]] || {
+    message E "fcmd: missing command or filter."
+    return 1
+  }
+
   local count=0
 
   while read -r; do
