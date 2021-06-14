@@ -142,7 +142,7 @@ It prevents netcat from prematurely returning while an expensive task is running
 
 ### fcmd
 
-Usage: `fcmd [-c] [-x] <mpd_command> [options] <key>`
+Usage: `fcmd [-c] [-x] <mpd_command> [options] <key[+key2+...+keyN]>`
 
 Filters command output by printing value for a given key.
 
