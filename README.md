@@ -260,6 +260,14 @@ Now playing
 title: song title
 ```
 
+## Chaining commands
+
+It is possible to chain commands with the `++` operator. For instance:
+
+```
+> smpcp clear ++ add paco_de_lucia/entre_dos_aguas ++ play
+```
+
 ## Plugins
 
 As stated at the beginning of this document, **smpcp** can be extended with plugins.  
