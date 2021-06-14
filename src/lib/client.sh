@@ -141,7 +141,7 @@ fcmd() {
   local count=0
 
   while read -r; do
-    [[ $REPLY =~ (${key//+/|}):[[:space:]](.+)$ ]] && {
+    [[ $REPLY =~ ^(${key//+/|}):[[:space:]](.+)$ ]] && {
       ((count++))
       if [[ $COUNT ]]; then
         continue
