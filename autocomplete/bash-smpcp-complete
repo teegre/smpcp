@@ -46,12 +46,12 @@ _smpcp_dir() {
 }
 
 _smpcp_artists() {
-  artists="$(smpcp lsartists 2> /dev/null)"
+  artists="$(smpcp lsartists 2> /dev/null | __escape)"
   mapfile -t COMPREPLY < <(compgen -W "$artists" -- "$cur" | __escape)
 }
 
 _smpcp_albums() {
-  albums="$(smpcp lsalbums "$prev" 2> /dev/null)"
+  albums="$(smpcp lsalbums "$prev" 2> /dev/null | __escape)"
   mapfile -t COMPREPLY < <(compgen -W "$albums" -- "$cur" | __escape)
 }
 
@@ -61,18 +61,18 @@ _smpcp_opt() {
 
 _smpcp_pls() {
   local playlists
-  playlists="$(smpcp pls 2> /dev/null)"
+  playlists="$(smpcp pls 2> /dev/null | __escape)"
   mapfile -t COMPREPLY < <(compgen -W "$playlists" -- "$cur" | __escape)
 }
 
 _smpcp() {
   local cur prev
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  cur="${COMP_WORDS[$((COMP_CWORD))]}"
+  prev="${COMP_WORDS[$((COMP_CWORD-1))]}"
   _init_completion
-  if (( COMP_CWORD == 1 )); then
+  if [[ $prev == "++" ]] || (( COMP_CWORD == 1 )); then
     _smpcp_cmd
-  elif (( COMP_CWORD == 2 )); then
+  else
     case $prev in
       add | lsdir | update ) _smpcp_dir ;;
       addalbum | albums | insertalbum | playalbum ) _smpcp_artists ;;
@@ -81,11 +81,10 @@ _smpcp() {
       mode ) _smpcp_opt "album" "song" "normal" ;;
       replaygain) _smpcp_opt "auto" "album" "track" ;;
     esac
-  elif (( COMP_CWORD == 3 )); then
-    local command="${COMP_WORDS[1]}"
-    case $command in
-      addalbum | insertalbum | playalbum ) _smpcp_albums ;;
-    esac
+  local _command="${COMP_WORDS[$((COMP_CWORD-2))]}"
+  case $_command in
+    addalbum | insertalbum | playalbum ) _smpcp_albums ;;
+  esac
   fi
 }
 
