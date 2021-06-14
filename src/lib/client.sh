@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/06/10
+# M │ 2021/06/14
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -140,12 +140,12 @@ fcmd() {
   local count=0
 
   while read -r; do
-    [[ $REPLY =~ ^$key:[[:space:]](.+)$ ]] && {
+    [[ $REPLY =~ (${key//+/|}):[[:space:]](.+)$ ]] && {
       ((count++))
       if [[ $COUNT ]]; then
         continue
       else
-        echo "${BASH_REMATCH[1]}"
+        echo "${BASH_REMATCH[2]}"
       fi
     }
   done < <(cmd "${arglist[@]}")
