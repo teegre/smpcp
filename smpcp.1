@@ -1,11 +1,21 @@
-.TH "SMPCP" "1" "0.1.5" "June 2021" "General Commands"
+.TH "SMPCP" "1" "0.1.5" "June 2021" "Super Music Player Client Plus"
 .SH NAME
-\fB\fCsmpcp\fR \- Super Music Player Client Plus\.
+\fB\fCsmpcp\fR \- smpcp documentation\.
 .SH "SYNOPSIS"
 .B smpcp [<\fICOMMAND\fR> [\fIOPTIONS\fR] [++ <\fICOMMAND\fR> [\fIOPTIONS\fR] ++ ...]
 .SH "DESCRIPTION"
 .PP
 \fBsmpcp\fR is a command line client for MPD.
+.SH "CONFIGURATION"
+See \fBsmpcp(5)\fR.
+.SH "DAEMON"
+To enable auto-playlists, playback statistics and notifications, \fBsmpcpd\fR - the \fBsmpcp\fR daemon - must be running. A systemd unit is provided for this purpose.
+.TP
+To enable the daemon:
+.B systemctl --user enable smpcpd
+.TP
+To start the daemon:
+.B systemctl --user start smpcpd
 .SH "COMMANDS"
 If no command is given, \fBsmpcp\fR prints its version and the current status.
 
@@ -268,7 +278,7 @@ song position in the queue
 .TP
 \fB%id%\fR
 unique song id in the queue
-.if
+.fi
 .IP "" 0
 .PP
 If no format is given when a command expects one, it defaults to \fB%file%\fR.
@@ -280,14 +290,26 @@ A substring enclosed in double square brackets is also stripped if it contains a
 For example:
 .IP "" 4
 .nf
-Now playing\\n[[artist: %artist%\\n]]title: %title%
+\fBNow playing\\n[[artist: %artist%\\n]]title: %title%\fR
 .IP "" 0
-.if
+.fi
 .PP
 assuming %artist% tag is not found, would output:
 .IP "" 4
 .nf
-Now playing
-title: song title
+.B Now playing
+.B title: song title
 .IP "" 0
-.if
+.fi
+.SH "AUTHOR"
+Written by Stéphane MEYER (Teegre)
+.SH "REPORTING BUGS"
+\fIhttps://gitlab.com/teegre/smpcp/issues\fR
+.SH "LICENSE"
+License GPL-v3
+
+This is free software provided \fBAS IS\fR with \fBNO WARRANTY\fR.
+.br
+Feel free to change and redistribute.
+
+For more info, see \fB/usr/share/licenses/smpcp/LICENSE\fR
