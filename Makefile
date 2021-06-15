@@ -6,12 +6,14 @@ BINDIR    ?= $(PREFIX)/bin
 LIBDIR    ?= $(PREFIX)/lib
 SYSDUNIT  ?= $(LIBDIR)/systemd/user
 SHAREDIR  ?= $(PREFIX)/share
-MANDIR    ?= $(SHAREDIR)/man/man1
+MANDIR1   ?= $(SHAREDIR)/man/man1
+MANDIR5   ?= $(SHAREDIR)/man/man5
 CONFIGDIR ?= /etc
 ASSETSDIR ?= $(CONFIGDIR)/$(PROGNAME)/assets
 BASHCOMP  ?= $(SHAREDIR)/bash-completion/completions
 ZSHCOMP   ?= $(SHAREDIR)/zsh/functions/Completion/Unix
-MANPAGE    = $(PROGNAME).1
+MANPAGE1   = $(PROGNAME).1
+MANPAGE5   = $(PROGNAME).settings.5
 
 CC         = gcc
 LIBS       = -lmpdclient
@@ -35,7 +37,8 @@ install: src/$(DAEMON)
 	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/
 	install -m644 autocomplete/bash-smpcp-complete $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
 	install -m644 autocomplete/zsh-smpcp-complete $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
-	install -Dm644 $(MANPAGE)  -t $(DESTDIR)$(MANDIR)
+	install -Dm644 $(MANPAGE1) -t $(DESTDIR)$(MANDIR1)
+	install -Dm644 $(MANPAGE5) -t $(DESTDIR)$(MANDIR5)
 	install -Dm644 LICENSE     -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
 
 	rm src/$(PROGNAME)
@@ -52,5 +55,6 @@ uninstall:
 	rm -rf $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	rm $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
 	rm $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
-	rm $(DESTDIR)$(MANDIR)/$(MANPAGE)
+	rm $(DESTDIR)$(MANDIR1)/$(MANPAGE1)
+	rm $(DESTDIR)$(MANDIR5)/$(MANPAGE5)
 	rm -rf $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
