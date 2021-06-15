@@ -18,8 +18,6 @@
 *  Playback statistics.
 *  Can be extended with plugins.
 
-**/!\ This is work in progress.**
-
 ## Dependencies
 
 Latest version of these packages are needed:
