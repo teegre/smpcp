@@ -25,7 +25,7 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/05/20
+# M : 2021/06/15
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
@@ -110,7 +110,7 @@ get_plugin_function() {
         __plug_"${plugin}"_notify "$@"
         return $?
       }
-    done < <(declare -F)
+    done < <(declare -F 2> /dev/null)
     return 1
   }
 
