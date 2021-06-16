@@ -25,7 +25,7 @@
 #
 # SMPCP-AUTOCOMPLETE
 # C : 2021/05/31
-# M : 2021/06/14
+# M : 2021/06/16
 # D : Zsh completion for smpcp.
 
 _smpcp_commands() {
@@ -42,7 +42,8 @@ _smpcp_args() {
 _smpcp_directories() {
   local directories
   directories=(${(f)"$(smpcp lsdir "$cur" 2> /dev/null)"})
-  _arguments '*:directories:($directories)'
+  compadd -S '' -a directories
+
 }
 
 _smpcp_artists() {
