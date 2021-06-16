@@ -531,6 +531,11 @@ get_albumart() {
 
 get_album_info() {
   # print current album full info.
+
+  [[ $(get_current) =~ ^https? ]] && {
+    message E "no info."
+    return 1
+  }
   
   local info artist album albumartist date fmt
   mapfile -t info < <(get_current "%artist%\n%album%\n%albumartist%\n%date%") ||
