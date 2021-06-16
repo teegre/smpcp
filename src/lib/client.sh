@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/06/14
+# M │ 2021/06/15
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -654,36 +654,39 @@ update_song_list() {
 
 list_dir() {
   # print (sub)directory or file list relative to music_directory.
-  # print partial matches for directories or files.
+  # print partial matches.
   # usage: list_dir [uri]
 
-  [[ $1 ]] || {
-    fcmd -x listfiles directory+file
-    return $?
-  }
+  local musicdir dir _path
+
+  musicdir="$(get_music_dir)" || return 1
 
   dir="$1"
-  musicdir="$(get_music_dir)"
-  local OK
 
-  if ! [[ -d ${musicdir}/${dir} ]]; then
-    [[ $dir == */* ]] || unset dir
-    [[ $dir == */* ]] && dir="${dir%/*}/"
-    while read -r; do
-      [[ $REPLY == ${dir##*/}* ]] && {
-        OK=1
-        [[ $dir == */* ]] && { echo "${dir%/*}/$REPLY"; continue; }
-        echo "$REPLY"
-      }
-    done < <(fcmd -x listfiles "${dir%/*}" directory+file)
-  else
-    while read -r; do
-      OK=1
-      echo "${dir%/*}/$REPLY"
-    done < <(fcmd -x listfiles "$dir" directory+file)
+  [[ $dir == ".." || $dir == "." ]] && unset dir
+
+  local _path="${musicdir}/${dir}"
+
+  if [[ -d $_path ]]; then
+    [[ $_path == */ ]] || _path+="/"
   fi
 
-  [[ $OK ]] && return 0 || return 1
+  local f count=0 file
+
+  for f in "$_path"*; do
+    file="${f/${musicdir}\/}"
+    [[ $file == *\* ]] && return 1
+    [[ -d $f ]] && file+="/"
+    ((++count))
+    echo "$file"
+  done
+
+  if (( count > 0 )); then
+    return 0
+  else
+    message E "nothing found."
+    return 1
+  fi
 }
 
 list_artists() {
@@ -704,13 +707,23 @@ list_albums() {
 list_outputs() {
   # list available outputs
 
+  [[ $1 == "-l" ]] && local NOSTATUS=1
+
   while read -r; do
-    [[ $REPLY =~ ^outputname:[[:space:]](.+)$ ]] && echo -n "${BASH_REMATCH[1]} "
+    [[ $REPLY =~ ^outputname:[[:space:]](.+)$ ]] &&  {
+      if [[ $NOSTATUS ]]; then
+        echo "${BASH_REMATCH[1]}"
+      else
+        echo -n "${BASH_REMATCH[1]} "
+      fi
+    }
     [[ $REPLY =~ ^outputenabled:[[:space:]](.+)$ ]] && {
-      case ${BASH_REMATCH[1]} in
-        0 ) echo "off" ;;
-        1 ) echo "on" ;;
-      esac
+      if ! [[ $NOSTATUS ]]; then
+        case ${BASH_REMATCH[1]} in
+          0 ) echo "off" ;;
+          1 ) echo "on" ;;
+        esac
+      fi
     }
   done < <(cmd outputs)
 }
@@ -780,5 +793,4 @@ set_output() {
   message M "${name}: ${state}"
 
   return 0
-
 }
