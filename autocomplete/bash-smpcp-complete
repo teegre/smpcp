@@ -65,6 +65,12 @@ _smpcp_pls() {
   mapfile -t COMPREPLY < <(compgen -W "$playlists" -- "$cur" | __escape)
 }
 
+_smpcp_outputs() {
+  local outputs
+  outputs="$(smpcp lsoutputs -l 2> /dev/null | __escape)"
+  mapfile -t COMPREPLY < <(compgen -W "$outputs" -- "$cur" | __escape)
+}
+
 _smpcp() {
   local cur prev
   cur="${COMP_WORDS[$((COMP_CWORD))]}"
@@ -79,11 +85,13 @@ _smpcp() {
       cload | load | pls | remove | save ) _smpcp_pls ;;
       consume | random | repeat | single ) _smpcp_opt "on" "off" ;;
       mode ) _smpcp_opt "album" "song" "normal" ;;
-      replaygain) _smpcp_opt "auto" "album" "track" ;;
+      replaygain ) _smpcp_opt "auto" "album" "track" ;;
+      output ) _smpcp_outputs ;;
     esac
   local _command="${COMP_WORDS[$((COMP_CWORD-2))]}"
   case $_command in
     addalbum | insertalbum | playalbum ) _smpcp_albums ;;
+    output ) _smpcp_opt "on" "off" ;;
   esac
   fi
 }
