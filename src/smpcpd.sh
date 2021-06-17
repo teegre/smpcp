@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/06/06
+# M : 2021/06/17
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -172,6 +172,7 @@ quit_daemon() {
   plugin_notify "quit"
   clear_media
   save_state
+  :> "$SMPCPD_PID"
   RUN=0
   logme "daemon: quit."
 }
