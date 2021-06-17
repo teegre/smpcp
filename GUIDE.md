@@ -1,8 +1,65 @@
-# PROGRAMMER'S GUIDE
+# PLUGINS DEVELOPER GUIDE
 
-This is a summary of available functions that can be useful when developing a plugin.
+Plugins must be written in Bash.
+
+## Plugins Location
+
+Plugins must be installed in `$XDG_CONFIG_HOME/.config/smpcp/plugins` and must be stored in separate directories.
+
+## Plugin functions
+
+Name of exposed plugin functions must be prefixed with `plug_`.
+
+If the plugin needs to receive player events, a function named `__plug_plugin-name_notify` must be created.
+
+This function is called each time a player event occurs and event is passed as the first and only argument `$1`.
+
+Player events are:
+
+*  `play` - playback started
+*  `pause` - playback paused
+*  `stop` - playback stopped
+*  `end` - reached the end of current song
+*  `change` - a new song is playing
+*  `add` - new songs are added
+*  `quit` - daemon is quitting
+
+## Plugin version
+
+The global variable `$PLUG_PLUGIN-NAME_VERSION` is used to set plugin version.
+
+## Plugin Help
+
+The function "help_plugin-function" is used to print function's arguments and a short description, e.g.:
+
+```bash
+_help_myfunction() {
+  echo "args=<arg1> [arg2];desc=function description."
+}
+```
+
+## Example Plugin
+
+You can check source code of a simple plugin at: `plugins/hello/hello.sh`
+
+# API
+
+This is a summary of available libraries/functions for developing a plugin.
 
 Libraries are stored in `/usr/lib/smpcp`.
+
+These libraries are sourced by default:
+
+*  client.sh
+*  core.sh
+*  help.sh
+*  player.sh
+*  playlist.sh
+*  plugin.sh
+*  query.sh
+*  statistics.sh
+*  tracker.sh
+*  volume.sh
 
 # core.sh
 
@@ -144,7 +201,7 @@ It prevents netcat from prematurely returning while an expensive task is running
 
 Usage: `fcmd [-c] [-x] <mpd_command> [options] <key[+key2+...+keyN]>`
 
-Filters command output by printing value for a given key.
+Filters command output by printing value for given keys.
 
 `-c` prints line count only.
 
@@ -200,9 +257,23 @@ Since %missing-tag% doesn't exist, *_parse_song_info* prints:
 
 By default, if no format string is given, *_parse_song_info* displays song's filepath.  
 
-Available tags are:
+Available metadata are:
 
-%file% %ext% %last-modified% %artist% %name% %album% %albumartist% %title% %track% %genre% %date% %time% %duration% %pos% %id%
+*  %file%
+*  %ext%
+*  %last-modified%
+*  %artist%
+*  %name%
+*  %album%
+*  %albumartist% (defaults to %artist% if not found)
+*  %title%
+*  %track%
+*  %genre%
+*  %date%
+*  %time%
+*  %duration%
+*  %pos%
+*  %id%
 
 ### get_current, get_next, get_previous
 
@@ -247,8 +318,6 @@ Searches for album art image files (cover.jpg, cover.png, folder.jpg, folder.png
 If no image file could be found, the function prints the path of the default cover image file.
 
 If a thumbnail already exists for this album, *get_album_art* prints its path.
-
-Album covers are stored in `$XDG_HOME_CONFIG/smpcp/.cache`.
 
 # notify.sh
 
