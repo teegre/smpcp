@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/06/15
+# M │ 2021/06/18
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -466,6 +466,11 @@ get_albumart() {
     song_uri="$(get_current)"
   fi
 
+  # stream?
+  [[ $song_uri =~ ^https?: ]] && {
+    echo "${SMPCP_ASSETS}/radio.png"
+    return
+  }
 
   # is album art in cache directory?
   local albumhash albumart
@@ -474,12 +479,6 @@ get_albumart() {
 
   [[ -a $albumart ]] && {
     echo "$albumart"
-    return
-  }
-
-  # stream?
-  [[ $(get_current) =~ ^https?: ]] && {
-    echo "${SMPCP_ASSETS}/radio.png"
     return
   }
 
