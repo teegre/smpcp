@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/05/27
+# M │ 2021/06/19
 # D │ Player functions.
 
 toggle() {
@@ -493,7 +493,7 @@ status() {
     echo "$(pstatus) $(rating "$uri") x$(playcount "$uri") $(get_info "$uri" "[[[%ext%]]]")"
     local info
     info="$(get_info "$uri" "$fmt")"
-    [[ $info ]] || get_info "$uri" "%file%"
+    [[ $info ]] || echo "$uri"
     [[ $info ]] && echo "$info"
   fi
 }
