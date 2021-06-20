@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/06/05
+# M │ 2021/06/20
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -362,6 +362,13 @@ list_playlist() {
   local name index
   name="$1"; shift
   index="$1"; shift
+
+  [[ $index ]] && {
+    [[ $index =~ [0-9]+ ]] || {
+      message E "invalid index."
+      return 1
+    }
+  }
 
   [[ $name ]] || { fcmd listplaylists playlist; return; }
 
