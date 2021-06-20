@@ -13,7 +13,7 @@ ASSETSDIR ?= $(CONFIGDIR)/$(PROGNAME)/assets
 BASHCOMP  ?= $(SHAREDIR)/bash-completion/completions
 ZSHCOMP   ?= $(SHAREDIR)/zsh/functions/Completion/Unix
 MANPAGE1   = $(PROGNAME).1
-MANPAGE5   = $(PROGNAME).settings.5
+MANPAGE5   = $(PROGNAME).conf.5
 
 CC         = gcc
 LIBS       = -lmpdclient
@@ -33,7 +33,7 @@ install: src/$(DAEMON)
 	install -m644 $(SERVICE) $(SYSDUNIT)/$(SERVICE)
 
 	install -Dm644 src/lib/*.* -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
-	install -Dm644 settings    -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
+	install -Dm644 smpcp.conf  -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
 	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/
 	install -m644 autocomplete/bash-smpcp-complete $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
 	install -m644 autocomplete/zsh-smpcp-complete $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
