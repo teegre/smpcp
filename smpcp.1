@@ -137,7 +137,7 @@ Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \
 \fBalbuminfo\fR
   Prints info about current album.
 
-\fBalbums\fR
+\fBalbums [artist]\fR
   Prints available albums for current artist.
 
 \fBgetcurrent\fR [\fIformat\fR]
@@ -179,6 +179,9 @@ Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \
 
 .SS Statistics
 
+\fBrating\fR [\fI1-5\fR]
+  Gives currents song a rating between 1 and 5. Without argument, it prints current song rating.
+
 \fBdbplaytime\fR
   Prints sum of all song durations in the database.
 
@@ -191,6 +194,29 @@ More commands may be available if plugins are installed. When invoking \fBhelp\f
 \fBplugins\fR
   Prints a list of installed plugins.
 
+.SH "STATUS"
+When invoking \fBsmpcp\fR without argument or with the \fBstatus\fR command, it prints current status including playback state and playback options.
+.PP
+.IP "" 4
+.nf
+.B [> [song] -z-cx- ****- x11
+.B Orbital - Nothing Left 1
+.PP
+.IP "" 0
+.fi
+Playback options are shown as a single letter:
+.PP
+.IP "" 4
+.nf
+.B r - repeat
+.B z - random
+.B s - single
+.B c - consume
+.B x - crossfade
+.B d - dim
+.PP
+.IP "" 0
+.fi
 .SH "MODES"
 \fBsmpcp\fR has three modes: \fInormal\fR, \fIsong\fR and \fIalbum\fR.
 
