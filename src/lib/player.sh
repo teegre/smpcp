@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/06/19
+# M │ 2021/06/20
 # D │ Player functions.
 
 toggle() {
@@ -487,7 +487,7 @@ status() {
 
   # stream?
   if [[ $uri =~ ^https?: ]]; then
-    echo "$(pstatus) [stream]"
+    pstatus
     printf "%s\n" "$(get_current "%name%\n${fmt}")"
   else
     echo "$(pstatus) $(rating "$uri") x$(playcount "$uri")"
