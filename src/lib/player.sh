@@ -490,7 +490,7 @@ status() {
     echo "$(pstatus) [stream]"
     printf "%s\n" "$(get_current "%name%\n${fmt}")"
   else
-    echo "$(pstatus) $(rating "$uri") x$(playcount "$uri") $(get_info "$uri" "[[[%ext%]]]")"
+    echo "$(pstatus) $(rating "$uri") x$(playcount "$uri")"
     local info
     info="$(get_info "$uri" "$fmt")"
     [[ $info ]] || echo "$uri"
