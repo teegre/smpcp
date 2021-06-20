@@ -46,7 +46,7 @@ plug_cassette() {
     message E "invalid command."
     return 1
   }
-    
+
   local duration date url
 
   duration="$1"; shift
@@ -131,7 +131,7 @@ cassette_status() {
 cassette_start() {
   [[ $(get_output_state recorder) == "1" ]] && return 1
   local filename
-  filename="cassette_$(_date "%Y%m%d%H%M%S").ogg"
+  filename="cassette_$(_date "%Y%m%d%H%M%S").opus"
   write_config cassette_filename "$filename"
   set_output recorder on &> /dev/null
   [[ $(state -p) != "play" ]] && play
@@ -148,13 +148,13 @@ cassette_stop() {
   set_output recorder off &> /dev/null
   [[ $musicdir ]] && {
     [[ -d ${musicdir}/cassette ]] || mkdir "${musicdir}/cassette"
-    mv "${dir}/cassette.ogg" "${musicdir}/cassette/${filename}"
+    mv "${dir}/cassette.opus" "${musicdir}/cassette/${filename}"
     echo "cassette/${filename}" >> ~/.config/mpd/playlists/recordings.m3u
     cmd update "cassette"
     message M "cassette: saved cassette/${filename}"
   }
   [[ $musicdir ]] || {
-    mv "${dir}/cassette.ogg"  "${dir}/${filename}"
+    mv "${dir}/cassette.opus"  "${dir}/${filename}"
     message M "cassette: saved ${dir}/${filename}"
   }
   cassette_clear
