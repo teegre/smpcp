@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/06/15
+# M │ 2021/06/20
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -35,7 +35,7 @@ declare SMPCP_ASSETS="/etc/smpcp/assets"
 declare SMPCP_ICON="/etc/smpcp/assets/default.png"
 declare SMPCP_CACHE="$HOME/.config/smpcp/.cache"
 declare SMPCP_LOG="$HOME/.config/smpcp/log"
-declare SMPCP_SETTINGS="$HOME/.config/smpcp/settings"
+declare SMPCP_SETTINGS="$HOME/.config/smpcp/smpcp.conf"
 
 declare SMPCPD_PID="$HOME/.config/smpcp/pid"
 declare SMPCPD_LOCK="$HOME/.config/smpcp/lock"
