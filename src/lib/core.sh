@@ -96,7 +96,7 @@ logme() {
 }
 
 # strip path and filename from URI and print lowercase file extension.
-get_ext() { local ext; ext="${1##*.}"; echo "${ext,,}"; }
+get_ext() { [[ $1 =~ ^https? ]] && { echo "stream"; return; }; local ext; ext="${1##*.}"; echo "${ext,,}"; }
 
 _max() {
   # return max value
