@@ -25,10 +25,10 @@
 #
 # CASSETTE PLUGIN
 # C : 2021/06/04
-# M : 2021/06/05
+# M : 2021/06/21
 # D : Programmable audio recorder.
 
-export PLUG_CASSETTE_VERSION="0.1"
+export PLUG_CASSETTE_VERSION="0.2"
 
 plug_cassette() {
   local command
@@ -118,7 +118,7 @@ cassette_status() {
   duration="$(read_config cassette_duration)" || unset duration
   date="$(read_config cassette_date)"
   [[ $duration ]] && {
-    message M "a C$((duration/60)) cassette is scheduled for recording."
+    message M "a $((duration/60)) minute(s) cassette is scheduled for recording."
     message M "recording will start on $(LC_TIME=C _date "%A" "$date") at $(_date "%H:%M" "$date")."
     message M "url: $(read_config cassette_url)"
     return 0
@@ -139,12 +139,19 @@ cassette_start() {
 
 cassette_stop() {
   [[ $(get_output_state recorder) == "0" ]] && return 1
-  pid="$(read_config cassette_pid)" || unset pid
-  [[ $pid ]] && kill "$pid" 2> /dev/null
+  [[ $1 == "--no-kill" ]] && {
+    local NOKILL=1
+    shift
+  }
+  [[ $NOKILL ]] || {
+    pid="$(read_config cassette_pid)" || unset pid
+    [[ $pid ]] && kill "$pid" 2> /dev/null
+  }
   local dir filename musicdir
   dir="${SMPCP_PLUGINS_DIR}/cassette"
   filename="$(read_config cassette_filename)"
   musicdir="$(get_music_dir)" || unset musicdir
+  stop
   set_output recorder off &> /dev/null
   [[ $musicdir ]] && {
     [[ -d ${musicdir}/cassette ]] || mkdir "${musicdir}/cassette"
@@ -171,28 +178,31 @@ cassette_clear() {
 cassette_schedule() {
   local _time duration url
   _time="$(read_config cassette_date)" || return 1
+  duration="$(read_config cassette_duration)"
+  url="$(read_config cassette_url)"
 
-  sleep $((_time - EPOCHSECONDS)) 2>/dev/null
+  sleep $((_time-EPOCHSECONDS)) 2>/dev/null
 
   # start recording
   save_state
   stop
   cmd clear
-  url="$(read_config cassette_url)"
   add "$url"
+
   cassette_start
   logme "cassette: recording..."
 
-  duration="$(read_config cassette_duration)"
-  
   sleep $((_time+duration-EPOCHSECONDS))
 
-  cassette_stop &> /dev/null
+  logme "cassette: stop recording."
+
+  cassette_stop --no-kill &> /dev/null
+
   logme "cassette: end."
 
   cmd clear
 
-  restore_state
+  restore_state &> /dev/null
 }
 
 cassette_cancel() {
@@ -201,7 +211,7 @@ cassette_cancel() {
   [[ $pid ]] && {
     [[ $(get_output_state recorder) == "on" ]] && {
       message W "stopping current recording."
-      cassette_stop
+      cassette_stop --no-kill
     }
     kill "$pid" 2> /dev/null && {
       message M "cassette: recording cancelled."
