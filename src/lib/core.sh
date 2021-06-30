@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/06/25
+# M │ 2021/06/30
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -235,7 +235,7 @@ _daemon() {
   local pid
   pid="$(<"$SMPCPD_PID")"
 
-  check_pid "$pid"
+  check_pid "$pid" 2> /dev/null
 }
 
 update_daemon() {
