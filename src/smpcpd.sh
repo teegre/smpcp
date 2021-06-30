@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/06/17
+# M : 2021/06/25
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -75,6 +75,8 @@ while ! __is_mpd_running; do
 done
 
 restore_state
+
+plugin_notify "start"
 
 add_songs() {
   # add songs to the queue.
