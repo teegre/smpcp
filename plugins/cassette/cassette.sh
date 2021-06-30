@@ -25,7 +25,7 @@
 #
 # CASSETTE PLUGIN
 # C : 2021/06/04
-# M : 2021/06/21
+# M : 2021/06/30
 # D : Programmable audio recorder.
 
 export PLUG_CASSETTE_VERSION="0.2"
@@ -91,11 +91,26 @@ help_cassette() {
 }
 
 __plug_cassette_notify() {
-  [[ $(get_output_state recorder) == "0" ]] && return
   case $1 in
-    stop | pause | quit )
+    stop | pause )
+      [[ $(get_output_state recorder) == "0" ]] && return
       logme "cassette: stopped."
       cassette_stop &> /dev/null
+    ;;
+    start )
+      local pid
+      pid="$(read_config cassette_pid)" || return
+      (( pid == 0 )) && {
+        cassette_schedule & disown
+        write_config cassette_pid $!
+        logme "cassette: restart scheduled recording."
+      }
+    ;;
+    quit )
+      local pid
+      logme "cassette: quit."
+      pid="$(read_config cassette_pid)" || return
+      (( pid != 0 )) && write_config cassette_pid 0
     ;;
   esac
 }
@@ -180,6 +195,12 @@ cassette_schedule() {
   _time="$(read_config cassette_date)" || return 1
   duration="$(read_config cassette_duration)"
   url="$(read_config cassette_url)"
+
+  (( _time-EPOCHSECONDS < 0 )) && {
+    logme "cassette: cancel scheduled recording."
+    cassette_clear
+    return 1
+  }
 
   sleep $((_time-EPOCHSECONDS)) 2>/dev/null
 
