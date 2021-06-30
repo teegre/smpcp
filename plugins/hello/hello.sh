@@ -25,7 +25,7 @@
 #
 # PLUGIN EXAMPLE
 # C : 2021/04/29
-# M : 2021/05/27
+# M : 2021/06/30
 # D : Basic plugin example.
 
 # set version
@@ -66,10 +66,11 @@ plug_goodbye() {
 __plug_hello_notify() {
    # here player event is passed as an argument to this function.
    case $1 in
-     play  ) echo "hello: playback started"    ;;
-     pause ) echo "hello: playback paused"     ;;
-     stop  ) echo "hello: playback stopped"    ;;
-     change) echo "hello: a new song is playing"   ;;
+     start ) echo "hello!" ;;
+     play  ) echo "hello: playback started" ;;
+     pause ) echo "hello: playback paused"  ;;
+     stop  ) echo "hello: playback stopped" ;;
+     change) echo "hello: a new song is playing" ;;
      end   ) echo "hello: reached the end of song" ;;
      add   ) echo "hello: adding new songs" ;;
      quit  ) echo "goodbye"
