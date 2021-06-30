@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/06/20
+# M │ 2021/06/25
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -196,6 +196,8 @@ check_pid() {
   # exit values:
   # 0 if process is active,
   # 1 otherwise.
+
+  local pid="$1"
 
   [[ $pid ]] || {
     message E "check_pid: missing process id."
