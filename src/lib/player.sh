@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/06/20
+# M │ 2021/07/02
 # D │ Player functions.
 
 toggle() {
@@ -177,6 +177,22 @@ skip() {
   update_stats "$uri"
   set_sticker "$uri" skipcount $((skipcount)) || return 1
   next
+  return 0
+}
+
+unskip() {
+  # reset skip count of the current song.
+
+  state || return 1
+
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
+
+  local uri
+
+  uri="$(get_current)"
+
+  set_sticker "$uri" skipcount 0 || return 1
+
   return 0
 }
 

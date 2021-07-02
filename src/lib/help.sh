@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/06/04
+# M : 2021/07/02
 # D : Help.
 
 _help() {
@@ -87,6 +87,7 @@ Commands:
   smpcp stop                                       stop playback.
   smpcp toggle [pos]                               toggle play/pause.
   smpcp tracker                                    idle mode, print music player events.
+  smpcp unskip                                     reset current song skip count.
   smpcp update [uri]                               update database.
   smpcp version                                    show program version and exit.
   smpcp vol [-n] [+|-]<vol>                        set volume.
