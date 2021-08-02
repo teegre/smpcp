@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/07/02
+# M : 2021/08/02
 # D : Help.
 
 _help() {
@@ -35,6 +35,7 @@ smpcp: version ${__version}
 Commands:
   smpcp add <uri>                                  add song(s) to the queue.
   smpcp addalbum [<artist> <album>]                append album to the queue.
+  smpcp addsong  <artist> <title>                  append song to the queue.
   smpcp albuminfo                                  display current album full info.
   smpcp albums                                     display albums in the database for current artist.
   smpcp clear                                      remove all songs from the queue.

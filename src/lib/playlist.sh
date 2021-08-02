@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/06/20
+# M │ 2021/08/02
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -342,6 +342,24 @@ add_album() {
   }
 
   return 0
+}
+
+add_song() {
+  # add the given song and play it right after the current one.
+  # usage: add_song artist title
+
+  local uri
+  uri="$(search artist "$1" title "$2")"
+
+  [[ $uri ]] && {
+    add "$uri"
+    local pos
+    ((pos=$(queue_length)-1))
+    cmd prio 1 $((pos))
+    return 0
+  }
+  message E "nothing found."
+  return 1
 }
 
 queue_length() {
