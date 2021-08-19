@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/05/03
+# M : 2021/08/19
 # D : Volume control.
 
 notify_volume() {
@@ -98,6 +98,7 @@ volume() {
       return 0
     else
       cvol="$(fcmd status volume)"
+      [[ $cvol ]] || cvol="$(read_config volume)"
     fi
 
     if [[ $val =~ ^[+\|-].*$ ]]; then
