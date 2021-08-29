@@ -25,7 +25,7 @@
 #
 # PLUGIN EXAMPLE
 # C : 2021/04/29
-# M : 2021/06/30
+# M : 2021/08/29
 # D : Basic plugin example.
 
 # set version
@@ -70,7 +70,10 @@ __plug_hello_notify() {
      play  ) echo "hello: playback started" ;;
      pause ) echo "hello: playback paused"  ;;
      stop  ) echo "hello: playback stopped" ;;
-     change) echo "hello: a new song is playing" ;;
+     change)
+       local cur
+       cur="$(get_current "[[%artist% - ]]%title%,")"
+       echo "hello: ${cur,,} is now playing" ;;
      end   ) echo "hello: reached the end of song" ;;
      add   ) echo "hello: adding new songs" ;;
      quit  ) echo "goodbye"
