@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/08/02
+# M : 2021/09/02
 # D : Help.
 
 _help() {
@@ -77,6 +77,7 @@ Commands:
   smpcp remove <name>                              delete given stored playlist.
   smpcp repeat [off|on]                            set repeat mode.
   smpcp replaygain [auto|track|album]              set replay gain mode.
+  smpcp save <name>                                save current queue to playlist.
   smpcp search <type> <query>                      search for songs.
   smpcp searchadd <type> <query>                   search for songs and add them to queue.
   smpcp seek [+|-]<[HH:[MM:]]SS> | [+|-]<0-100%>   seek to specified position.
