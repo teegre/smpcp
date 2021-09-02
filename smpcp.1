@@ -1,4 +1,4 @@
-.TH "SMPCP" "1" "0.1.5" "July 2021" "Super Music Player Client Plus"
+.TH "SMPCP" "1" "0.1.5" "August 2021" "Super Music Player Client Plus"
 .SH NAME
 \fB\fCsmpcp\fR \- smpcp documentation\.
 .SH "SYNOPSIS"
@@ -94,6 +94,9 @@ Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \
 
 \fBadd\fR <\fIuri\fR>
   Adds songs to the queue. \fBadd\fR command can also read from stdin.
+
+\fBaddsong\fR <\fIartist\fR> <\fItitle\fR>
+  Add a specific song to the queue and set its priority so that it will be played right after the current song.
 
 \fBgetrnd\fR [\fI-a\fR] <\fIcount\fR>
   Prints <\fIcount\fR> random songs or albums (\fI-a\fB).
