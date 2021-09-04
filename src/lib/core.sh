@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/06/30
+# M │ 2021/09/04
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -143,7 +143,9 @@ read_config() {
   # return setting value for a given parameter.
 
   [[ $1 ]] || { echo "null"; return 1; }
-  
+
+  [[ -a $SMPCP_SETTINGS ]] || return 1
+
   local param regex line value
   param="$1"
   regex="^[[:space:]]*${param}[[:space:]]*=[[:space:]]*(.+)$"
@@ -171,6 +173,8 @@ read_config() {
 write_config() {
   # write value for a given parameter in config file.
   # append parameter/value to config file if not present.
+
+  [[ -a $SMPCP_SETTINGS ]] || return 1
 
   [[ -n "$*" && -n "$2" ]] && {
     local param="$1"
