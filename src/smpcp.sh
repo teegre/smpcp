@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/08/02
+# M │ 2021/09/04
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -49,6 +49,13 @@ source "$SMPCP_LIB"/statistics.sh
 source "$SMPCP_LIB"/tracker.sh
 # shellcheck source=/usr/lib/smpcp/volume.sh
 source "$SMPCP_LIB"/volume.sh
+
+
+[[ -a $SMPCP_SETTINGS ]] || {
+  message E "missing configuration file."
+  message M "see smpcp.conf(5) for more info."
+  exit 1
+}
 
 __is_mpd_running || {
   message E "MPD is not running."
