@@ -18,6 +18,8 @@
 *  Playback statistics.
 *  Can be extended with plugins.
 
+**smpcp** doesn't work if **mpd** is not started as a user process.
+
 ## Dependencies
 
 Latest version of these packages are needed:
