@@ -19,42 +19,36 @@ CC         = gcc
 LIBS       = -lmpdclient
 
 .PHONY: install
-install: src/$(PROGNAME)
-install: src/$(DAEMON)
-
-	install -d  $(DESTDIR)$(BINDIR)
-	
-	install -m755 src/$(PROGNAME) $(DESTDIR)$(BINDIR)/$(PROGNAME)
-	install -m755 src/$(DAEMON) $(DESTDIR)$(BINDIR)/$(DAEMON)
-	
+install:src/$(PROGNAME)
+install:src/$(DAEMON)
+	install -d $(BINDIR)
+	install -m755 src/$(PROGNAME) $(BINDIR)/$(PROGNAME)
+	install -m755 src/$(DAEMON) $(BINDIR)/$(DAEMON)
 	${CC} src/idle.c $(LIBS) -o src/idlecmd
-	install -m755 src/idlecmd $(DESTDIR)$(BINDIR)
-
+	install -m755 src/idlecmd $(BINDIR)
 	install -m644 $(SERVICE) $(SYSDUNIT)/$(SERVICE)
-
-	install -Dm644 src/lib/*.* -t $(DESTDIR)$(LIBDIR)/$(PROGNAME)
-	install -Dm644 smpcp.conf  -t $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
-	install -Dm644 assets/*.*  -t $(DESTDIR)$(ASSETSDIR)/
-	install -m644 autocomplete/bash-smpcp-complete $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
-	install -m644 autocomplete/zsh-smpcp-complete $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
-	install -Dm644 $(MANPAGE1) -t $(DESTDIR)$(MANDIR1)
-	install -Dm644 $(MANPAGE5) -t $(DESTDIR)$(MANDIR5)
-	install -Dm644 LICENSE     -t $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
-
+	install -Dm644 src/lib/*.* -t $(LIBDIR)/$(PROGNAME)
+	install -Dm644 smpcp.conf  -t $(CONFIGDIR)/$(PROGNAME)
+	install -Dm644 assets/*.*  -t $(ASSETSDIR)/
+	install -Dm644 $(MANPAGE1) -t $(MANDIR1)
+	install -Dm644 $(MANPAGE5) -t $(MANDIR5)
+	install -Dm644 LICENSE     -t $(SHAREDIR)/licenses/$(PROGNAME)
+	if [ -d $(BASHCOMP) ]; then install -m644 autocomplete/bash-smpcp-complete $(BASHCOMP)/$(PROGNAME); fi
+	if [ -d $(ZSHCOMP) ]; then install -m644 autocomplete/zsh-smpcp-complete $(ZSHCOMP)/_$(PROGNAME); fi
 	rm src/$(PROGNAME)
 	rm src/$(DAEMON)
 	rm src/idlecmd
 
 .PHONY: uninstall
 uninstall:
-	rm $(DESTDIR)$(BINDIR)/$(PROGNAME)
-	rm $(DESTDIR)$(BINDIR)/$(DAEMON)
-	rm $(DESTDIR)$(BINDIR)/idlecmd
+	rm $(BINDIR)/$(PROGNAME)
+	rm $(BINDIR)/$(DAEMON)
+	rm $(BINDIR)/idlecmd
 	rm $(SYSDUNIT)/$(SERVICE)
-	rm -rf $(DESTDIR)$(LIBDIR)/$(PROGNAME)
-	rm -rf $(DESTDIR)$(CONFIGDIR)/$(PROGNAME)
-	rm $(DESTDIR)$(BASHCOMP)/$(PROGNAME)
-	rm $(DESTDIR)$(ZSHCOMP)/_$(PROGNAME)
-	rm $(DESTDIR)$(MANDIR1)/$(MANPAGE1)
-	rm $(DESTDIR)$(MANDIR5)/$(MANPAGE5)
-	rm -rf $(DESTDIR)$(SHAREDIR)/licenses/$(PROGNAME)
+	rm -rf $(LIBDIR)/$(PROGNAME)
+	rm -rf $(CONFIGDIR)/$(PROGNAME)
+	rm $(MANDIR1)/$(MANPAGE1)
+	rm $(MANDIR5)/$(MANPAGE5)
+	rm -rf $(SHAREDIR)/licenses/$(PROGNAME)
+	if [ -d $(BASHCOMP) ]; then rm $(BASHCOMP)/$(PROGNAME); fi
+	if [ -d $(ZSHCOMP) ]; then rm $(ZSHCOMP)/_$(PROGNAME); fi
