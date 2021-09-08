@@ -25,7 +25,7 @@
 #
 # VOICEOVER
 # C : 2021/05/20
-# M : 2021/05/25
+# M : 2021/09/08
 # D : Random track artist/title or current time voiceover.
 
 export PLUG_VOICEOVER_VERSION="0.1"
@@ -92,14 +92,24 @@ voiceover() {
   voice="${gender}$((RANDOM%3+2))"
   
   espeak -v en+${voice} -w "${wav}" -s 140 &> /dev/null <<< "$msg"
-  
+
   ((cvol=$(fcmd status volume)))
   ((vol=cvol-cvol*30/100))
+
+  local avol
+
+  if which pw-play &> /dev/null; then
+    local player="pw-play"
+    avol="$((cvol/100)).$((cvol%100))"
+  else
+    local player="paplay"
+    ((avol=65536*cvol/100))
+  fi
 
   (
     volume $((vol)) &> /dev/null
   
-    paplay --volume $((65536*cvol/100)) "$wav"
+    "$player" --volume "$avol" "$wav"
 
     volume $((cvol)) &> /dev/null
 
