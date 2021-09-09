@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/08/11
+# M : 2021/08/27
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -86,11 +86,11 @@ add_songs() {
   # sometimes in random mode there's not next song
   # even if the queue contains more than one track.
   # disabling and re-enabling random mode fix the issue.
-  get_next 2> /dev/null || {
+  get_next &> /dev/null || {
     [[ $(queue_length) -gt 1 ]] && {
       random 0
       random 1
-      get_next 2> /dev/null && return 1
+      get_next &> /dev/null && return 1
     }
   }
 
