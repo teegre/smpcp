@@ -25,21 +25,14 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/06/19
+# M │ 2021/09/09
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
 
 __is_mpd_running() {
   # check whether mpd is running or not.
-
-  local pidfile="$HOME/.config/mpd/pid"
-  local pid
-  [[ -s $pidfile ]] && {
-    pid="$(<"$pidfile")"
-    check_pid "$pid" && return 0
-  }
-  return 1
+  cmd ping &> /dev/null
 }
 
 __cmd() {
@@ -96,7 +89,7 @@ CMD
 
 cmd() {
   # like __cmd + filter errors.
-  local _cmd
+  local _cmd _OK
   _cmd="$*"
   while read -r; do
     [[ $REPLY =~ ^OK.+$ ]] && continue
@@ -107,8 +100,10 @@ cmd() {
       message E "${BASH_REMATCH[1],,}"
       return 1
     }
+    _OK=1
     [[ $REPLY ]] && echo "$REPLY"
   done < <(__cmd "$@")
+  [[ $_OK ]] || return 1
 }
 
 fcmd() {
