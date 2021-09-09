@@ -235,6 +235,7 @@ wait_for_pid() {
 
 _daemon() {
   # check whether daemon is enabled.
+  [[ -a $SMPCPD_PID ]] || return 1
 
   local pid
   pid="$(<"$SMPCPD_PID")"
