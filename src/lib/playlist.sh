@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/08/02
+# M │ 2021/10/10
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -500,6 +500,16 @@ save_state() {
     write_config TRACK $(($(fcmd status song)+1))
     [[ $(get_current) =~ ^https? ]] || write_config ELAPSED "$(get_elapsed)"
   }
+
+  # save playback options
+  local options
+  options="$(fcmd status repeat)"
+  options+="$(fcmd status random)"
+  options+="$(fcmd status single)"
+  options+="$(fcmd status consume)"
+  options+="$(fcmd status xfade)"
+  write_config OPTIONS "$options"
+
 }
 
 restore_state() {
@@ -516,9 +526,10 @@ restore_state() {
 
   [[ $savestate == "off" ]] && return 1
 
-  load queue
+  load queue 2> /dev/null || return 1
+
   read_config STATE &> /dev/null && {
-    local track elapsed
+    local track elapsed options
     track="$(read_config TRACK)"
     elapsed="$(read_config ELAPSED)" || elapsed=0
     play $((track)) && seek $((elapsed))
@@ -526,5 +537,12 @@ restore_state() {
     remove_config STATE
     remove_config TRACK
     remove_config ELAPSED
+    options="$(read_config OPTIONS)"
+    cmd repeat    "${options:0:1}" 2> /dev/null
+    cmd random    "${options:1:1}" 2> /dev/null
+    cmd single    "${options:2:1}" 2> /dev/null
+    cmd consume   "${options:3:1}" 2> /dev/null
+    cmd crossfade "${options:4}"   2> /dev/null
+    remove_config OPTIONS
   }
 }
