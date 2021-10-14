@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/10/10
+# M │ 2021/10/14
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -492,14 +492,12 @@ save_state() {
     savestate="off"
 
   [[ $savestate == "off" ]] && return 1
-  
+
   save queue
 
-  [[ $(state -p) == "play" ]] && {
-    write_config STATE play
-    write_config TRACK $(($(fcmd status song)+1))
-    [[ $(get_current) =~ ^https? ]] || write_config ELAPSED "$(get_elapsed)"
-  }
+  write_config STATE "$(state -p)"
+  write_config TRACK $(($(fcmd status song)+1))
+  [[ $(get_current) =~ ^https? ]] || write_config ELAPSED "$(get_elapsed)"
 
   # save playback options
   local options
@@ -509,7 +507,6 @@ save_state() {
   options+="$(fcmd status consume)"
   options+="$(fcmd status xfade)"
   write_config OPTIONS "$options"
-
 }
 
 restore_state() {
@@ -528,21 +525,26 @@ restore_state() {
 
   load queue 2> /dev/null || return 1
 
-  read_config STATE &> /dev/null && {
-    local track elapsed options
-    track="$(read_config TRACK)"
-    elapsed="$(read_config ELAPSED)" || elapsed=0
+  local state track elapsed options
+  state="$(read_config STATE)" || state="stop"
+  track="$(read_config TRACK)"
+  elapsed="$(read_config ELAPSED)" || elapsed=0
+
+  [[ $state != "stop" ]] &&
     play $((track)) && seek $((elapsed))
-    remove queue
-    remove_config STATE
-    remove_config TRACK
-    remove_config ELAPSED
-    options="$(read_config OPTIONS)"
-    cmd repeat    "${options:0:1}" 2> /dev/null
-    cmd random    "${options:1:1}" 2> /dev/null
-    cmd single    "${options:2:1}" 2> /dev/null
-    cmd consume   "${options:3:1}" 2> /dev/null
-    cmd crossfade "${options:4}"   2> /dev/null
-    remove_config OPTIONS
-  }
+  [[ $state == "pause" ]] && pause
+
+  remove queue
+  remove_config STATE
+  remove_config TRACK
+  remove_config ELAPSED
+
+  options="$(read_config OPTIONS)"
+  cmd repeat    "${options:0:1}" 2> /dev/null
+  cmd random    "${options:1:1}" 2> /dev/null
+  cmd single    "${options:2:1}" 2> /dev/null
+  cmd consume   "${options:3:1}" 2> /dev/null
+  cmd crossfade "${options:4}"   2> /dev/null
+
+  remove_config OPTIONS
 }
