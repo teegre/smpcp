@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/09/09
+# M │ 2021/10/18
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -90,6 +90,13 @@ logme() {
     }
     :> "$SMPCP_LOG"
     return
+  }
+  [[ $1 == "--clean" ]] && {
+    rm "${SMPCP_LOG}".* &> /dev/null && {
+      echo -e "$(now) --- cleaned older log files." >> "$SMPCP_LOG"
+      return 0
+    }
+    return 1
   }
 
   echo -e "$(now) --- $*" >> "$SMPCP_LOG"
