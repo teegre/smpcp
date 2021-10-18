@@ -62,12 +62,6 @@ plug_bookmark() {
 
 __plug_bookmark_notify() {
   case $1 in
-    end)
-      local id
-      id="$(__bookmark_id)"
-      remove_config "bookmark_${id}" &&
-        logme "bookmark: removed bookmark ${id}."
-      ;;
     play)
       local id pos
       id="$(__bookmark_id)"
