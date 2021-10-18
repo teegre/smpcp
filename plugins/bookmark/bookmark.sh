@@ -74,5 +74,7 @@ __plug_bookmark_notify() {
       pos="$(read_config "bookmark_${id}")" || return
       logme "bookmark: restore bookmark ${id}."
       seek $((pos))
+      remove_config "bookmark_${id}" &&
+        logme "bookmark: removed bookmark ${id}."
   esac
 }
