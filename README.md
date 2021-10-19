@@ -80,12 +80,7 @@ For more info, read **smpcp(1)** manual page.
 
 ## Plugins
 
-As stated at the beginning of this document, **smpcp** can be extended with plugins.  
-For now these plugins are available:
-
-*  sleeptimer - pause playback after a user-defined duration (in minutes).
-*  stopafter - pause playback after current song.
-*  voiceover - occasionally tells what's playing or the current time.
+As stated at the beginning of this document, **smpcp** can be extended with plugins (check out `plugins` in this repository).
 
 Until I find a convenient way to manage plugin installation, a plugin must be installed manually by copying or symlinking its directory over to `$XDG_CONFIG_HOME/plugins`.
 No extra step is needed since **smpcp** 'detects' plugins automatically.
@@ -96,6 +91,3 @@ Type `smpcp plugins` to see a list of installed plugins.
 
 I provided a (very basic and still in construction) guide to help plugins development. And you can check out the example plugin called **hello**.
 
-## TODO
-
-A lot.
