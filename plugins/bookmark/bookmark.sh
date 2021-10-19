@@ -25,7 +25,7 @@
 #
 # PLUGIN EXAMPLE
 # C : 2021/10/18
-# M : 2021/10/18
+# M : 2021/10/19
 # D : Save current playback position and stop.
 
 # version
@@ -68,6 +68,7 @@ __plug_bookmark_notify() {
       pos="$(read_config "bookmark_${id}")" || return
       logme "bookmark: restore bookmark ${id}."
       seek $((pos))
+      notify_player "restoring bookmark..."
       remove_config "bookmark_${id}" &&
         logme "bookmark: removed bookmark ${id}."
   esac
