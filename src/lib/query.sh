@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/06/06
+# M │ 2021/10/19
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -251,6 +251,10 @@ musicdir="$(get_music_dir)" || {
   return 1
 }
 
+local T="$EPOCHSECONDS"
+
+notify_player "cleaning sticker database..."
+
 message M "scanning sticker database."
 
 local uris
@@ -278,7 +282,10 @@ done
 
 message M "found ${#_orphans[@]} orphan(s)."
 
-[[ ${_orphans[*]} ]] || return 0
+[[ ${_orphans[*]} ]] || {
+  notify_player "sticker database is clean."
+  return 0
+}
 
 # format list
 for ((i=0;i<${#_orphans[@]}-1;i++)); do
@@ -292,6 +299,9 @@ sqlite3 "$SMPCP_STICKER_DB" << SQL
 DELETE FROM sticker
 WHERE uri IN (${orphans[*]})
 SQL
+
+notify_player "sticker database cleaned in $(secs_to_hms $((EPOCHSECONDS-T)))"
+
 }
 
 get_random_song() {
