@@ -25,7 +25,7 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/10/19
+# M : 2021/10/20
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
@@ -39,6 +39,7 @@ declare SMPCP_PLUGINS_DIR="$HOME/.config/smpcp/plugins"
 get_plugin_list() {
   local plugin
   for plugin in "${SMPCP_PLUGINS_DIR}"/*; do
+    [[ ${plugin##*/} == "*" ]] && break # if directory is empty.
     echo "${plugin##*/}"
   done
 }
@@ -192,7 +193,6 @@ list_plugins() {
   local plugin count=0 version
 
   while read -r plugin; do
-    [[ $plugin == "*" ]] && break
     ((++count))
     # shellcheck disable=SC1090
     source "${SMPCP_PLUGINS_DIR}/${plugin}/${plugin}.sh"
