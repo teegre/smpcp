@@ -64,7 +64,7 @@ echo "$$" > "$SMPCPD_PID"
 
 logme --clear
 
-logme "daemon: started."
+logme "smpcpd: daemon started."
 
 echo "daemon started."
 
@@ -96,7 +96,7 @@ add_songs() {
 
   [[ $(queue_length) -gt 1 ]] && return 1
 
-  logme "daemon: add songs."
+  logme "smpcpd: adding songs."
 
   local mode
   mode="$(get_mode)"
@@ -138,7 +138,7 @@ play_event() {
   # handle playlist generator here vvv
   add_songs
 
-  logme "daemon: play."
+  logme "smpcpd: play."
 }
 
 pause_event() {
@@ -146,14 +146,14 @@ pause_event() {
 
   media_update
 
-  logme "daemon: pause."
+  logme "smpcpd: pause."
 }
 
 stop_event() {
   media_update
   get_mode &> /dev/null || notify_player "stopped."
 
-  logme "daemon: stop."
+  logme "smpcpd: stop."
 }
 
 change_event() {
@@ -171,7 +171,7 @@ change_event() {
 end_event() {
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
   update_stats "$URI" ||
-    logme "daemon: [ERROR] could not update song statistics. uri: $URI"
+    logme "smpcpd: [ERROR] could not update song statistics. uri: $URI"
   add_songs && {
     state || play
   }
@@ -182,18 +182,18 @@ update_daemon() {
 }
 
 quit_daemon() {
-  logme "daemon: shutting down."
+  logme "smpcpd: shutting down."
   echo "shutting down..."
   plugin_notify "quit"
   clear_media
   save_state
   :> "$SMPCPD_PID"
   RUN=0
-  logme "daemon: quit."
+  logme "smpcpd: quit."
 }
 
 loop() {
-  logme "daemon: listening to events."
+  logme "smpcpd: listening to events."
   local event
   while read -r event; do
     # react to player events
@@ -236,14 +236,18 @@ while ((RUN)); do
   __is_mpd_running && {
     [[ $DETECT ]] && {
       unset DETECT
-      logme "daemon: unpaused."
+      logme "smpcpd: daemon unpaused."
     }
     loop
   }
   [[ $RUN ]] && {
-    [[ $DETECT ]] || { DETECT=1; logme "daemon: paused"; }
+    [[ $DETECT ]] || {
+      DETECT=1
+      clear_media
+      logme "smpcpd: daemon paused"
+    }
     sleep 1
   }
 done
 
-logme "daemon: stopped."
+logme "smpcpd: daemon stopped."
