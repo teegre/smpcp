@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/09/09
+# M │ 2021/10/19
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -647,7 +647,10 @@ update_song_list() {
     ((list_mod_date >= db_mod_date)) && return 1
   }
     
+  notify_player "updating song list..."
+  local T="$EPOCHSECONDS"
   fcmd -x list file file > "$SMPCP_SONG_LIST"
+  notify_player "song list updated in $(secs_to_hms $((EPOCHSECONDS-T)))."
   return 0
 }
 
