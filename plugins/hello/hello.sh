@@ -76,6 +76,7 @@ __plug_hello_notify() {
        echo "hello: ${cur,,} is now playing" ;;
      end   ) echo "hello: reached the end of song" ;;
      add   ) echo "hello: adding new songs" ;;
-     quit  ) echo "goodbye"
+     added ) echo "hello: songs were added" ;;
+     quit  ) echo "goodbye!"
    esac
 }
