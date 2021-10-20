@@ -1,13 +1,13 @@
-.TH "SMPCP" "1" "0.1.5" "August 2021" "Super Music Player Client Plus"
+.TH "SMPCP" "1" "0.1.7" "October 2021" "Super Music Player Client Plus"
 .SH NAME
 \fB\fCsmpcp\fR \- smpcp documentation\.
 .SH "SYNOPSIS"
 .B smpcp [<\fICOMMAND\fR> [\fIOPTIONS\fR] [++ <\fICOMMAND\fR> [\fIOPTIONS\fR] ++ ...]
 .SH "DESCRIPTION"
 .PP
-\fBsmpcp\fR is a command line client for MPD.
+\fBsmpcp\fR is a command line client for \fBMPD\fR.
 .SH "CONFIGURATION"
-See \fBsmpcp(5)\fR.
+See \fBsmpcp.conf(5)\fR.
 .SH "DAEMON"
 To enable auto-playlists, playback statistics and notifications, \fBsmpcpd\fR - the \fBsmpcp\fR daemon - must be running. A systemd unit is provided for this purpose.
 .TP
@@ -21,9 +21,11 @@ If no command is given, \fBsmpcp\fR prints its version and the current status.
 
 Commands can be chained with \fB++\fR operator.
 
+Command auto-completion is available for \fBzsh\fR and \fBbash\fR.
+
 .SS Player Commands
 
-\fBplay\fR [pos]
+\fBplay\fR [\fIpos\fR]
   Starts playing the specified song by its position in the queue.
 
 \fBplayalbum\fR [<\fIartist\fR> <\fIalbum\fR>]
@@ -89,7 +91,7 @@ If no option is given for the following commands, \fBsmpcp\fR prints their curre
 
 .SS Queue Management
 
-\fBls\fR [\fI-f\fR]|[\fI-f\fR <\fIformat\fR>]
+\fBls\fR [\fI-f\fR]|[\fI-f\fR [\fIformat\fR]]
 Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \fIformat\fR (see \fBOUTPUT FORMATTING\fR).
 
 \fBadd\fR <\fIuri\fR>
@@ -143,7 +145,7 @@ Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \
 \fBalbuminfo\fR
   Prints info about current album.
 
-\fBalbums [artist]\fR
+\fBalbums\fR [\fIartist\fR]
   Prints available albums for current artist.
 
 \fBgetcurrent\fR [\fIformat\fR]
@@ -226,6 +228,8 @@ Playback options are shown as a single letter:
 .SH "MODES"
 \fBsmpcp\fR has three modes: \fInormal\fR, \fIsong\fR and \fIalbum\fR.
 
+To see what mode is currently used: \fBmode\fR
+
 In order to use \fIalbum\fR and \fIsong\fR modes, the \fBsmpcp\fR daemon (\fBsmpcpd\fR) must be up and running.
 
 .SS Song Mode
@@ -240,7 +244,7 @@ Song is in the playback history.
 Song skip count is greater or equal to the limit.
 .fi
 .IP "" 0
-(see \fBINFO AND STATISTICS\fR and read \fIsmpcp.conf\fR for more info.)
+(see \fBINFO AND STATISTICS\fR and read \fBsmpcp.conf(5)\fR for more info.)
 
 To enable \fIsong\fR mode: \fBmode song\fR
 
@@ -255,8 +259,33 @@ To enable \fIalbum\fR mode: \fBmode album\fR
 \fINormal\fR mode is the default. In this mode, you have to manage the queue manually.
 
 To enable \fInormal\fR mode: \fBmode normal\fR
-
-.SH OUTPUT FORMATTING
+.SH "INFO AND STATISTICS"
+When \fBsmpcp\fR daemon is running, it keep track of played songs and statistics are stored in \fBMPD\fR sticker database:
+.PP
+.IP "" 4
+- date last played
+.br
+- play count
+.br
+- skip count
+.br
+- rating
+.fi
+.IP "" 0
+A song is added to history if:
+.PP
+.IP "" 4
+.nf
+- \fBnext\fR or \fBskip\fR command is invoked.
+- The song has been played thoroughly.
+.fi
+.IP "" 0
+Song playcount is incremented if it was played until the end.
+.br
+Song skipcount is incremented when using \fBskip\fR command.
+.PP
+You can obtain information about current song with the \fBsonginfo\fR command.
+.SH "OUTPUT FORMATTING"
 Some commands can use a format to display songs (i.e \fBgetcurrent\fR).
 .PP
 Interpreted metadata are:
@@ -345,3 +374,5 @@ This is free software provided \fBAS IS\fR with \fBNO WARRANTY\fR.
 Feel free to change and redistribute.
 
 For more info, see \fB/usr/share/licenses/smpcp/LICENSE\fR
+.SH "SEE ALSO"
+\fBsmpcp.conf(5)\fR, \fBmpd(1)\fR.
