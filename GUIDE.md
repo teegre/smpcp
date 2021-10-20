@@ -16,12 +16,14 @@ This function is called each time a player event occurs and event is passed as t
 
 Player events are:
 
+*  `start` - daemon is starting
 *  `play` - playback started
 *  `pause` - playback paused
 *  `stop` - playback stopped
 *  `end` - reached the end of current song
 *  `change` - a new song is playing
 *  `add` - new songs are added
+*  `added` - new songs were added
 *  `quit` - daemon is quitting
 
 ## Plugin version
@@ -95,12 +97,15 @@ Prints current date and time (`YYYY-MM-DD HH:MM:SS`).
 
 Usage: `logme <message>`  
 Usage: `logme --clear`
+Usage: `logme --clean`
 
 A simple logger.
 
 Log file is stored in `$HOME/.config/smpcp/log`
 
 `--clear` backup and clear log file.
+
+`--clean` clean old log files.
 
 `<message>` can contain new line character.
 
@@ -311,7 +316,7 @@ Exit status: 0 success, 1 failed.
 
 ### get_albumart
 
-Usage: `get_album_art [uri]`
+Usage: `get_albumart [uri]`
 
 Searches for album art image files (cover.jpg, cover.png, folder.jpg, folder.png), creates a 64x64 pixels thumbnail and save it to `$XDG_HOME_CONFIG/smpcp/.cache` and print its path.
 
@@ -336,5 +341,4 @@ Displays a notification including album art for the current song or the given **
 Usage: `notify_player <message>`
 
 Displays a notification with player status and a given message.
-
 
