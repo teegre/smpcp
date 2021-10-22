@@ -25,8 +25,8 @@ audio_output {
   type        "recorder"
   name        "recorder"
   enabled     "no"
-  path        "~/.config/smpcp/plugins/cassette/cassette.opus"
-  encoder     "opus"
+  path        "~/.config/smpcp/plugins/cassette/cassette.ogg"
+  encoder     "vorbis"
   format      "44100:16:2"
 }
 ```
