@@ -25,7 +25,7 @@
 #
 # VOLUME
 # C : 2021/04/10
-# M : 2021/08/19
+# M : 2021/10/22
 # D : Volume control.
 
 notify_volume() {
@@ -160,7 +160,7 @@ dim() {
     svol="$(read_config volume)"
     cmd setvol $((svol))
     write_config dim off
-    [[ $NOTIFY ]] || message M "dim: off."
+    [[ $NOTIFY ]] || message M "dim: off"
     [[ $NOTIFY ]] && notify_volume $((svol))
     return 0
   else
@@ -169,11 +169,11 @@ dim() {
     ((cvol > 1)) && {
       cmd setvol $((cvol/2))
       write_config dim on
-      [[ $NOTIFY ]] || message M "dim: on."
+      [[ $NOTIFY ]] || message M "dim: on"
       [[ $NOTIFY ]] && volume -n
       return 0
     }
-    [[ $NOTIFY ]] || message M "dim: off."
+    [[ $NOTIFY ]] || message M "dim: off"
     [[ $NOTIFY ]] && volume -n
   fi
 }
