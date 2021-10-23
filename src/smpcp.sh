@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/09/04
+# M │ 2021/10/23
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -57,7 +57,7 @@ source "$SMPCP_LIB"/volume.sh
   exit 1
 }
 
-__is_mpd_running || {
+is_mpd || {
   message E "MPD is not running."
   exit 1
 }

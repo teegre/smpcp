@@ -229,6 +229,49 @@ ORDER BY uri ASC;
 SQL
 }
 
+
+_db_get_favourite() {
+# return favourite songs.
+# usage: _db_get_favourite [-l [count]]
+# without option, it returns all favourite songs, 
+# that is, most played songs with a rating greater than 3,
+# most played on top of the list.
+# if '-l' option is provided it limits the number of songs
+# to 'song_mode_count' configuration parameter or to the 
+# number entered, if any.
+
+if [[ $1 == "-l" ]]; then
+  local order="ORDER BY RANDOM()"
+  if [[ $2 =~ [[:digit:]]+ ]]; then
+    local limit="LIMIT $2"
+    shift 2
+  else
+    local count
+    count="$(read_config song_mode_count)" || count=10
+    local limit="LIMIT $count"
+    shift
+  fi
+else
+  local order="ORDER BY r.rating DESC, c.playcount DESC"
+fi
+
+sqlite3 "$SMPCP_STICKER_DB" << SQL
+.timeout 2000
+SELECT c.uri FROM (
+  SELECT uri, CAST(value AS INTEGER) AS playcount FROM sticker
+  WHERE name='playcount' AND playcount > 0
+  ) AS c
+  LEFT JOIN (
+  SELECT uri, CAST(value AS INTEGER) AS rating FROM sticker
+  WHERE name='rating' AND rating > 6
+  ) AS r
+  ON c.uri=r.uri
+  WHERE r.rating IS NOT NULL
+${order}
+${limit};
+SQL
+}
+
 clean_orphan_stickers() {
 # check for orphans and remove them from
 # sticker database.
@@ -347,6 +390,9 @@ get_rnd() {
   }
   
   count=$1
+  [[ $count ]] || {
+    count="$(read_config song_mode_count)" || count=10
+  }
 
   mapfile -t QUEUE < <(list_queue -f 2> /dev/null)
 
@@ -394,5 +440,10 @@ get_rnd() {
 
   ((C+count-RR5-RR4==0))
 
-  logme "query: $((C+(count-RR5-RR4))) song(s) added."
+  logme "query: found $((C+(count-RR5-RR4))) song(s)."
+}
+
+get_fav() {
+  # print random favourite songs
+  _db_get_favourite -l
 }

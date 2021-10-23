@@ -86,6 +86,8 @@ add_songs() {
   # sometimes in random mode there's not next song
   # even if the queue contains more than one track.
   # disabling and re-enabling random mode fix the issue.
+
+  # shellcheck disable=SC2119
   get_next &> /dev/null || {
     [[ $(queue_length) -gt 1 ]] && {
       random 0
@@ -102,12 +104,19 @@ add_songs() {
   mode="$(get_mode)"
 
   if [[ $mode -eq 1 ]]; then
-    local songcount
-    songcount="$(read_config playlist_song_count)" || songcount=10
     plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding songs..."
-    get_rnd $((songcount)) | add
+    if ((RANDOM%10 == 0)); then
+      # 10% chance to get a queue filled with favourite songs.
+      local c q
+      c="$(read_config song_mode_count)" || c=10
+      get_fav | add
+      q="$(queue_length)"
+      ((q<c)) && get_rnd $((c-q)) | add
+    else
+      get_rnd | add
+    fi
     plugin_notify "added"
     __song_mode
     rm "$SMPCPD_LOCK"
