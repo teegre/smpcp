@@ -1,5 +1,7 @@
 # PLUGINS DEVELOPER GUIDE
 
+## Programming Language
+
 Plugins must be written in Bash.
 
 ## Plugins Location
@@ -96,7 +98,7 @@ Prints current date and time (`YYYY-MM-DD HH:MM:SS`).
 ### logme
 
 Usage: `logme <message>`  
-Usage: `logme --clear`
+Usage: `logme --clear`  
 Usage: `logme --clean`
 
 A simple logger.
@@ -115,10 +117,10 @@ Usage: `get_ext <uri>`
 
 Prints lower case file extension.
 
-### _max
+### max
 
-Usage: `_max <value1> <value2> ... <valueN>`  
-Usage: `<command> | _max`
+Usage: `max <value1> <value2> ... <valueN>`  
+Usage: `<command> | max`
 
 Prints max value.
 
@@ -136,20 +138,20 @@ Prints a message on stdout or stderr.
 
 Usage: `read_config <parameter>`
 
-Reads from settings file and prints value for the given parameter.
+Reads from configuration file and prints value for the given parameter.
 
 ### write_config
 
 Usage: `write_config <parameter> <value>`
 
-Writes value for the given parameter in the settings file.  
-Appends parameter to config file if not already present.
+Writes value for the given parameter in the configuration file.  
+Appends parameter to configuration file if not already present.
 
 ### remove_config
 
 `Usage: remove_config <parameter>`
 
-Removes a parameter from the settings file.
+Removes a parameter from the configuration file.
 
 ### check_pid
 
@@ -167,7 +169,7 @@ Waits for process to terminate for a given duration in seconds.
 
 Returns exit status 0 if process ended, 1 otherwise.
 
-### _daemon
+### is_daemon
 
 Checks whether **smpcpd** is running or not.
 
@@ -183,7 +185,7 @@ Sends HUP signal to **smpcpd** to notify it to add new songs to the queue.
 
 ## Functions :
 
-### __is_mpd_running
+### is_mpd
 
 Checks whether MPD is running or not.
 
@@ -224,9 +226,9 @@ Returns exit status 0 if playing or paused, 1 if stopped.
 
 `-p` prints actual state. Can be *play*, *pause* or *stop*.
 
-### _parse_song_info
+### parse_song_info
 
-`Usage: _parse_song_info [-s] [format]`
+`Usage: parse_song_info [-s] [format]`
 
 Parses song information in the given format.
 
@@ -302,9 +304,9 @@ Usage: `get_elapsed [-h]`
 Display song duration or elapsed time in seconds.  
 `-h` print time in a human readable format.
 
-### _album_uri
+### album_uri
 
-Usage: `_album_uri [uri]`
+Usage: `album_uri [uri]`
 
 Strip filename part from current song path or given **uri**.
 

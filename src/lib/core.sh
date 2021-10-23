@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2021/10/20
+# M │ 2021/10/23
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -105,11 +105,11 @@ logme() {
 # strip path and filename from URI and print lowercase file extension.
 get_ext() { [[ $1 =~ ^https? ]] && { echo "stream"; return; }; local ext; ext="${1##*.}"; echo "${ext,,}"; }
 
-_max() {
+max() {
   # return max value
   # usage: 
-  #  _max <value1> <value2> ... <valueN>
-  #  <command> | _max
+  #  max <value1> <value2> ... <valueN>
+  #  <command> | max
 
   local v1 v2
   if (( $# > 1 )); then
@@ -240,8 +240,8 @@ wait_for_pid() {
   }
 }
 
-_daemon() {
-  # check whether daemon is enabled.
+is_daemon() {
+  # check whether daemon is running.
   [[ -a $SMPCPD_PID ]] || return 1
 
   local pid

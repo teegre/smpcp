@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/10/19
+# M │ 2021/10/23
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -81,11 +81,11 @@ _is_in_history() {
   dur="$(read_config keep_in_history)" || return 1
   
   if [[ $ALBUM ]]; then
-    uri="$(_album_uri "$uri")"
+    uri="$(album_uri "$uri")"
     D1=$(
       while read -r; do
         date -d "${REPLY%% *}" "+%s"
-      done < <(find_sticker "$uri" lastplayed 2> /dev/null) | _max
+      done < <(find_sticker "$uri" lastplayed 2> /dev/null) | max
     )
   else
     D1="$(get_sticker "$uri" lastplayed 2> /dev/null)"
@@ -357,7 +357,7 @@ get_rnd() {
     logme "query: $((count)) album(s)."
 
     while read -r; do
-      _album_uri "$REPLY"
+      album_uri "$REPLY"
     done < <(get_random_song -a $((count)))
     return
   }

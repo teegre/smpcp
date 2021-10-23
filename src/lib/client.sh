@@ -25,12 +25,12 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/10/19
+# M │ 2021/10/23
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
 
-__is_mpd_running() {
+is_mpd() {
   # check whether mpd is running or not.
   cmd ping &> /dev/null
 }
@@ -171,7 +171,7 @@ state() {
   fi
 }
 
-_parse_song_info() {
+parse_song_info() {
   # parse song information in the given format.
   #
   # available tags:
@@ -325,7 +325,7 @@ get_current() {
   local fmt
   fmt="${1:-"%file%"}"
 
-  cmd currentsong | _parse_song_info "$fmt"
+  cmd currentsong | parse_song_info "$fmt"
 }
 
 get_next() {
@@ -338,7 +338,7 @@ get_next() {
 
   songid="$(fcmd status nextsongid)"
   [[ $songid ]] || return 1
-  cmd playlistid "$songid" | _parse_song_info "$fmt" 
+  cmd playlistid "$songid" | parse_song_info "$fmt" 
 }
 
 get_previous() {
@@ -350,18 +350,18 @@ get_previous() {
   fmt="${1:-"%file%"}"
 
   if consume &> /dev/null; then
-    _daemon && {
+    is_daemon && {
       local index uri
       index="$(read_config history_index)" || index=0
       uri="$(_db_get_previous_song $((index)))"
       [[ $uri ]] &&
-        cmd lsinfo "$uri" | _parse_song_info -s "$fmt"
+        cmd lsinfo "$uri" | parse_song_info -s "$fmt"
     }
   else
     local cid id
     cid="$(get_current "%id%")"
     ((id=cid-1))
-    cmd playlistid "$id" 2> /dev/null | _parse_song_info "$fmt"
+    cmd playlistid "$id" 2> /dev/null | parse_song_info "$fmt"
   fi
 }
 
@@ -377,7 +377,7 @@ get_info() {
   local fmt
   fmt="${1:-"[[%artist% - ]]%title%"}"
 
-  cmd lsinfo "$uri" | _parse_song_info -s "$fmt"
+  cmd lsinfo "$uri" | parse_song_info -s "$fmt"
 }
 
 get_duration() {
@@ -426,7 +426,7 @@ get_elapsed() {
 }
 
 # shellcheck disable=SC2120
-_album_uri() {
+album_uri() {
   # print current album URI.
 
   local uri
@@ -500,7 +500,7 @@ get_albumart() {
   }
 
   local uri covers cover
-  uri="$(_album_uri "$song_uri")"
+  uri="$(album_uri "$song_uri")"
 
   mapfile -t covers < <(fcmd listfiles "$uri" file | grep '^cover\..*$\|^folder\..*$')
 
@@ -548,11 +548,11 @@ get_album_info() {
   fi
 
   local uri tracklist count=0
-  uri="$(_album_uri)"
+  uri="$(album_uri)"
   while read -r; do
     ((++count))
     tracklist+=("$REPLY")
-  done < <(cmd lsinfo "$uri" | _parse_song_info -s "$fmt")
+  done < <(cmd lsinfo "$uri" | parse_song_info -s "$fmt")
 
   local t song track title dur=0
   for t in "${tracklist[@]}"; do

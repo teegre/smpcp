@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/10/14
+# M │ 2021/10/23
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -51,7 +51,7 @@ list_queue() {
     local fmt
     fmt="${2:-"%file%"}"
 
-    ${_cmd} | _parse_song_info "$fmt"
+    ${_cmd} | parse_song_info "$fmt"
     return
   }
 
@@ -83,7 +83,7 @@ list_queue() {
     else
       printf "%0${#len}d. │ %s\n" "$pos" "$title"
     fi
-  done < <(${_cmd} | _parse_song_info "%file%→[[%artist%: ]]%title%[[ (%name%)]]→%time%")
+  done < <(${_cmd} | parse_song_info "%file%→[[%artist%: ]]%title%[[ (%name%)]]→%time%")
 
   local trk
   ((pos>1)) && trk="tracks" || trk="track"
@@ -208,7 +208,7 @@ move() {
 }
 
 clear_queue() {
-  _daemon && get_mode &> /dev/null && state && {
+  is_daemon && get_mode &> /dev/null && state && {
     cmd clear
     update_daemon
     return
@@ -231,7 +231,7 @@ crop() {
       cmd deleteid "$id"
   done < <(fcmd playlistinfo "Id")
 
-  _daemon && get_mode &> /dev/null && state
+  is_daemon && get_mode &> /dev/null && state
     update_daemon
 }
 
@@ -306,7 +306,7 @@ add_album() {
   }
 
   local uri
-  uri="$(_album_uri)" || {
+  uri="$(album_uri)" || {
     message E "no current song."
     return 1
   }

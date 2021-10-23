@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/06/05
+# M : 2021/10/23
 # D : Statistics management.
 
 get_sticker() {
@@ -98,7 +98,7 @@ update_history_index() {
 }
 
 media_update() {
-  __is_mpd_running || {
+  is_mpd || {
     :> "/tmp/.currentmedia"
     return
   }
@@ -115,7 +115,7 @@ clear_media() { :> "/tmp/.currentmedia"; }
 
 update_stats() {
   
-  __is_mpd_running || return 1
+  is_mpd || return 1
 
   [[ $1 == "--no-playcount" ]] && {
     local NO_PLAYCOUNT=1

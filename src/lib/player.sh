@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2021/07/02
+# M │ 2021/10/23
 # D │ Player functions.
 
 toggle() {
@@ -45,7 +45,7 @@ play() {
   # start playback.
   # usage: play [pos]
 
-  state || _daemon && get_mode &> /dev/null && queue_is_empty && {
+  state || is_daemon && get_mode &> /dev/null && queue_is_empty && {
     # too bad! playback is stopped, daemon is active, song/album mode
     # is enabled and queue is empty!
     # so we need to tell smpcpd to add songs for us 
@@ -87,13 +87,13 @@ next_album() {
 
   local mode
   mode="$(get_mode)"
-  [[ $mode -eq 2 ]] && _daemon && {
+  [[ $mode -eq 2 ]] && is_daemon && {
     cmd clear
     update_daemon
     return 0
   }
 
-  _daemon || {
+  is_daemon || {
     message E "daemon is not running."
     return 1
   }
@@ -400,7 +400,7 @@ replaygain() {
 _mode() {
   # set play mode or print status.
 
-  _daemon || {
+  is_daemon || {
     message W "mode: off (daemon not running.)"
     write_config mode off
     return 1

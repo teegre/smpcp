@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/10/20
+# M : 2021/10/23
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -54,7 +54,7 @@ source "$SMPCP_LIB"/volume.sh
 declare URI
 
 # check if an instance is already running.
-_daemon && {
+is_daemon && {
   message E "an instance is already running."
   exit 1
 }
@@ -70,7 +70,7 @@ echo "daemon started."
 
 clear_media
 
-while ! __is_mpd_running; do
+while ! is_mpd; do
   sleep 1
 done
 
@@ -233,7 +233,7 @@ echo "done."
 # or was stopped when smpcpd was running...
 RUN=1
 while ((RUN)); do
-  __is_mpd_running && {
+  is_mpd && {
     [[ $DETECT ]] && {
       unset DETECT
       logme "smpcpd: daemon unpaused."
