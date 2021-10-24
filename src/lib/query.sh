@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/10/23
+# M │ 2021/10/24
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -50,7 +50,7 @@ search() {
     fmt="%file%"
   fi
 
-  cmd -x search "$@" | _parse_song_info -s "$fmt" ||
+  cmd -x search "$@" | parse_song_info -s "$fmt" ||
     return 1
 }
 
