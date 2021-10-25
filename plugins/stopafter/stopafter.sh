@@ -57,7 +57,7 @@ plug_stopafter() {
     return 1
   }
 
-  _daemon || {
+  is_daemon || {
     message E "stopafter: daemon is not running."
     return 1
   }
