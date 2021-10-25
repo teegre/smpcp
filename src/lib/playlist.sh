@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/10/23
+# M │ 2021/10/25
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -480,71 +480,4 @@ remove() {
   # usage: remove <name>
 
   cmd rm "$1"
-}
-
-save_state() {
-  # save queue and current playback state.
-
-  queue_is_empty && return 1
-
-  local savestate
-  savestate="$(read_config resume_state)" ||
-    savestate="off"
-
-  [[ $savestate == "off" ]] && return 1
-
-  save queue
-
-  write_config STATE "$(state -p)"
-  write_config TRACK $(($(fcmd status song)+1))
-  [[ $(get_current) =~ ^https? ]] || write_config ELAPSED "$(get_elapsed)"
-
-  # save playback options
-  local options
-  options="$(fcmd status repeat)"
-  options+="$(fcmd status random)"
-  options+="$(fcmd status single)"
-  options+="$(fcmd status consume)"
-  options+="$(fcmd status xfade)"
-  write_config OPTIONS "$options"
-}
-
-restore_state() {
-  # restore previously saved state.
-
-  queue_is_empty || {
-    remove queue 2> /dev/null
-    return 1
-  }
-
-  local savestate
-  savestate="$(read_config resume_state)" ||
-    savestate="off"
-
-  [[ $savestate == "off" ]] && return 1
-
-  load queue 2> /dev/null || return 1
-
-  local state track elapsed options
-  state="$(read_config STATE)" || state="stop"
-  track="$(read_config TRACK)"
-  elapsed="$(read_config ELAPSED)" || elapsed=0
-
-  [[ $state != "stop" ]] &&
-    play $((track)) && seek $((elapsed))
-  [[ $state == "pause" ]] && pause
-
-  remove queue
-  remove_config STATE
-  remove_config TRACK
-  remove_config ELAPSED
-
-  options="$(read_config OPTIONS)"
-  cmd repeat    "${options:0:1}" 2> /dev/null
-  cmd random    "${options:1:1}" 2> /dev/null
-  cmd single    "${options:2:1}" 2> /dev/null
-  cmd consume   "${options:3:1}" 2> /dev/null
-  cmd crossfade "${options:4}"   2> /dev/null
-
-  remove_config OPTIONS
 }

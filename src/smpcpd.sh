@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/10/23
+# M : 2021/10/25
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -73,8 +73,6 @@ clear_media
 while ! is_mpd; do
   sleep 1
 done
-
-restore_state
 
 plugin_notify "start"
 
@@ -195,7 +193,6 @@ quit_daemon() {
   echo "shutting down..."
   plugin_notify "quit"
   clear_media
-  save_state
   :> "$SMPCPD_PID"
   RUN=0
   logme "smpcpd: quit."
