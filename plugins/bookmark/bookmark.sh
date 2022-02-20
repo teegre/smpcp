@@ -23,9 +23,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>
 #
-# PLUGIN EXAMPLE
+# BOOKMARK
 # C : 2021/10/18
-# M : 2021/10/19
+# M : 2021/12/31
 # D : Save current playback position and stop.
 
 # version
@@ -67,8 +67,8 @@ __plug_bookmark_notify() {
       id="$(__bookmark_id)"
       pos="$(read_config "bookmark_${id}")" || return
       logme "bookmark: restore bookmark ${id}."
-      seek $((pos))
       notify_player "restoring bookmark..."
+      seek $((pos))
       remove_config "bookmark_${id}" &&
         logme "bookmark: removed bookmark ${id}."
   esac
