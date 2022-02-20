@@ -82,12 +82,13 @@ For more info, read **smpcp(1)** manual page.
 
 As stated at the beginning of this document, **smpcp** can be extended with plugins (check out `plugins` in this repository).
 
-Until I find a convenient way to manage plugin installation, a plugin must be installed manually by copying or symlinking its directory over to `$XDG_CONFIG_HOME/plugins`.
+Until I find a convenient way to manage plugin installation, a plugin must be installed manually by copying or symlinking its directory over to `$XDG_CONFIG_HOME/smpcp/plugins`.
 No extra step is needed since **smpcp** 'detects' plugins automatically.
 
 Type `smpcp plugins` to see a list of installed plugins.
 
 ### Writing plugins
 
-I provided a (very basic and still in construction) guide to help plugins development. And you can check out the example plugin called **hello**.
+I provided a (very basic and still in construction) guide to help plugins development: [Plugins Development Guide Wiki](https://gitlab.com/teegre/smpcp/-/wikis/Plugin-Development-Guide)  
+And you can check out the example plugin called **hello**.
 
