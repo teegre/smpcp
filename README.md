@@ -82,7 +82,7 @@ For more info, read **smpcp(1)** manual page.
 
 As stated at the beginning of this document, **smpcp** can be extended with plugins (check out `plugins` in this repository).
 
-Until I find a convenient way to manage plugin installation, a plugin must be installed manually by copying or symlinking its directory over to `$XDG_CONFIG_HOME/smpcp/plugins`.
+Until I find a convenient way to manage plugin installation, a plugin must be installed manually by copying or symlinking its directory over to `$XDG_CONFIG_HOME/smpcp/plugins/`.
 No extra step is needed since **smpcp** 'detects' plugins automatically.
 
 Type `smpcp plugins` to see a list of installed plugins.
