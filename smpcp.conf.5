@@ -1,4 +1,4 @@
-.TH "SMPCP.CONF" "5" "0.1.8" "October 2021" "SMPCP"
+.TH "SMPCP.CONF" "5" "0.1.8" "February 2022" "SMPCP"
 .SH "NAME"
 smpcp.conf - configuration file documentation.
 .SH "DESCRIPTION"
@@ -6,7 +6,7 @@ smpcp.conf - configuration file documentation.
 .PP
 Each line of the file contains a setting name and its value, i.e:
 .PP
-.B resume_state = off
+.B skip_limit = 2
 .PP
 If a line starts by \fB#\fR, it is considered as a comment and is ignored by \fBsmpcp\fR.
 
@@ -26,7 +26,7 @@ How long a song is kept in history. \fB<duration>\fR must be a string that can b
 If a song is in history, it is ignored when songs are added to the queue in \fIsong\fR mode.
 .TP
 .B skip_limit = <count>
-Set the skip limit for songs. If a song skip count is greater or equal to this setting, it is discarded when adding songs in \fIsong\fR mode (default: 2).
+Set the skip limit for songs. If a song skip count is greater or equal to this setting, it is discarded when adding songs in \fIsong\fR mode (default: 3).
 .TP
 .B status_format = <format>
 Format used in status and notifications (see \fBsmpcp(1) OUTPUT FORMATTING section\fR) (default: [[%artist% - ]]%title%).
