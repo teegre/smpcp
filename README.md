@@ -24,7 +24,7 @@ Latest version of these packages are needed:
 
 bash  
 coreutils  
-gnu-netcat  
+openbsd-netcat  
 imagemagick  
 libmpdclient  
 libnotify  
