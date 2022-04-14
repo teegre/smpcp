@@ -25,10 +25,10 @@
 #
 # VOICEOVER
 # C : 2021/05/20
-# M : 2021/09/08
+# M : 2022/04/14
 # D : Random track artist/title or current time voiceover.
 
-export PLUG_VOICEOVER_VERSION="0.1"
+export PLUG_VOICEOVER_VERSION="0.1.1"
 
 __plug_voiceover_notify() {
   [[ $1 == "change" ]] && {
