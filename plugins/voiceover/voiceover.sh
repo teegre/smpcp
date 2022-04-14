@@ -109,7 +109,7 @@ voiceover() {
   (
     volume $((vol)) &> /dev/null
   
-    "$player" --volume "$avol" "$wav"
+    LC_NUMERIC=C "$player" --volume "$avol" "$wav"
 
     volume $((cvol)) &> /dev/null
 
