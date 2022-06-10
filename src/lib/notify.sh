@@ -25,13 +25,16 @@
 #
 # NOTIFY
 # C : 2021/05/20
-# M : 2021/05/20
+# M : 2022/06/10
 # D : Notification helper functions.
 
 notify_song() {
   # display notification for the given URI
   # or the current song.
   # usage: notify_song [uri]
+
+  which notify-send 2> /dev/null ||
+    return 1
 
   local uri
 
@@ -47,6 +50,9 @@ notify_song() {
 
 notify_player() {
   
+  which notify-send 2> /dev/null ||
+    return 1
+
   if [[ $1 ]]; then
     local msg
     msg="$1"
