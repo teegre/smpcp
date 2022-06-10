@@ -33,7 +33,7 @@ notify_song() {
   # or the current song.
   # usage: notify_song [uri]
 
-  which notify-send 2> /dev/null ||
+  which notify-send 2>&1 > /dev/null ||
     return 1
 
   local uri
@@ -50,7 +50,7 @@ notify_song() {
 
 notify_player() {
   
-  which notify-send 2> /dev/null ||
+  which notify-send 2>&1 > /dev/null ||
     return 1
 
   if [[ $1 ]]; then
