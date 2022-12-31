@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is a smpcp plugin.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2022, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
 #
 # BOOKMARK
 # C : 2021/10/18
-# M : 2021/12/31
+# M : 2022/12/31
 # D : Save current playback position and stop.
 
 # version
-export PLUG_BOOKMARK_VERSION=0.1
+export PLUG_BOOKMARK_VERSION=0.3
 
 __bookmark_id() {
   state && {
@@ -42,18 +42,24 @@ __bookmark_id() {
   return 1
 }
 
+__save_bookmark() {
+  id="$(__bookmark_id)" || return 1
+  write_config "bookmark_${id}" "$(get_elapsed)" && return 0
+  return 1
+}
+
 help_bookmark() {
   echo "args=; desc=save current playback position and stop."
 }
 
 plug_bookmark() {
   state && {
-    id="$(__bookmark_id)" || return 1
-    write_config "bookmark_${id}" "$(get_elapsed)" && {
+    __save_bookmark && {
       message M "saved bookmark ${id}."
       stop
       return 0
     }
+    message E "could not save bookmark."
     return 1
   }
   message M "nothing to do."
@@ -62,7 +68,7 @@ plug_bookmark() {
 
 __plug_bookmark_notify() {
   case $1 in
-    play)
+    play|change)
       local id pos
       id="$(__bookmark_id)"
       pos="$(read_config "bookmark_${id}")" || return
