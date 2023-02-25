@@ -195,7 +195,7 @@ sqlite3 "$SMPCP_STICKER_DB" << SQL
 .timeout 2000
 SELECT datetime(value) AS d, uri
 FROM sticker
-WHERE name="lastplayed" AND value BETWEEN "${from}" AND "$(now)"
+WHERE name='lastplayed' AND value BETWEEN '${from}' AND '$(now)'
 ORDER BY d DESC;
 SQL
 }
