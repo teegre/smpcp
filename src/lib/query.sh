@@ -131,7 +131,7 @@ val="$1"
 sqlite3 "$SMPCP_STICKER_DB" << SQL
 .timeout 2000
 SELECT COUNT(uri) FROM sticker
-WHERE name="rating" AND value${val};
+WHERE name='rating' AND value${val};
 SQL
 }
 
@@ -151,7 +151,7 @@ val="$1"
 sqlite3 "$SMPCP_STICKER_DB" << SQL
 .timeout 2000
 SELECT uri FROM sticker
-WHERE name="rating" AND value${val}
+WHERE name='rating' AND value${val}
 ORDER BY Random();
 SQL
 }
