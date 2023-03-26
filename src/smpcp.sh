@@ -83,7 +83,7 @@ exec_command() {
     consume    ) shift; consume "$@" ;;
     crop       ) crop ;;
     dbplaytime ) db_playtime ;;
-    DEBUG      ) shift; "$@" ;;
+    dbg        ) shift; "$@" ;;
     delete     ) shift; delete "$@" ;;
     dim        ) shift; dim "$@" ;;
     getcurrent ) shift; get_current "$@" ;;
