@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2021/10/24
+# M │ 2023/03/29
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
