@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2021/10/23
+# M │ 2023/04/02
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -638,7 +638,7 @@ get_discography() {
 
 update_song_list() {
   # make a text file containing all songs to ease playlist generation.
-  # do it only if needed (expensive!).
+  # do it only if a database update previously occurred (expensive!).
 
   [[ -s $SMPCP_SONG_LIST ]] && {
     local list_mod_date db_mod_date
@@ -647,10 +647,17 @@ update_song_list() {
     ((list_mod_date >= db_mod_date)) && return 1
   }
     
-  notify_player "updating song list..."
+  [[ -t 1 ]] || notify_player "updating song list..."
+  [[ -t 1 ]] && message M "updating song list..."
+
   local T="$EPOCHSECONDS"
   fcmd -x list file file > "$SMPCP_SONG_LIST"
-  notify_player "song list updated in $(secs_to_hms $((EPOCHSECONDS-T)))."
+  [[ -t 1 ]] && local D=$((EPOCHSECONDS-T))
+  [[ -t 1 ]] || local D="$(sec_to_hms $((EPOCHSECONDS-T)))"
+
+  [[ -t 1 ]] && message M "song list updated in ${D} seconds."
+  [[ -t 1 ]] || notify_player "song list updated in ${D}."
+
   return 0
 }
 

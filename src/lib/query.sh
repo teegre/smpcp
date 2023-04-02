@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2023/03/29
+# M │ 2023/04/02
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -296,7 +296,8 @@ musicdir="$(get_music_dir)" || {
 
 local T="$EPOCHSECONDS"
 
-notify_player "cleaning sticker database..."
+[[ -t 1 ]] && message M "cleaning sticker database..."
+[[ -t 1 ]] || notify_player "cleaning sticker database..."
 
 message M "scanning sticker database."
 
@@ -326,7 +327,8 @@ done
 message M "found ${#_orphans[@]} orphan(s)."
 
 [[ ${_orphans[*]} ]] || {
-  notify_player "sticker database is clean."
+  [[ -t 1 ]] && message M "sticker database is clean."
+  [[ -t 1 ]] || notify_player "sticker database is clean."
   return 0
 }
 
@@ -343,7 +345,8 @@ DELETE FROM sticker
 WHERE uri IN (${orphans[*]})
 SQL
 
-notify_player "sticker database cleaned in $(secs_to_hms $((EPOCHSECONDS-T)))"
+[[ -t 1 ]] && message M "sticker database cleaned in $((EPOCHSECONDS-T)) seconds."
+[[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms $((EPOCHSECONDS-T)))."
 
 }
 
