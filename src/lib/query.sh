@@ -316,7 +316,7 @@ message M "processing."
 for uri in "${uris[@]}"; do
   [[ $QUIET ]] || ((++i))
   [[ -a ${musicdir}/$uri ]] ||
-    _orphans+=("'${uri//\"/\\\"}'")
+    _orphans+=("'${uri//\'/\'\'}'")
   [[ $QUIET ]] ||
     printf "\r-- %d/%d: %d%%" $((i)) $((t)) $((i*100/t))
 done
