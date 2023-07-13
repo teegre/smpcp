@@ -70,7 +70,6 @@ pause() {
 
 stop() {
   # stop playback.
-
   state && cmd stop
 }
 

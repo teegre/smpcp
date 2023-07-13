@@ -450,9 +450,12 @@ cload() {
   # clear the current queue and load a playlist.
 
   local pl="$1"
+
   [[ $pl ]] || return 1
   
   list_playlist "$pl" > /dev/null || return 1
+
+  local pos="$2"
 
   _mode off
   
@@ -460,7 +463,7 @@ cload() {
 
   cmd clear
 
-  load "$pl"
+  load "$pl" "$pos"
 
   [[ $PLAY ]] && play 1
 }
