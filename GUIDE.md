@@ -277,6 +277,7 @@ Available metadata are:
 *  %track%
 *  %genre%
 *  %date%
+*  %disc%
 *  %time%
 *  %duration%
 *  %pos%

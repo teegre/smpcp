@@ -284,6 +284,10 @@ parse_song_info() {
       fmt="${fmt//"%date%"/${BASH_REMATCH[1]:0:4}}"
       continue
     }
+    [[ $REPLY =~ ^Disc:[[:space:]](.+)$ ]] && {
+      fmt="${fmt//"%disc%"/${BASH_REMATCH[1]}}"
+      continue
+    }
     [[ $REPLY =~ ^Time:[[:space:]](.+)$ ]] && {
       fmt="${fmt//"%time%"/${BASH_REMATCH[1]}}"
       continue
