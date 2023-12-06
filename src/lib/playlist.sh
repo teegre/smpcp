@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2021/10/25
+# M │ 2023/12/06
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -348,11 +348,29 @@ add_song() {
   # add the given song and play it right after the current one.
   # usage: add_song artist title
 
-  local uri
-  uri="$(search artist "$1" title "$2")"
+  local -a uri # in case of multiple results.
+  local idx=0
+
+  while read -r; do
+    uri+=("$REPLY")
+  done <<< $(search artist "$1" title "$2")
+
+  local len="${#uri[@]}"
+
+  (( len > 1 )) && {
+    # multiple results found, show them...
+    local i r
+    for (( i = 0; i < $len; i++ )); do
+      printf "%0${#len}d. │ %s\n" $((i+1)) "$(get_info "${uri[$i]}" "%artist%: %title% (%album%)")"
+    done
+    read -p "1-${len}? " -r r
+    [[ $r =~ [0-9]+ ]] || { message E "nothing added."; return 1; }
+    ((r < 1)) || ((r > ${len})) && { message E "bad index."; return 1; }
+    idx="$((r-1))"
+  }
 
   [[ $uri ]] && {
-    add "$uri"
+    add "${uri[$idx]}"
     local pos
     ((pos=$(queue_length)-1))
     cmd prio 1 $((pos))
