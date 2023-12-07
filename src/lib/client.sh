@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2023, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2023/04/02
+# M │ 2023/12/07
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -243,57 +243,57 @@ parse_song_info() {
       continue
     }
     [[ $REPLY =~ ^Last-Modified:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%last-modified%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%last-modified%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Format:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%format%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%format%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Artist:[[:space:]](.+)$ ]] && {
       local artist
-      artist="${BASH_REMATCH[1]}"
-      fmt="${fmt//"%artist%"/${BASH_REMATCH[1]}}"
+      artist="${BASH_REMATCH[1]}" # used as fallback for %albumartist%
+      fmt="${fmt//"%artist%"/"$artist"}"
       continue
     }
     [[ $REPLY =~ ^Name:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%name%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%name%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Album:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%album%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%album%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^AlbumArtist:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%albumartist%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%albumartist%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Title:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%title%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%title%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Track:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%track%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%track%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Genre:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%genre%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%genre%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Date:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%date%"/${BASH_REMATCH[1]:0:4}}"
+      fmt="${fmt//"%date%"/"${BASH_REMATCH[1]:0:4}"}"
       continue
     }
     [[ $REPLY =~ ^Disc:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%disc%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%disc%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Time:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%time%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%time%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^duration:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%duration%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%duration%"/"${BASH_REMATCH[1]}"}"
       if [[ $search ]]; then
         [[ $fmt == *%albumartist%* ]] &&
           fmt="${fmt//%albumartist%/"$artist"}"
@@ -309,10 +309,10 @@ parse_song_info() {
       continue
     }
     [[ $REPLY =~ ^Id:[[:space:]](.+)$ ]] && {
-      fmt="${fmt//"%id%"/${BASH_REMATCH[1]}}"
+      fmt="${fmt//"%id%"/"${BASH_REMATCH[1]}"}"
       [[ $fmt == *%albumartist%* ]] &&
         fmt="${fmt//%albumartist%/"$artist"}"
-      echo -e "$(strip_unexpanded "$fmt")"
+      strip_unexpanded "$fmt"
       fmt="${1:-%file%}"
       ((count++))
     }
