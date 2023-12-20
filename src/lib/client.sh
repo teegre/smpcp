@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2023/12/07
+# M │ 2023/12/20
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -468,6 +468,12 @@ get_albumart() {
   # stream?
   [[ $song_uri =~ ^https?: ]] && {
     echo "${SMPCP_ASSETS}/radio.png"
+    return
+  }
+
+  # audio cd?
+  [[ $song_uri =~ ^cdda: ]] && {
+    echo "${SMPCP_ASSETS}/audiocd.png"
     return
   }
 
