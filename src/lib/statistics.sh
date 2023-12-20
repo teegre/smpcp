@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2021/10/23
+# M : 2023/12/20
 # D : Statistics management.
 
 get_sticker() {
@@ -33,6 +33,7 @@ get_sticker() {
   uri="$1"
 
   [[ $uri =~ ^https?: ]] && return 1
+  [[ $uri =~ ^cdda: ]] && return 1
 
   name="$2"
   [[ $uri && $name ]] && {
@@ -50,6 +51,7 @@ set_sticker() {
   uri="$1"
 
   [[ $uri =~ ^https?: ]] && return 1
+  [[ $uri =~ ^cdda: ]] && return 1
 
   name="$2"
   value="$3"
@@ -65,6 +67,7 @@ find_sticker() {
   uri="$1"
 
   [[ $uri =~ ^https?: ]] && return 1
+  [[ $uri =~ ^cdda: ]] && return 1
 
   name="$2"
   while read -r; do
@@ -80,6 +83,7 @@ delete_sticker() {
   uri="$1"
 
   [[ $uri =~ ^https?: ]] && return 1
+  [[ $uri =~ ^cdda: ]] && return 1
 
   name="$2"
   [[ $uri && $name ]] && {
@@ -128,6 +132,7 @@ update_stats() {
   [[ $uri ]] || return 1
 
   [[ $uri =~ ^https?: ]] && return 0
+  [[ $uri =~ ^cdda: ]] && return 0
 
   update_history_index
 
@@ -274,9 +279,15 @@ skipcount() {
 # shellcheck disable=SC2119
 song_stats() {
   # print current song statistics.
-
+  local uri
+  uri="$(get_current)"
   get_current "[[%name%\n]][[%artist%: ]]%title%[[\n%album%]][[ (%date%)]]"
   echo "$(get_elapsed -h) / $(get_duration -h)"
+
+  if [[ $uri =~ ^https?: ]] || [[ $uri =~ ^cdda: ]]; then
+    return
+  fi
+
   echo "===="
   echo "rating:      $(rating)"
   echo "last played: $(lastplayed)"

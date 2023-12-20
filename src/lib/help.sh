@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2021/09/02
+# M : 2023/12/20
 # D : Help.
 
 _help() {
@@ -38,6 +38,8 @@ Commands:
   smpcp addsong  <artist> <title>                  append song to the queue.
   smpcp albuminfo                                  display current album full info.
   smpcp albums                                     display albums in the database for current artist.
+  smpcp cdadd [[track][start-end]...]              add audio cd tracks to the queue.
+  smpcp cdplay                                     play audio cd.
   smpcp clear                                      remove all songs from the queue.
   smpcp cload <name> [[pos]|[start-end]...]        clear queue and load a stored playlist (see 'load').
   smpcp consume [off|on]                           set consume mode.

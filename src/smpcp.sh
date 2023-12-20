@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2021/10/23
+# M │ 2023/10/20
 # D │ Main program.
 
 declare SMPCP_LIB="/usr/lib/smpcp"
@@ -78,6 +78,8 @@ exec_command() {
     addsong    ) shift; add_song "$@" ;;
     albuminfo  ) get_album_info ;;
     albums     ) shift; get_discography "$@" ;;
+    cdadd      ) shift; cdadd "$@" ;;
+    cdplay     ) shift; cdadd -p "$@" ;;
     clear      ) clear_queue ;;
     cload      ) shift; cload "$@" ;;
     consume    ) shift; consume "$@" ;;

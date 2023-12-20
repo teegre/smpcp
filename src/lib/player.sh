@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/O4/04
+# M │ 2023/12/20
 # D │ Player functions.
 
 toggle() {
@@ -165,11 +165,14 @@ skip() {
 
   state || return 1
 
-  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
-
   local uri skipcount
 
   uri="$(get_current)"
+
+  [[ $uri =~ ^cdda: ]] && return 1
+  [[ $uri =~ ^https?: ]] && return 1
+
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
 
   skipcount="$(get_sticker "$uri" skipcount 2> /dev/null)" || skipcount=0
   ((skipcount++))
@@ -184,11 +187,14 @@ unskip() {
 
   state || return 1
 
-  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
-
   local uri
 
   uri="$(get_current)"
+
+  [[ $uri =~ ^cdda: ]] && return 1
+  [[ $uri =~ ^https?: ]] && return 1
+
+  while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
 
   set_sticker "$uri" skipcount 0 || return 1
 

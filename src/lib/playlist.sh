@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2023/12/06
+# M │ 2023/12/20
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -113,6 +113,9 @@ add() {
   if (( $# > 0 )); then
     local uri
     uri="${*}"
+    [[ $uri =~ ^cdda: ]] && {
+      message E "use cdadd command"
+    }
     uri="${uri%*/}"
     cmd add "$uri"
   else
@@ -120,6 +123,89 @@ add() {
       cmd add "$REPLY"
     done
   fi
+}
+
+cdadd() {
+  # add audio cd track(s) to queue.
+  # usage: cdadd [track | start-end | track1 ... trackN]
+  # without parameter, cdadd adds
+  # all tracks to the queue.
+
+  # check if there's an audio cd in the drive
+  # and get track count.
+
+  which cdparanoia &> /dev/null || {
+    message E "missing 'cdparanoia' dependency."
+    return 1
+  }
+
+  local tracks=0
+  tracks="$(cdparanoia -Qs |& grep -P '^\s+\d+\.' | wc -l)"
+
+  ((tracks==0)) && {
+    message E "no disc."
+    return 1
+  }
+
+  [[ $1 == "-p" ]] && {
+    state && {
+      local ext
+      ext="$(get_current "%ext%")"
+      [[ $ext == "cdda" ]] && {
+        message W "already playing."
+        return 1
+      }
+    }
+    local PLAY=1
+    shift
+    cmd clear
+    __album_mode
+  }
+
+  (( $#>1 )) && {
+    for track in "$@"; do
+      if ((track>0)) && ((track<=tracks)); then
+        cmd add "cdda:///${track}" || return 1
+      else
+        message E "${track}: bad track index [skipped]."
+        continue
+      fi
+    done
+    [[ $PLAY ]] && cmd play
+    return 0
+  }
+
+  [[ $1 =~ ^([0-9]+)-([0-9]+)$ ]] && {
+    local start end track
+    ((start=BASH_REMATCH[1]))
+    ((end=BASH_REMATCH[2]))
+    ((start<tracks)) && ((end<=tracks)) && ((start>0)) && ((end>0)) && {
+      for (( track=start; track<=end; track++ )); do
+        cmd add "cdda:///${track}" || return 1
+      done
+      [[ $PLAY ]] && cmd play
+      return 0
+    }
+    message E "bad track index."
+    return 1
+  }
+
+  [[ $1 =~ ^[0-9]+$ ]] && {
+    local track="$1"
+    ((track>0)) && ((track<=tracks)) && {
+      cmd add "cdda:///${1}" || return 1
+      [[ $PLAY ]] && cmd play
+      return 0
+    }
+    message E "bad track index."
+    return 1
+  }
+
+  for (( track=1; track<=tracks; track++ )); do
+    cmd add "cdda:///${track}" || return 1
+  done
+  [[ $PLAY ]] && cmd play
+  return 0
 }
 
 delete() {

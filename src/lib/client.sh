@@ -312,6 +312,15 @@ parse_song_info() {
       fmt="${fmt//"%id%"/"${BASH_REMATCH[1]}"}"
       [[ $fmt == *%albumartist%* ]] &&
         fmt="${fmt//%albumartist%/"$artist"}"
+      [[ $filename =~ ^cdda: ]] && {
+        [[ $fmt == *%title%* ]] && {
+          local track
+          track="${filename#*\/\/\/}"
+          fmt="${fmt//%title%/"Track ${track}"}"
+        }
+        [[ $fmt == *%album%* ]] &&
+          fmt="${fmt//%album%/"Audio CD"}"
+      }
       strip_unexpanded "$fmt"
       fmt="${1:-%file%}"
       ((count++))

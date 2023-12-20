@@ -25,11 +25,11 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2022/06/10
+# M │ 2023/12/20
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
-__version='0.1.9.2'
+__version='0.1.9.3'
 
 declare SMPCP_ASSETS="/etc/smpcp/assets"
 declare SMPCP_ICON="/etc/smpcp/assets/default.png"
@@ -103,7 +103,11 @@ logme() {
 }
 
 # strip path and filename from URI and print lowercase file extension.
-get_ext() { [[ $1 =~ ^https? ]] && { echo "stream"; return; }; local ext; ext="${1##*.}"; echo "${ext,,}"; }
+get_ext() {
+  [[ $1 =~ ^https? ]] && { echo "stream"; return; }
+  [[ $1 =~ ^cdda: ]] && { echo "cdda"; return; }
+  local ext; ext="${1##*.}"; echo "${ext,,}"
+}
 
 max() {
   # return max value
