@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2023/12/20
+# M │ 2023/12/21
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -545,10 +545,13 @@ get_albumart() {
 get_album_info() {
   # print current album full info.
 
-  [[ $(get_current) =~ ^https? ]] && {
+  local uri
+  uri="$(get_current)"
+
+  if [[ $uri =~ ^https? ]] || [[ $uri =~ ^cdda: ]]; then
     message E "no info."
     return 1
-  }
+  fi
   
   local info artist album albumartist date fmt
   mapfile -t info < <(get_current "%artist%\n%album%\n%albumartist%\n%date%") ||
