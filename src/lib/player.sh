@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/12/20
+# M │ 2023/12/21
 # D │ Player functions.
 
 toggle() {
@@ -395,6 +395,7 @@ replaygain() {
     track) cmd replay_gain_mode track || return 1 ;;
     album) cmd replay_gain_mode album || return 1 ;;
     auto ) cmd replay_gain_mode auto  || return 1 ;;
+    off  ) cmd replay_gain_mode off   || return 1 ;;
     ""   ) : ;;
     *    ) message E "invalid parameter."; return 1
   esac
