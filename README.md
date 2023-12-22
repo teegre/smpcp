@@ -23,7 +23,7 @@
 Latest version of these packages are needed:
 
 bash  
-cdparanoia (optional)
+cdparanoia (optional)  
 coreutils  
 openbsd-netcat  
 imagemagick  
