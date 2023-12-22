@@ -6,6 +6,8 @@
 
 It is a programmable audio recorder.
 
+Note: **cassette** won't work if **smpcpd** is not running.
+
 ## Usage
 
 `smpcp cassette [status]`  
