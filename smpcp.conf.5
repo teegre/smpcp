@@ -14,16 +14,19 @@ Tilde in filesystem path is expanded.
 .SH "MANDATORY SETTINGS"
 .TP
 .B sticker_db = <filepath>
-  Path to the sticker database (i.e. \fB$XDG_CONFIG_HOME/mpd/sticker.sql\fR).
+Path to the sticker database (i.e. \fB$XDG_CONFIG_HOME/mpd/sticker.sql\fR).
 .SH "OPTIONAL SETTINGS"
 .TP
 .B music_directory = <path>
-  Path to the music directory. May be necessary if the path cannot be directly retrieved from \fBMPD\fR. For instance when \fBMPD\fR is configured in satellite mode.
+Path to the music directory. May be necessary if the path cannot be directly retrieved from \fBMPD\fR. For instance when \fBMPD\fR is configured in satellite mode.
 .TP
 .B keep_in_history = <duration>
 How long a song is kept in history. \fB<duration>\fR must be a string that can be read by the \fBdate(1)\fR command. For instance: 1 month, 2 weeks, 1 day (default: 2 weeks).
 .br
 If a song is in history, it is ignored when songs are added to the queue in \fIsong\fR mode.
+.br
+
+\fBTIP:\fR to choose a decent duration, the \fBsmpcp dbplaytime\fR command might be of help.
 .TP
 .B skip_limit = <count>
 Set the skip limit for songs. If a song skip count is greater or equal to this setting, it is discarded when adding songs in \fIsong\fR mode (default: 3).
@@ -45,14 +48,14 @@ Enable or disable replaygain in album mode (default: on).
 .B pause_icon = <string>
 .TP
 .B stop_icon = <string>
-  Playback state icons shown in status and notifications (default: [>, ||, [])
+Playback state icons shown in status and notifications (default: [>, ||, [])
 .SH "FILES"
 .TP
 .B $XDG_CONFIG_HOME/smpcp/smpcp.conf
-  User configuration file (usually ~/.config/smpcp/smpcp.conf)
+User configuration file (usually ~/.config/smpcp/smpcp.conf)
 .TP
 .B $XDG_DATA_HOME/.local/share/smpcp/smpcp.conf
-  Default configuration file. Can be used as a starting point.
+Default configuration file. Can be used as a starting point.
 .SH "SEE ALSO"
 .TP
 .B smpcp(1)
