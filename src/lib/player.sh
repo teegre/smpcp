@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/12/21
+# M │ 2023/12/22
 # D │ Player functions.
 
 toggle() {
@@ -337,23 +337,27 @@ _playback_mode() {
   local mode value
   mode="$1"; shift
   value="$(fcmd status "$mode")"
+  new_value="$1"; shift
 
   [[ -z $value ]] && return 1
 
-  if [[ -z $1 ]]; then
+  # show playback mode current state
+  if [[ -z $new_value ]]; then
     case $value in
       0) message M "${mode}: off"; return 1 ;;
-      1) message M "${mode}: on"; return 0
+      1) message M "${mode}: on"; return 0 ;;
+      *) message M "${mode}: oneshot"; return 0
     esac
-  elif [[ $1 == "on" || $1 == "1" ]]; then
+  elif [[ $new_value == "on" || $new_value == "1" || $new_value == "oneshot" ]]; then
     case $value in
-      0) cmd "$mode" 1 && { message M "${mode}: on"; return 0; }; return 1 ;;
-      1) message M "${mode}: on"; return 0
+      0) cmd "$mode" "$new_value" && { message M "${mode}: ${new_value}"; return 0; }; return 1 ;;
+      1) message M "${mode}: ${new_value}"; return 0 ;;
     esac
-  elif [[ $1 == "off" || $1 == "0" ]]; then
+  elif [[ $new_value == "off" || $new_value == "0" ]]; then
     case $value in
       0) message M "${mode}: off"; return 0 ;;
-      1) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1
+      1) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1 ;;
+      *) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1
     esac
   fi
 }
@@ -473,10 +477,16 @@ pstatus() {
 
   options=( "repeat" "random" "single" "consume" )
 
+  local pbmode_status
   for pbmode in "${options[@]}"; do
-    [[ "$(fcmd status "$pbmode")" -eq 1 ]] \
-      && status+="${__m["$pbmode"]}" \
-      || status+="-"
+    pbmode_status="$(fcmd status "$pbmode")"
+    if [[ $pbmode_status -eq 1 ]]; then
+      status+="${__m["$pbmode"]}"
+    elif [[ $pbmode_status == "oneshot" ]]; then
+      status+="1"
+    else
+      status+="-"
+    fi
   done
 
   [[ $(fcmd status xfade) -gt 0 ]] \
