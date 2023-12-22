@@ -327,7 +327,11 @@ __album_mode() {
   cmd single 0
   cmd crossfade 0
   cmd repeat 0
-  cmd replay_gain_mode album
+  if [[ $(read_config "album_mode_replaygain") == "on" ]]; then
+    cmd replay_gain_mode album
+  else
+    cmd replay_gain_mode off
+  fi
 }
 
 __song_mode() {
