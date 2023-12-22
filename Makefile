@@ -32,8 +32,8 @@ install:src/$(DAEMON)
 	install -Dm644 $(MANPAGE1) -t $(MANDIR1)
 	install -Dm644 $(MANPAGE5) -t $(MANDIR5)
 	install -Dm644 LICENSE     -t $(SHAREDIR)/licenses/$(PROGNAME)
-	if [ -d $(BASHCOMP) ]; then install -m644 autocomplete/bash-smpcp-complete $(BASHCOMP)/$(PROGNAME); fi
-	if [ -d $(ZSHCOMP) ]; then install -m644 autocomplete/zsh-smpcp-complete $(ZSHCOMP)/_$(PROGNAME); fi
+	if [ $$(basename $$SHELL) == "bash" ]; then install -Dm644 autocomplete/bash-smpcp-complete $(BASHCOMP)/$(PROGNAME); fi
+	if [ $$(basename $$SHELL) == "zsh"  ]; then install -Dm644 autocomplete/zsh-smpcp-complete $(ZSHCOMP)/_$(PROGNAME); fi
 	rm src/$(PROGNAME)
 	rm src/$(DAEMON)
 	rm src/idlecmd
