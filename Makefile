@@ -1,15 +1,14 @@
 PROGNAME  ?= smpcp
 DAEMON    ?= smpcpd
 SERVICE   ?= smpcpd.service
-PREFIX    ?= /usr
+PREFIX    ?= $(HOME)/.local
 BINDIR    ?= $(PREFIX)/bin
 LIBDIR    ?= $(PREFIX)/lib
-SYSDUNIT  ?= $(LIBDIR)/systemd/user
+SYSDUNIT  ?= $(HOME)/.config/systemd/user
 SHAREDIR  ?= $(PREFIX)/share
 MANDIR1   ?= $(SHAREDIR)/man/man1
 MANDIR5   ?= $(SHAREDIR)/man/man5
-CONFIGDIR ?= /etc
-ASSETSDIR ?= $(CONFIGDIR)/$(PROGNAME)/assets
+ASSETSDIR ?= $(SHAREDIR)/$(PROGNAME)/assets
 BASHCOMP  ?= $(SHAREDIR)/bash-completion/completions
 ZSHCOMP   ?= $(SHAREDIR)/zsh/functions/Completion/Unix
 MANPAGE1   = $(PROGNAME).1
@@ -28,7 +27,7 @@ install:src/$(DAEMON)
 	install -m755 src/idlecmd $(BINDIR)
 	install -m644 $(SERVICE) $(SYSDUNIT)/$(SERVICE)
 	install -Dm644 src/lib/*.* -t $(LIBDIR)/$(PROGNAME)
-	install -Dm644 smpcp.conf  -t $(CONFIGDIR)/$(PROGNAME)
+	install -Dm644 smpcp.conf  -t $(SHAREDIR)/$(PROGNAME)
 	install -Dm644 assets/*.*  -t $(ASSETSDIR)/
 	install -Dm644 $(MANPAGE1) -t $(MANDIR1)
 	install -Dm644 $(MANPAGE5) -t $(MANDIR5)
@@ -46,7 +45,7 @@ uninstall:
 	rm $(BINDIR)/idlecmd
 	rm $(SYSDUNIT)/$(SERVICE)
 	rm -rf $(LIBDIR)/$(PROGNAME)
-	rm -rf $(CONFIGDIR)/$(PROGNAME)
+	rm -rf $(SHAREDIR)/$(PROGNAME)
 	rm $(MANDIR1)/$(MANPAGE1)
 	rm $(MANDIR5)/$(MANPAGE5)
 	rm -rf $(SHAREDIR)/licenses/$(PROGNAME)

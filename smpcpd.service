@@ -4,7 +4,8 @@ Documentation=man:smpcp(1)
 After=mpd.service
 
 [Service]
-ExecStart=/usr/bin/smpcpd
+Environment="PATH=/usr/bin:/usr/local/bin:%h/.local/bin"
+ExecStart=%h/.local/bin/smpcpd
 
 [Install]
 WantedBy=default.target

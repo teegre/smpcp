@@ -28,7 +28,7 @@
 # M : 2021/10/25
 # D : Music non stop daemon.
 
-declare SMPCP_LIB="/usr/lib/smpcp"
+declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
 
 # shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh

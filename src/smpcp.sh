@@ -24,10 +24,10 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2023/10/20
+# M │ 2023/10/22
 # D │ Main program.
 
-declare SMPCP_LIB="/usr/lib/smpcp"
+declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
 
 # shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh
