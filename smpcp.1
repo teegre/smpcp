@@ -1,4 +1,4 @@
-.TH "SMPCP" "1" "0.1.9.3" "December 2023" "Super Music Player Client Plus"
+.TH "SMPCP" "1" "0.1.9.4" "December 2023" "Super Music Player Client Plus"
 .SH NAME
 \fB\fCsmpcp\fR \- smpcp documentation\.
 .SH "SYNOPSIS"
@@ -65,7 +65,7 @@ If no option is given for the following commands, \fBsmpcp\fR prints their curre
 \fBrandom\fR [\fIon\fR|\fIoff\fR]
   Sets random mode.
 
-\fBsingle\fR [\fIon\fR|\fIoff\fR]
+\fBsingle\fR [\fIon\fR|\fIoff\fR|\fIoneshot\fR]
   Sets single mode.
 
 \fBconsume\fR [\fIon\fR|\fIoff\fR]
@@ -226,6 +226,7 @@ Playback options are shown as a single letter:
 .B r - repeat
 .B z - random
 .B s - single
+.B 1 - oneshot
 .B c - consume
 .B x - crossfade
 .B d - dim
@@ -369,10 +370,10 @@ assuming %artist% tag is not found, would output:
 .B title: song title
 .IP "" 0
 .fi
-.SH "AUTHOR"
-Written by Stéphane MEYER (Teegre)
+.SH "SEE ALSO"
+\fBsmpcp.conf(5)\fR, \fBmpd(1)\fR.
 .SH "REPORTING BUGS"
-\fIhttps://gitlab.com/teegre/smpcp/issues\fR
+\fIhttps://github.com/teegre/smpcp/issues\fR
 .SH "LICENSE"
 License GPL-v3
 
@@ -380,6 +381,10 @@ This is free software provided \fBAS IS\fR with \fBNO WARRANTY\fR.
 .br
 Feel free to change and redistribute.
 
-For more info, see \fB/usr/share/licenses/smpcp/LICENSE\fR
-.SH "SEE ALSO"
-\fBsmpcp.conf(5)\fR, \fBmpd(1)\fR.
+For more info, see \fB$XDG_DATA_HOME/.local/share/licenses/smpcp/LICENSE\fR
+.SH "AUTHOR"
+.TP
+Stéphane MEYER (Teegre)
+.SH "COPYRIGHT"
+.TP
+2023 Stéphane MEYER (Teegre)

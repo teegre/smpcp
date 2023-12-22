@@ -1,4 +1,4 @@
-.TH "SMPCP.CONF" "5" "0.1.9.2" "December 2023" "SMPCP"
+.TH "SMPCP.CONF" "5" "0.1.9.4" "December 2023" "SMPCP"
 .SH "NAME"
 smpcp.conf - configuration file documentation.
 .SH "DESCRIPTION"
@@ -14,7 +14,7 @@ Tilde in filesystem path is expanded.
 .SH "MANDATORY SETTINGS"
 .TP
 .B sticker_db = <filepath>
-  Path to the sticker database (i.e. \fB~/.config/mpd/sticker.sql\fR).
+  Path to the sticker database (i.e. \fB$XDG_CONFIG_HOME/mpd/sticker.sql\fR).
 .SH "OPTIONAL SETTINGS"
 .TP
 .B music_directory = <path>
@@ -37,6 +37,9 @@ How many songs must be added to the queue in \fIsong\fR mode (default: 10).
 .B song_mode_xfade_duration = <duration>
 Crossfade duration in seconds for \fIsong\fR mode (default: 10).
 .TP
+.B album_mode_replaygain = <on | off>
+Enable or disable replaygain in album mode (default: on).
+.TP
 .B play_icon = <string>
 .TP
 .B pause_icon = <string>
@@ -48,14 +51,24 @@ Crossfade duration in seconds for \fIsong\fR mode (default: 10).
 .B $XDG_CONFIG_HOME/smpcp/smpcp.conf
   User configuration file (usually ~/.config/smpcp/smpcp.conf)
 .TP
-.B /etc/smpcp/smpcp.conf
+.B $XDG_DATA_HOME/.local/share/smpcp/smpcp.conf
   Default configuration file. Can be used as a starting point.
 .SH "SEE ALSO"
 .TP
 .B smpcp(1)
+.SH "REPORTING BUGS"
+\fIhttps://github.com/teegre/smpcp/issues\fR
+.SH "LICENSE"
+License GPL-v3
+
+This is free software provided \fBAS IS\fR with \fBNO WARRANTY\fR.
+.br
+Feel free to change and redistribute.
+
+For more info, see \fB$XDG_DATA_HOME/.local/share/licenses/smpcp/LICENSE\fR
 .SH "AUTHOR"
 .TP
-Stéphane MEYER (teegre)
+Stéphane MEYER (Teegre)
 .SH "COPYRIGHT"
 .TP
-2021 Stéphane MEYER (teegre)
+2023 Stéphane MEYER (Teegre)
