@@ -25,10 +25,10 @@
 #
 # SLEEPTIMER
 # C : 2021/04/26
-# M : 2021/05/27
+# M : 2023/12/22
 # D : Pause playback after time out.
 
-export PLUG_SLEEPTIMER_VERSION="0.1"
+export PLUG_SLEEPTIMER_VERSION="0.2"
 SLEEPTIMER_PID="$SMPCP_PLUGINS_DIR/sleeptimer/pid"
 
 help_sleeptimer() {
@@ -73,7 +73,7 @@ sleeptimer() {
     elapsed="$(get_elapsed)"
 
     ((EPOCHSECONDS+(dur-elapsed)>=expire)) && {
-      plugin_function_exec stopafter stopafter on &> /dev/null ||
+      oneshot on &> /dev/null &&
         continue
       logme "sleeptimer: $(secs_to_hms $((dur-elapsed))) left."
       write_config sleeptimer_duration 0
