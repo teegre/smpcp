@@ -66,6 +66,7 @@ Commands:
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
   smpcp next                                       play next song in the queue.
   smpcp nextalbum                                  play another random album (album mode only).
+  smpcp oneshot [on|off]                           set oneshot mode.
   smpcp output <name> <on|off>                     enable/disable an output.
   smpcp pause                                      pause playback.
   smpcp play [pos]                                 play song.

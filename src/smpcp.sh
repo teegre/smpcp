@@ -108,6 +108,7 @@ exec_command() {
     next       ) next ;;
     nextalbum  ) next_album ;;
     output     ) shift; set_output "$@" ;;
+    oneshot    ) shift; oneshot "$@" ;;
     pause      ) pause ;;
     play       ) shift; play "$@" ;;
     playalbum  ) shift; add_album -p "$@" ;;

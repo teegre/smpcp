@@ -346,9 +346,8 @@ _playback_mode() {
     case $value in
       0) message M "${mode}: off"; return 1 ;;
       1) message M "${mode}: on"; return 0 ;;
-      *) message M "${mode}: oneshot"; return 0
     esac
-  elif [[ $new_value == "on" || $new_value == "1" || $new_value == "oneshot" ]]; then
+  elif [[ $new_value == "on" || $new_value == "1" ]]; then
     case $value in
       0) cmd "$mode" "$new_value" && { message M "${mode}: ${new_value}"; return 0; }; return 1 ;;
       1) message M "${mode}: ${new_value}"; return 0 ;;
@@ -357,7 +356,6 @@ _playback_mode() {
     case $value in
       0) message M "${mode}: off"; return 0 ;;
       1) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1 ;;
-      *) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1
     esac
   fi
 }
@@ -367,6 +365,21 @@ _repeat() { _playback_mode repeat  "$1"; }
 random()  { _playback_mode random  "$1"; }
 single()  { _playback_mode single  "$1"; }
 consume() { _playback_mode consume "$1"; }
+
+oneshot() {
+  local value new_value
+  value="$(fcmd status single)"
+  new_value="$1"
+  if [[ -z $new_value ]]; then
+    [[ $value == "oneshot" ]] && { message M "oneshot: on"; return 1; }
+    [[ $value == "oneshot" ]] || { message M "oneshot: off"; return 0; }
+  else
+    case $new_value in
+      on ) cmd single oneshot; message M "oneshot: on"; return 1 ;;
+      off) cmd single 0; message M "oneshot: off"; return 0
+    esac
+  fi
+}
 
 xfade() {
   # crossfade:
