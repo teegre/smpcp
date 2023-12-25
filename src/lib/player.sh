@@ -371,12 +371,12 @@ oneshot() {
   value="$(fcmd status single)"
   new_value="$1"
   if [[ -z $new_value ]]; then
-    [[ $value == "oneshot" ]] && { message M "oneshot: on"; return 1; }
-    [[ $value == "oneshot" ]] || { message M "oneshot: off"; return 0; }
+    [[ $value == "oneshot" ]] && { message M "oneshot: on"; return 0; }
+    [[ $value == "oneshot" ]] || { message M "oneshot: off"; return 1; }
   else
     case $new_value in
-      on ) cmd single oneshot; message M "oneshot: on"; return 1 ;;
-      off) cmd single 0; message M "oneshot: off"; return 0
+      on ) cmd single oneshot; message M "oneshot: on"; return 0 ;;
+      off) cmd single 0; message M "oneshot: off"; return 1
     esac
   fi
 }
