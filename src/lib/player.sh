@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/12/22
+# M │ 2023/12/25
 # D │ Player functions.
 
 toggle() {
@@ -349,8 +349,8 @@ _playback_mode() {
     esac
   elif [[ $new_value == "on" || $new_value == "1" ]]; then
     case $value in
-      0) cmd "$mode" "$new_value" && { message M "${mode}: ${new_value}"; return 0; }; return 1 ;;
-      1) message M "${mode}: ${new_value}"; return 0 ;;
+      0) cmd "$mode" 1 && { message M "${mode}: on"; return 0; }; return 1 ;;
+      1) message M "${mode}: on"; return 0 ;;
     esac
   elif [[ $new_value == "off" || $new_value == "0" ]]; then
     case $value in
