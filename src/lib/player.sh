@@ -378,13 +378,13 @@ oneshot() {
     case $new_value in
       on )
         cmd single oneshot
-        [[ $NOTIFY ]] && notify_player "ONESHOT: ON"
+        [[ $NOTIFY ]] && notify_player "oneshot: ON"
         [[ $NOTIFY ]] || message M "oneshot: on"
         return 0
         ;;
       off)
         cmd single 0
-        [[ $NOTIFY ]] && notify_player "ONESHOT: OFF"
+        [[ $NOTIFY ]] && notify_player "oneshot: OFF"
         [[ $NOTIFY ]] || message M "oneshot: off"
         return 1
     esac
