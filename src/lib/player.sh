@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2023, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/12/25
+# M │ 2023/12/26
 # D │ Player functions.
 
 toggle() {
@@ -368,15 +368,25 @@ consume() { _playback_mode consume "$1"; }
 
 oneshot() {
   local value new_value
+  [[ $1 == '-n' ]] && { local NOTIFY=1; shift; }
   value="$(fcmd status single)"
   new_value="$1"
   if [[ -z $new_value ]]; then
-    [[ $value == "oneshot" ]] && { message M "oneshot: on"; return 0; }
+    [[ $value == "oneshot" ]] && { message M "oneshot: on";  return 0; }
     [[ $value == "oneshot" ]] || { message M "oneshot: off"; return 1; }
   else
     case $new_value in
-      on ) cmd single oneshot; message M "oneshot: on"; return 0 ;;
-      off) cmd single 0; message M "oneshot: off"; return 1
+      on )
+        cmd single oneshot
+        [[ $NOTIFY ]] && notify_player "ONESHOT: ON"
+        [[ $NOTIFY ]] || message M "oneshot: on"
+        return 0
+        ;;
+      off)
+        cmd single 0
+        [[ $NOTIFY ]] && notify_player "ONESHOT: OFF"
+        [[ $NOTIFY ]] || message M "oneshot: off"
+        return 1
     esac
   fi
 }

@@ -7,7 +7,7 @@
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2023, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,30 +24,21 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2023/10/22
+# M │ 2023/12/26
 # D │ Main program.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
 
-# shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh
-# shellcheck source=/usr/lib/smpcp/core.sh
 source "$SMPCP_LIB"/core.sh
-# shellcheck source=/usr/lib/smpcp/help.sh
 source "$SMPCP_LIB"/help.sh
-# shellcheck source=/usr/lib/smpcp/player.sh
+source "$SMPCP_LIB"/notify.sh
 source "$SMPCP_LIB"/player.sh
-# shellcheck source=/usr/lib/smpcp/playlist.sh
 source "$SMPCP_LIB"/playlist.sh
-# shellcheck source=/usr/lib/smpcp/plugin.sh
 source "$SMPCP_LIB"/plugin.sh
-# shellcheck source=/usr/lib/smpcp/query.sh
 source "$SMPCP_LIB"/query.sh
-# shellcheck source=/usr/lib/smpcp/statistics.sh
 source "$SMPCP_LIB"/statistics.sh
-# shellcheck source=/usr/lib/smpcp/tracker.sh
 source "$SMPCP_LIB"/tracker.sh
-# shellcheck source=/usr/lib/smpcp/volume.sh
 source "$SMPCP_LIB"/volume.sh
 
 

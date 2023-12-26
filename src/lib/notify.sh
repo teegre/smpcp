@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is a part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2023, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # NOTIFY
 # C : 2021/05/20
-# M : 2022/06/10
+# M : 2023/12/26
 # D : Notification helper functions.
 
 notify_song() {
@@ -59,5 +59,5 @@ notify_player() {
     shift
   fi
 
-  notify-send -i "$SMPCP_ICON" -t 1500 "$(pstatus)" "$msg"
+  notify-send -i "$SMPCP_ICON" -t 2000 "$(pstatus)" "$msg"
 }
