@@ -25,7 +25,7 @@
 #
 # SLEEPTIMER
 # C : 2021/04/26
-# M : 2023/12/22
+# M : 2023/12/27
 # D : Pause playback after time out.
 
 export PLUG_SLEEPTIMER_VERSION="0.2"
@@ -110,14 +110,19 @@ plug_sleeptimer() {
     return 1
   }
 
-  # if single mode is enabled, there is
+  # if oneshot/single mode is enabled, there is
   # no need for a sleep timer.
-  single &> /dev/null && {
+  local _state="$(fcmd status single)"
+  local dur
+  dur="$(read_config sleeptimer_duration)" || dur=0
+  [[ $_state == "1" || $_state == "oneshot" ]] && [[ $dur -gt 0 ]] && {
     local duration elapsed expire
     duration="$(get_duration)"
     elapsed="$(get_elapsed)"
     expire="$(secs_to_hms $((duration-elapsed)))"
-
+    kill_sleeptimer
+    write_config sleeptimer_duration 0
+    write_config sleeptimer_expiration 0
     message M "sleeptimer: ${expire} left."
     return
   }
