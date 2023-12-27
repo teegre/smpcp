@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/12/26
+# M │ 2023/12/27
 # D │ Player functions.
 
 toggle() {
@@ -336,6 +336,7 @@ _playback_mode() {
 
   local mode value
   mode="$1"; shift
+  [[ $1 == "-n" ]] && { local NOTIFY=1; shift; }
   value="$(fcmd status "$mode")"
   new_value="$1"; shift
 
@@ -344,27 +345,57 @@ _playback_mode() {
   # show playback mode current state
   if [[ -z $new_value ]]; then
     case $value in
-      0) message M "${mode}: off"; return 1 ;;
-      1) message M "${mode}: on"; return 0 ;;
+      0)
+        [[ $NOTIFY ]] && notify_player "${mode}: off"
+        [[ $NOTIFY ]] || message M "${mode}: off"
+        return 1
+        ;;
+      1)
+        [[ $NOTIFY ]] && notify_player "${mode}: on"
+        [[ $NOTIFY ]] || message M "${mode}: on"
+        return 0
+        ;;
     esac
+  # turn on
   elif [[ $new_value == "on" || $new_value == "1" ]]; then
     case $value in
-      0) cmd "$mode" 1 && { message M "${mode}: on"; return 0; }; return 1 ;;
-      1) message M "${mode}: on"; return 0 ;;
+      0)
+        cmd "$mode" 1 && {
+          [[ $NOTIFY ]] && notify_player "${mode}: on"
+          [[ $NOTIFY ]] || message M "${mode}: on"
+          return 0
+        }
+        return 1
+        ;;
+      1)
+        [[ $NOTIFY ]] && notify_player "${mode}: on"
+        [[ $NOTIFY ]] || message M "${mode}: on"
+        return 0
+        ;;
     esac
+  # turn off
   elif [[ $new_value == "off" || $new_value == "0" ]]; then
     case $value in
-      0) message M "${mode}: off"; return 0 ;;
-      1) cmd "$mode" 0 && { message M "${mode}: off"; return 0; }; return 1 ;;
+      0)
+        [[ $NOTIFY ]] && notify_player "${mode}: off"
+        [[ $NOTIFY ]] && message M "${mode}: off"; return 0 ;;
+      1)
+        cmd "$mode" 0 && {
+          [[ $NOTIFY ]] && notify_player "${mode}: off"
+          [[ $NOTIFY ]] || message M "${mode}: off"
+          return 0
+        }
+        return 1
+        ;;
     esac
   fi
 }
 
-_repeat() { _playback_mode repeat  "$1"; }
+_repeat() { _playback_mode repeat  "$@"; }
 # shellcheck disable=SC2120
-random()  { _playback_mode random  "$1"; }
-single()  { _playback_mode single  "$1"; }
-consume() { _playback_mode consume "$1"; }
+random()  { _playback_mode random  "$@"; }
+single()  { _playback_mode single  "$@"; }
+consume() { _playback_mode consume "$@"; }
 
 oneshot() {
   local value new_value
@@ -378,13 +409,13 @@ oneshot() {
     case $new_value in
       on )
         cmd single oneshot
-        [[ $NOTIFY ]] && notify_player "oneshot: ON"
+        [[ $NOTIFY ]] && notify_player "oneshot: on"
         [[ $NOTIFY ]] || message M "oneshot: on"
         return 0
         ;;
       off)
         cmd single 0
-        [[ $NOTIFY ]] && notify_player "oneshot: OFF"
+        [[ $NOTIFY ]] && notify_player "oneshot: off"
         [[ $NOTIFY ]] || message M "oneshot: off"
         return 1
     esac
@@ -440,19 +471,19 @@ _mode() {
   }
 
   case $1 in
-    song  ) write_config mode song;  message M "mode: song."   ;;
-    album ) write_config mode album; message M "mode: album."  ;;
-    norm  ) write_config mode off;   message M "mode: normal."; __normal_mode ;;
-    normal) write_config mode off;   message M "mode: normal."; __normal_mode ;;
-    off   ) write_config mode off;   message M "mode: normal."; __normal_mode ;;
-    ""    ) message M "mode: $(read_config mode)." ;;
+    song  ) write_config mode song;  message M "mode: song"  ;;
+    album ) write_config mode album; message M "mode: album" ;;
+    norm  ) write_config mode off;   message M "mode: normal"; __normal_mode ;;
+    normal) write_config mode off;   message M "mode: normal"; __normal_mode ;;
+    off   ) write_config mode off;   message M "mode: normal"; __normal_mode ;;
+    ""    ) message M "mode: $(read_config mode)" ;;
     *     ) message E "invalid option."
   esac
 }
 
 get_mode() {
   # helper function to get mode as an integer.
-  # 0 off
+  # 0 normal/off
   # 1 song
   # 2 album
 
