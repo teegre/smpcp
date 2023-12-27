@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2023/12/26
+# M │ 2023/12/27
 # D │ Main program.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -57,7 +57,7 @@ try_plugin() {
   if plugin_function_exists "$1"; then
     plugin_function_exec "$@"
   else
-    message E "invalid command: ${1}."
+    message E "invalid command: ${1}"
     return 1
   fi
 }
