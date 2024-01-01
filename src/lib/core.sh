@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2024, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2023/12/22
+# M │ 2024/01/01
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -80,14 +80,16 @@ now() { _date "%F %T"; }
 # a simple logger.
 logme() {
   [[ $1 == "--clear" ]] && {
-    [[ -s $SMPCP_LOG ]] && {
-      local index=1
-      # make a backup copy of log file.
-      while [[ -a ${SMPCP_LOG}.${index} ]]; do
-        ((index++))
-      done
-      cp "$SMPCP_LOG" "${SMPCP_LOG}.${index}"
-    }
+    if [[ $(read_config keep_logfiles) == "yes" ]]; then
+      [[ -s $SMPCP_LOG ]] && {
+        local index=1
+        # make a backup copy of log file.
+        while [[ -a ${SMPCP_LOG}.${index} ]]; do
+          ((index++))
+        done
+        cp "$SMPCP_LOG" "${SMPCP_LOG}.${index}"
+      }
+    fi
     :> "$SMPCP_LOG"
     return
   }
