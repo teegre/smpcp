@@ -112,7 +112,7 @@ media_update() {
   info="$(get_current "$fmt")"
   info="${info:-$(get_current)}"
 
-  echo "$(state -p);${info}" > "/tmp/.currentmedia"
+  echo "$(state -p):::${info}" > "/tmp/.currentmedia"
 }
 
 clear_media() { :> "/tmp/.currentmedia"; }
