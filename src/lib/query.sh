@@ -345,8 +345,8 @@ DELETE FROM sticker
 WHERE uri IN (${orphans[*]})
 SQL
 
-[[ -t 1 ]] && message M "sticker database cleaned in $((EPOCHSECONDS-T)) seconds."
-[[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms $((EPOCHSECONDS-T)))."
+[[ -t 1 ]] && message M "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
+[[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
 
 }
 
@@ -360,7 +360,7 @@ get_random_song() {
     shift
   }
 
-  skiplimit="$(read_config skip_limit)" || skiplimit=0
+  skiplimit="$(read_config skip_limit)" || skiplimit=3
 
   while read -r; do
     _is_in_playlist "$REPLY" && continue
