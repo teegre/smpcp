@@ -205,7 +205,6 @@ cassette_schedule() {
   sleep $((_time-EPOCHSECONDS)) 2>/dev/null
 
   # start recording
-  save_state
   stop
   cmd clear
   add "$url"
