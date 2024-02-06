@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2021/10/25
+# M : 2024/02/06
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -81,7 +81,7 @@ add_songs() {
 
   get_mode &> /dev/null || return 1
 
-  # sometimes in random mode there's not next song
+  # sometimes in random mode there's no next song
   # even if the queue contains more than one track.
   # disabling and re-enabling random mode fix the issue.
 
@@ -105,16 +105,7 @@ add_songs() {
     plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding songs..."
-    if ((RANDOM%10 == 0)); then
-      # 10% chance to get a queue filled with favourite songs.
-      local c q
-      c="$(read_config song_mode_count)" || c=10
-      get_fav | add
-      q="$(queue_length)"
-      ((q<c)) && get_rnd $((c-q)) | add
-    else
-      get_rnd | add
-    fi
+    get_rnd | add
     plugin_notify "added"
     __song_mode
     rm "$SMPCPD_LOCK"
