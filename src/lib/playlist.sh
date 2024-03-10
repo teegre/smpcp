@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2024, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # PLAYLIST
 # C │ 2021/04/03
-# M │ 2023/12/20
+# M │ 2024/03/10
 # D │ Queue/playlist management.
 
 list_queue() {
@@ -513,6 +513,16 @@ list_playlist() {
 
     fcmd listplaylist "$name" file
   }
+}
+
+list_numbered_playlist_content() {
+  local name count=1
+  name="$1"; shift
+  [[ $name ]] || return 1
+  while read -r; do
+    printf "%i. %s\n" "$count" "$REPLY"
+    ((count++))
+  done < <(list_playlist "$name")
 }
 
 load() {

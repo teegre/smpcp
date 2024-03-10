@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2024, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2023/12/21
+# M : 2024/03/10
 # D : Help.
 
 _help() {
@@ -66,6 +66,7 @@ Commands:
   smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
   smpcp next                                       play next song in the queue.
   smpcp nextalbum                                  play another random album (album mode only).
+  smpcp npls <name>                                display numbered content of a stored playlist.
   smpcp oneshot [on|off]                           set oneshot mode.
   smpcp output <name> <on|off>                     enable/disable an output.
   smpcp pause                                      pause playback.

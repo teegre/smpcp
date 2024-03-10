@@ -7,7 +7,7 @@
 # ▐█▄▪▐███ ██▌▐█▌▐█▪·•▐███▌▐█▪·• client
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
-# Copyright (C) 2021-2023, Stéphane MEYER.
+# Copyright (C) 2021-2024, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2023/12/27
+# M │ 2024/03/10
 # D │ Main program.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -98,6 +98,7 @@ exec_command() {
     move       ) shift; move "$@" ;;
     next       ) next ;;
     nextalbum  ) next_album ;;
+    npls       ) shift; list_numbered_playlist_content "$@" ;;
     output     ) shift; set_output "$@" ;;
     oneshot    ) shift; oneshot "$@" ;;
     pause      ) pause ;;
