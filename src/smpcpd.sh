@@ -109,7 +109,7 @@ add_songs() {
     plugin_notify "added"
     __song_mode
     rm "$SMPCPD_LOCK"
-    state || play
+    [[ $(state -p) == "stop" ]] && play
     return 0
   elif [[ $mode -eq 2 ]]; then
     plugin_notify "add" 2> /dev/null
