@@ -92,7 +92,7 @@ _smpcp() {
     consume | random | repeat | single )
       _smpcp_args "on" "off"
     ;;
-    cload | load | pls | remove | save )
+    cload | load | npls | pls | remove | save )
       _smpcp_playlists
     ;;
     help )

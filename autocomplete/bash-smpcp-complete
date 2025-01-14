@@ -82,7 +82,7 @@ _smpcp() {
     case $prev in
       add | lsdir | update ) _smpcp_dir ;;
       addalbum | albums | insertalbum | playalbum ) _smpcp_artists ;;
-      cload | load | pls | remove | save ) _smpcp_pls ;;
+      cload | load | npls | pls | remove | save ) _smpcp_pls ;;
       consume | random | repeat | single ) _smpcp_opt "on" "off" ;;
       help ) _smpcp_cmd ;;
       mode ) _smpcp_opt "album" "song" "normal" ;;
