@@ -20,7 +20,7 @@
 
 ## Dependencies
 
-Latest version of these packages are needed:
+Latest version of these packages are needed:  
 awk (for auto-completion)  
 bash  
 cdparanoia (optional)  
