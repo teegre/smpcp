@@ -1,4 +1,4 @@
-.TH "SMPCP" "1" "0.1.9.4" "December 2023" "Super Music Player Client Plus"
+.TH "SMPCP" "1" "0.1.9.5" "January 2025" "Super Music Player Client Plus"
 .SH NAME
 \fB\fCsmpcp\fR \- smpcp documentation\.
 .SH "SYNOPSIS"
@@ -19,7 +19,7 @@ To start the daemon:
 .SH "COMMANDS"
 If no command is given, \fBsmpcp\fR prints its version and the current status.
 
-Commands can be chained with \fB++\fR operator.
+Commands can be chained with the \fB++\fR operator.
 
 Command auto-completion is available for \fBzsh\fR and \fBbash\fR.
 
@@ -200,11 +200,19 @@ Pretty prints the current queue. \fI-f\fR option prints filenames only or uses \
 \fBrating\fR [\fI1-5\fR]
   Gives currents song a rating between 1 and 5. Without argument, it prints current song rating.
 
-\fBdbplaytime\fR
-  Prints sum of all song durations in the database.
-
-\fBplaytime\fR
-  Prints total time played.
+\fBstats\fR [\fIkey\fR]
+  Display statistics:
+.IP "" 4
+.nf
+\fBartists\fR: number of artists.
+\fBalbums\fR: number of albums.
+\fBsongs\fR: number of songs.
+\fBuptime\fR: \fBMPD\fR daemon uptime.
+\fBdb_playtime\fR: sum of all song times in the database
+\fBdb_update\fR: last db update.
+\fBplaytime\fR: time length of music played.
+.IP "" 0
+  If no \fIkey\fR is provided, all statistics are displayed.
 
 .SS Plugins
 More commands may be available if plugins are installed. When invoking \fBhelp\fR, new commands are shown at the end of the list.
@@ -271,7 +279,7 @@ To enable \fIalbum\fR mode: \fBmode album\fR
 
 To enable \fInormal\fR mode: \fBmode normal\fR
 .SH "INFO AND STATISTICS"
-When \fBsmpcp\fR daemon is running, it keep track of played songs and statistics are stored in \fBMPD\fR sticker database:
+When \fBsmpcp\fR daemon is running, it keeps track of played songs and statistics are stored in \fBMPD\fR sticker database:
 .PP
 .IP "" 4
 - date last played
@@ -390,4 +398,4 @@ For more info, see \fB$XDG_DATA_HOME/.local/share/licenses/smpcp/LICENSE\fR
 Stéphane MEYER (Teegre)
 .SH "COPYRIGHT"
 .TP
-2023 Stéphane MEYER (Teegre)
+2025 Stéphane MEYER (Teegre)

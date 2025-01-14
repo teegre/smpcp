@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021-2024, Stéphane MEYER.
+# Copyright (C) 2021-2025, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # HELP
 # C : 2021/04/13
-# M : 2024/03/10
+# M : 2025/05/14
 # D : Help.
 
 _help() {
@@ -44,7 +44,6 @@ Commands:
   smpcp cload <name> [<pos>|<start-end>...]        clear queue and load a stored playlist (see 'load').
   smpcp consume [off|on]                           set consume mode.
   smpcp crop                                       remove all songs from the queue except the current one.
-  smpcp dbplaytime                                 display database playtime.
   smpcp delete <position>|<start-end>              delete song(s) from the queue.
   smpcp dim [-n]                                   toggle volume dim.
   smpcp getcurrent [format]                        show info about current song.
@@ -72,7 +71,6 @@ Commands:
   smpcp pause                                      pause playback.
   smpcp play [pos]                                 play song.
   smpcp playalbum [<artist> <album>]               play album for current song.
-  smpcp playtime                                   display user playtime.
   smpcp pls [name]                                 list stored playlists or content of a given playlist.
   smpcp plugins                                    list installed plugins.
   smpcp prev                                       play song from the start or play previous song.
@@ -89,6 +87,7 @@ Commands:
   smpcp songinfo                                   print info about current song.
   smpcp skip                                       skip current track.
   smpcp state [-p]                                 playback state (-p to print).
+  smpcp stats [key]                                display statistics.
   smpcp status                                     print player status.
   smpcp stop                                       stop playback.
   smpcp toggle [pos]                               toggle play/pause.

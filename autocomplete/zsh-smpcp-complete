@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021, Stéphane MEYER.
+# Copyright (C) 2021-2025, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # SMPCP-AUTOCOMPLETE
 # C : 2021/05/31
-# M : 2021/06/16
+# M : 2025/01/14
 # D : Zsh completion for smpcp.
 
 _smpcp_commands() {
@@ -104,6 +104,9 @@ _smpcp() {
     ;;
     replaygain )
       _smpcp_args "album" "auto" "track"
+    ;;
+    stats )
+      _smpcp_args "albums" "artists" "db_playtime" "db_update" "playtime" "songs" "update"
   esac
 
   case $words[$((CURRENT-2))] in

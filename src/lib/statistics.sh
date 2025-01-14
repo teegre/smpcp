@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021-2023, Stéphane MEYER.
+# Copyright (C) 2021-2025, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2023/12/20
+# M : 2025/01/14
 # D : Statistics management.
 
 get_sticker() {
@@ -295,22 +295,31 @@ song_stats() {
   echo "skip count:  $(skipcount)"
 }
 
-db_playtime() {
-  # print db total playtime
-  
-  local t
-  t="$(fcmd stats db_playtime)"
+show_stats() {
+  local k v
+  while read -r; do
+    [[ $REPLY =~ ^(.+):[[:space:]](.+)$ ]] && {
+      k="${BASH_REMATCH[1]}"
+      v="${BASH_REMATCH[2]}"
 
-  secs_to_hms $((t))
-  echo
-}
+      [[ $1 ]] && {
+        [[ $1 == $k ]] || continue
+        # if a key is given do not print.
+      }
 
-playtime() {
-  # print user playtime.
+      [[ $1 ]] || echo -n "${k}: "
 
-  local t
-  t="$(fcmd stats playtime)"
+      case $k in
+        uptime) secs_to_hms $((v)); echo ;;
+        playtime) secs_to_hms $((v)); echo ;;
+        db_playtime) secs_to_hms $((v)); echo ;;
+        db_update) _date "%Y/%m/%d %H:%M:%S" $((v)); echo ;;
+        update) secs_to_hms $((v)); echo ;;
+        *) echo "$v"
 
-  secs_to_hms $((t))
-  echo
+      esac
+      # exit loop if key was found.
+      [[ $1 == $k ]] && break
+    }
+  done < <(cmd stats)
 }

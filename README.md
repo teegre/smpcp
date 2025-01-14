@@ -21,7 +21,7 @@
 ## Dependencies
 
 Latest version of these packages are needed:
-
+awk (for auto-completion)  
 bash  
 cdparanoia (optional)  
 coreutils  
@@ -30,7 +30,7 @@ imagemagick
 libmpdclient  
 libnotify  
 mpd  
-sed  
+sed (for auto-completion)  
 sqlite3  
 util-linux
 
