@@ -33,72 +33,95 @@ cat << EOB
 smpcp: version ${__version}
 
 Commands:
-  smpcp add <uri>                                  add song(s) to the queue.
-  smpcp addalbum [<artist> <album>]                append album to the queue.
-  smpcp addsong  <artist> <title>                  append song to the queue.
-  smpcp albuminfo                                  display current album full info.
-  smpcp albums                                     display albums in the database for current artist.
-  smpcp cdadd [<track>|<start-end>...]             add audio cd tracks to the queue.
-  smpcp cdplay                                     play an audio cd.
-  smpcp clear                                      remove all songs from the queue.
-  smpcp cload <name> [<pos>|<start-end>...]        clear queue and load a stored playlist (see 'load').
-  smpcp consume [off|on]                           set consume mode.
-  smpcp crop                                       remove all songs from the queue except the current one.
-  smpcp delete <position>|<start-end>              delete song(s) from the queue.
-  smpcp dim [-n]                                   toggle volume dim.
-  smpcp getcurrent [format]                        show info about current song.
-  smpcp getduration [-h]                           display duration of current song.
-  smpcp getelapsed [-h]                            display elapsed time for current song.
-  smpcp getnext [format]                           show info about next song in the queue.
-  smpcp getprev [format]                           show info about previously played song.
-  smpcp getrnd [-a] <count>                        print <count> random songs or albums (-a).
-  smpcp help                                       show this help screen.
-  smpcp history                                    show playback history.
-  smpcp insertalbum [<artist> <album>]             add album after current song.
-  smpcp load <name> [[pos]|[start-end]...]         load playlist or specific songs into the queue.
-  smpcp ls [-f [format]]                           print queue.
-  smpcp lsalbums [artist]                          print albums.
-  smpcp lsartists                                  print artists.
-  smpcp lsdir [uri]                                print (sub)directory/file list.
-  smpcp lsoutputs                                  print available outputs.
-  smpcp mode [song|album|off]                      set mode or print status.
-  smpcp move [<position> | <start-end>] <to>       move song(s) within the queue.
-  smpcp next                                       play next song in the queue.
-  smpcp nextalbum                                  play another random album (album mode only).
-  smpcp npls <name>                                display numbered content of a stored playlist.
-  smpcp oneshot [on|off]                           set oneshot mode.
-  smpcp output <name> <on|off>                     enable/disable an output.
-  smpcp pause                                      pause playback.
-  smpcp play [pos]                                 play song.
-  smpcp playalbum [<artist> <album>]               play album for current song.
-  smpcp pls [name]                                 list stored playlists or content of a given playlist.
-  smpcp plugins                                    list installed plugins.
-  smpcp prev                                       play song from the start or play previous song.
-  smpcp random [off|on]                            set random mode.
-  smpcp rating [0..5]                              rate current song.
-  smpcp remove <name>                              delete given stored playlist.
-  smpcp repeat [off|on]                            set repeat mode.
-  smpcp replaygain [auto|track|album]              set replay gain mode.
-  smpcp save <name>                                save current queue to playlist.
-  smpcp search <type> <query>                      search for songs.
-  smpcp searchadd <type> <query>                   search for songs and add them to queue.
-  smpcp seek [+|-]<[HH:[MM:]]SS> | [+|-]<0-100%>   seek to specified position.
-  smpcp single [off|on]                            set single mode.
-  smpcp songinfo                                   print info about current song.
-  smpcp skip                                       skip current track.
-  smpcp state [-p]                                 playback state (-p to print).
-  smpcp stats [key]                                display statistics.
-  smpcp status                                     print player status.
-  smpcp stop                                       stop playback.
-  smpcp toggle [pos]                               toggle play/pause.
-  smpcp tracker                                    idle mode, print music player events.
-  smpcp unskip                                     reset current song skip count.
-  smpcp update [uri]                               update database.
-  smpcp version                                    show program version and exit.
-  smpcp vol [-n] [+|-]<vol>                        set volume.
-  smpcp xfade [duration]                           set crossfade duration.
+  smpcp add <uri>                                  | add song(s) to the queue.
+  smpcp addalbum [<artist> <album>]                | append album to the queue.
+  smpcp addsong  <artist> <title>                  | append song to the queue.
+  smpcp albuminfo                                  | display current album full info.
+  smpcp albums                                     | display albums in the database for current artist.
+  smpcp cdadd [<track>|<start-end>...]             | add audio cd tracks to the queue.
+  smpcp cdplay                                     | play an audio cd.
+  smpcp clear                                      | remove all songs from the queue.
+  smpcp cload <name> [<pos>|<start-end>...]        | clear queue and load a stored playlist (see 'load').
+  smpcp consume [off|on]                           | set consume mode.
+  smpcp crop                                       | remove all songs from the queue except the current one.
+  smpcp delete <position>|<start-end>              | delete song(s) from the queue.
+  smpcp dim [-n]                                   | toggle volume dim.
+  smpcp getcurrent [format]                        | show info about current song.
+  smpcp getduration [-h]                           | display duration of current song.
+  smpcp getelapsed [-h]                            | display elapsed time for current song.
+  smpcp getnext [format]                           | show info about next song in the queue.
+  smpcp getprev [format]                           | show info about previously played song.
+  smpcp getrnd [-a] <count>                        | print <count> random songs or albums (-a).
+  smpcp help [command]                             | show this help screen.
+  smpcp history                                    | show playback history.
+  smpcp insertalbum [<artist> <album>]             | add album after current song.
+  smpcp load <name> [[pos]|[start-end]...]         | load playlist or specific songs into the queue.
+  smpcp ls [-f [format]]                           | print queue.
+  smpcp lsalbums [artist]                          | print albums.
+  smpcp lsartists                                  | print artists.
+  smpcp lsdir [uri]                                | print (sub)directory/file list.
+  smpcp lsoutputs                                  | print available outputs.
+  smpcp mode [song|album|off]                      | set mode or print status.
+  smpcp move [<position> | <start-end>] <to>       | move song(s) within the queue.
+  smpcp next                                       | play next song in the queue.
+  smpcp nextalbum                                  | play another random album (album mode only).
+  smpcp npls <name>                                | display numbered content of a stored playlist.
+  smpcp oneshot [on|off]                           | set oneshot mode.
+  smpcp output <name> <on|off>                     | enable/disable an output.
+  smpcp pause                                      | pause playback.
+  smpcp play [pos]                                 | play song.
+  smpcp playalbum [<artist> <album>]               | play album for current song.
+  smpcp pls [name]                                 | list stored playlists or content of a given playlist.
+  smpcp plugins                                    | list installed plugins.
+  smpcp prev                                       | play song from the start or play previous song.
+  smpcp random [off|on]                            | set random mode.
+  smpcp rating [0..5]                              | rate current song.
+  smpcp remove <name>                              | delete given stored playlist.
+  smpcp repeat [off|on]                            | set repeat mode.
+  smpcp replaygain [auto|track|album]              | set replay gain mode.
+  smpcp save <name>                                | save current queue to playlist.
+  smpcp search <type> <query>                      | search for songs.
+  smpcp searchadd <type> <query>                   | search for songs and add them to queue.
+  smpcp seek [+|-]<[HH:[MM:]]SS> | [+|-]<0-100%>   | seek to specified position.
+  smpcp single [off|on]                            | set single mode.
+  smpcp songinfo                                   | print info about current song.
+  smpcp skip                                       | skip current track.
+  smpcp state [-p]                                 | playback state (-p to print).
+  smpcp stats [key]                                | display statistics.
+  smpcp status                                     | print player status.
+  smpcp stop                                       | stop playback.
+  smpcp toggle [pos]                               | toggle play/pause.
+  smpcp tracker                                    | idle mode, print music player events.
+  smpcp unskip                                     | reset current song skip count.
+  smpcp update [uri]                               | update database.
+  smpcp version                                    | show program version and exit.
+  smpcp vol [-n] [+|-]<vol>                        | set volume.
+  smpcp xfade [duration]                           | set crossfade duration.
 $(plugin_help)
 EOB
+}
+
+get_help() {
+  local c r
+  c="$1"
+  r="^[[:space:]]{2}smpcp[[:space:]]([^[:space:]]+)(.+)\|[[:space:]](.+)$"
+
+  while read -r; do
+    [[ $c ]] || echo "$REPLY"
+    [[ $c ]] && {
+      [[ $REPLY =~ $r ]] && {
+        [[ ${BASH_REMATCH[1]} == $c ]] && {
+          echo "${c}${BASH_REMATCH[2]}"
+          echo "--- ${BASH_REMATCH[3]}"
+          f=1
+          break
+        }
+      }
+    }
+  done < <(_help)
+  [[ $c ]] || return
+  [[ $c && $f ]] || message E "no such command: $c"
+  unset f
 }
 
 _print_version() {

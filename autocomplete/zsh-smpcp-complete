@@ -95,6 +95,9 @@ _smpcp() {
     cload | load | pls | remove | save )
       _smpcp_playlists
     ;;
+    help )
+      _smpcp_commands
+    ;;
     mode )
       _smpcp_args "album" "normal" "song"
     ;;

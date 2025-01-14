@@ -84,7 +84,7 @@ exec_command() {
     getnext    ) shift; get_next "$@" ;;
     getprev    ) shift; get_previous "$@" ;;
     getrnd     ) shift; get_rnd "$@" ;;
-    help       ) _help ;;
+    help       ) shift; get_help "$@" ;;
     history    ) _db_get_history ;;
     insertalbum) shift; add_album -i "$@" ;;
     load       ) shift; load "$@" ;;

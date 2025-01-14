@@ -25,7 +25,7 @@
 #
 # PLUGIN
 # C : 2021/04/28
-# M : 2021/10/20
+# M : 2025/01/15
 # D : Plugins management.
 
 # Plugins must be installed in $HOME/.config/smpcp/plugins and
@@ -180,7 +180,7 @@ plugin_help() {
       [[ $helpstr ]] || continue
       [[ $helpstr =~ ^args${sp}*=${sp}*(.*)${sp}*\;${sp}*desc${sp}*=${sp}*(.*)$ ]] && {
         args="${BASH_REMATCH[1]}"
-        desc="${BASH_REMATCH[2]}"
+        desc="| ${BASH_REMATCH[2]}"
         printf "  smpcp %-42s %s\n" "${func/help_} $args" "$desc"
       }
     done < <(get_all_plugin_functions "$plugin")

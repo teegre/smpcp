@@ -84,6 +84,7 @@ _smpcp() {
       addalbum | albums | insertalbum | playalbum ) _smpcp_artists ;;
       cload | load | pls | remove | save ) _smpcp_pls ;;
       consume | random | repeat | single ) _smpcp_opt "on" "off" ;;
+      help ) _smpcp_cmd ;;
       mode ) _smpcp_opt "album" "song" "normal" ;;
       replaygain ) _smpcp_opt "auto" "album" "track" ;;
       stats ) _smpcp_opt "albums" "artists" "db_playtime" "db_update" "playtime" "songs" "uptime" ;;
