@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/01/14
+# M : 2025/01/18
 # D : Statistics management.
 
 get_sticker() {
@@ -101,9 +101,11 @@ update_history_index() {
     $((index>0?index-1:0))
 }
 
+clear_media() { :> "/tmp/.currentmedia"; }
+
 media_update() {
   is_mpd || {
-    :> "/tmp/.currentmedia"
+    clear_media
     return
   }
 
@@ -114,8 +116,6 @@ media_update() {
 
   echo "$(state -p):::${info}" > "/tmp/.currentmedia"
 }
-
-clear_media() { :> "/tmp/.currentmedia"; }
 
 update_stats() {
   
