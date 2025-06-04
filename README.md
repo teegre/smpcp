@@ -29,6 +29,7 @@ openbsd-netcat
 imagemagick  
 libmpdclient  
 libnotify  
+mediainfo
 mpd  
 sed (for auto-completion)  
 sqlite3  

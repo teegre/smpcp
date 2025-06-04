@@ -25,11 +25,11 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2025/04/06
+# M │ 2025/06/04
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
-__version='0.1.9.6'
+__version='0.1.9.6-2'
 
 declare SMPCP_ASSETS="${HOME}/.local/share/smpcp/assets"
 declare SMPCP_ICON="${SMPCP_ASSETS}/default.png"

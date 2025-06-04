@@ -25,7 +25,7 @@
 #
 # TRACKER
 # C : 2021/04/09
-# M : 2021/05/05
+# M : 2025/06/04
 # D : Player event tracker.
 
 _wait() {
@@ -37,22 +37,18 @@ _wait() {
   [[ $STATE == "pause" || $STATE == "stop" ]] &&
     return 1
 
-  local duration elapsed
-
-  # shellcheck disable=2119
-  {
-    duration="$(get_duration)"
-    elapsed="$(get_elapsed)"
-  }
-
   # stream?
-  [[ $duration ]] || return
+  URI="$(get_current)"
+  [[ $URI =~ ^https?: ]] && return
+
+  local duration elapsed
+  duration="$(get_duration)"
+  elapsed="$(get_elapsed)"
 
   sleep $((duration-elapsed))
 
   echo "end"
 }
-
 
 tracker() {
   # track and print player events.

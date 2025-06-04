@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2025/04/06
+# M │ 2025/06/04
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -402,9 +402,23 @@ get_duration() {
   # usage: get_duration [-h] [uri]
   # -h print time in a human readable format.
 
-  local duration
-  duration="$(fcmd status duration)"
-  duration="${duration%%.*}"
+  local URI duration duration_ms
+
+  # NOTE: 2025-06-04
+  # For some mp3 files, duration is not properly read.
+  # Example: ffprobe gives 343.875922 and get_duration 347
+  # For these files, statistics are not updated because smpcpd
+  # believes they have not been played thoroughly.
+  # Below is a trick to address the issue.
+  URI="$(get_music_dir)/$(get_current)"
+  duration_ms="$(mediainfo --Inform="Audio;%Duration%" "$URI" 2> /dev/null)"
+  [[ $duration_ms ]] && {
+    duration=$((duration_ms/1000))
+    ((duration_ms%1000 >= 500)) && ((duration+=1))
+  }
+
+  # Fall back to mpd's given duration if something went wrong...
+  [[ $duration_ms ]] || duration="$(fcmd status duration)"
 
   [[ $duration ]] || return 1
 

@@ -131,7 +131,7 @@ play_event() {
   URI="$(get_current)"
   volume auto
   media_update
-  notify_song "$(get_current)"
+  notify_song "$URI"
 
   # handle playlist generator here vvv
   add_songs
