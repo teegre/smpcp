@@ -165,7 +165,7 @@ skip() {
 
   state || return 1
 
-  local uri skipcount
+  local uri ID
 
   uri="$(get_current)"
 
@@ -174,10 +174,9 @@ skip() {
 
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
 
-  skipcount="$(get_sticker "$uri" skipcount 2> /dev/null)" || skipcount=0
-  ((skipcount++))
+  ID="$(get_song_id "$uri")"
+  qdb mpdmusic 'W stat:'$ID' skipcount @inc'
   update_stats "$uri"
-  set_sticker "$uri" skipcount $((skipcount)) || return 1
   next
   return 0
 }
