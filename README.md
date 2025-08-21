@@ -31,6 +31,7 @@ libmpdclient
 libnotify  
 mediainfo
 mpd  
+qdb ([https://github.com/teegre/QDB](https://github.com/teegre/QDB))
 sed (for auto-completion)  
 sqlite3  
 util-linux
