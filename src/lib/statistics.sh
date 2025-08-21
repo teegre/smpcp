@@ -25,11 +25,61 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/01/18
+# M : 2025/08/21
 # D : Statistics management.
 
+qdb_setup() {
+  # local user password
+  # user="$(read_config qdb_user)"
+  # password="$(read_config qdb_password)"
+
+  # if [[ $password =~ ^\$\((.+)\)$ ]]; then
+  #   local cmd="${BASH_REMATCH[1]}"
+  #   password="$($cmd)" 2> /dev/null  || {
+  #     message E "invalid command."
+  #     return 1
+  #   }
+  # elif [[ $password =~ ^\$\(.+[^\)]$ ]]; then
+  #   message E "invalid password command."
+  #   return 1
+  # elif [[ $password =~ ^@\((.+)\)$ ]]; then
+  #   password="$(echo "${BASH_REMATCH[1]}" | base64 -d)"
+  # elif [[ $password =~ ^@\(.+[^\)]$ ]]; then
+  #   __err E .email "base64 password, invalid syntax."
+  #   return 1
+  # fi
+
+  # [[ $password =~ ^\$\((.+)\) ]] && password="$("${BASH_REMATCH[1]}")"
+  # SMPCP_QDB_USER="$user"
+  # export SMPCP_QDB_USER
+  # SMPCP_QDB_PWD="$password"
+  # export SMPCP_QDB_PWD
+  # unset user password
+
+  qdb --quiet --nofield "${SMPCP_STICKER_DB}" open && return 0
+  return 1
+}
+
+quote() {
+  local val="$1"
+  val="${val//\"/\\\\\\\"}"
+  val="${val//\'/\\\\\\\'}"
+  echo $val
+}
+
+get_song_id() {
+  local uri value
+  uri="$(quote "$@")"
+
+  [[ $uri =~ ^https?: ]] && return 1
+  [[ $uri =~ ^cdda: ]] && return 1
+
+  qdb mpdmusic "Q song \$id:#file=\"$uri\"" && return 0
+  return 1
+}
+
 get_sticker() {
-  local uri name value
+  local uri name value ID
   uri="$1"
 
   [[ $uri =~ ^https?: ]] && return 1
@@ -37,17 +87,21 @@ get_sticker() {
 
   name="$2"
   [[ $uri && $name ]] && {
-    value="$(cmd sticker get song "$uri" "$name")" || return 1
-    [[ $value =~ ^sticker:[[:space:]]${name}=(.+)$ ]] && {
-      echo "${BASH_REMATCH[1]}"
-      return 0
-    }
+    ID="$(get_song_id "$uri")" || return 1
+    value="$(qdb mpdmusic 'Q stat:'$ID' '"$name"'')" || return 1
+    echo "$value"
+    return 0
+    # value="$(cmd sticker get song "$uri" "$name")" || return 1
+    # [[ $value =~ ^sticker:[[:space:]]${name}=(.+)$ ]] && {
+    #   echo "${BASH_REMATCH[1]}"
+    #   return 0
+    # }
   }
   return 1
 }
 
 set_sticker() {
-  local uri name value
+  local uri name value ID
   uri="$1"
 
   [[ $uri =~ ^https?: ]] && return 1
@@ -55,6 +109,7 @@ set_sticker() {
 
   name="$2"
   value="$3"
+
   [[ $uri && $name && $value ]] && {
     cmd sticker set song "$uri" "$name" "$value" || return 1
     return 0
@@ -126,7 +181,7 @@ update_stats() {
     shift
   }
 
-  local uri
+  local uri ID
   uri="$1"
 
   [[ $uri ]] || return 1
@@ -134,49 +189,40 @@ update_stats() {
   [[ $uri =~ ^https?: ]] && return 0
   [[ $uri =~ ^cdda: ]] && return 0
 
+  ID="$(get_song_id "$uri")"
+
   update_history_index
 
-  set_sticker "$uri" lastplayed "$(now)" || return 1
-  
-  [[ $NO_PLAYCOUNT ]] || {
-    local playcount
-    playcount="$(get_sticker "$uri" playcount 2> /dev/null)" || playcount=0
+  [[ $NO_PLAYCOUNT ]] || \
+    qdb mpdmusic 'W stat:'$ID' lastplayed @now playcount @inc' || return 1
 
-    ((playcount++))
-    set_sticker "$uri" playcount "$playcount" ||
-      return 1
-  }
-
-  get_sticker "$uri" rating &> /dev/null ||
-    rating 0 &> /dev/null
-  get_sticker "$uri" skipcount &> /dev/null ||
-    set_sticker "$uri" skipcount 0
+  [[ $NO_PLAYCOUNT ]] && \
+    qdb mpdmusic 'W stat:'$ID' lastplayed @now' || return 1
 
   return 0
 }
 
 reset_stats() {
 
-  local uri
+  local uri ID
   uri=$1
 
   [[ $uri ]] || return 1
 
-  set_sticker "$uri" lastplayed "-" &&
-    set_sticker "$uri" playcount 0 &&
-      set_sticker "$uri" skipcount 0 &&
-        return 0
+  ID="$(get_song_id "$uri")"
 
-  return 1
+  qdb mpdmusic 'W stat:'$ID' lastplayed 0 playcount 0 skipcount 0' || return 1
+
+  return 0
 }
 
 rating() {
   # set current song rating.
-  # usage: rating [value]
+  # usage: rating [uri] [value]
   # value must be an integer between 0 (unset) and 5.
   # if no given value, print actual rating.
 
-  local uri
+  local uri ID
 
   if [[ $1 ]] && ! [[ $1 =~ ^[0-9]+$ ]]; then
     uri="$1"
@@ -185,8 +231,10 @@ rating() {
     uri="$(get_current)"
   fi
 
+  ID="$(get_song_id "$uri")"
+
   local cr
-  cr="$(get_sticker "$uri" rating 2> /dev/null)" || cr=0
+  cr="$(qdb mpdmusic 'Q stat:'$ID' rating')" || cr=0
   ((cr/=2))
 
   [[ $1 ]] || {
@@ -207,7 +255,9 @@ rating() {
       message E "invalid value."
       return 1
     }
-    set_sticker "$uri" rating $((r*2)) || return 1
+
+    qdb mpdmusic 'W stat:'$ID' rating '$((r*2))'' || return 1
+    # set_sticker "$uri" rating $((r*2)) || return 1
     message M "$(get_current "%artist%: %title%") [$cr → $r]"
     return 0
   }
@@ -219,7 +269,7 @@ rating() {
 lastplayed() {
   # print when song was last played.
 
-  local uri
+  local uri ID
 
   if [[ $1 ]]; then
     uri="$1"
@@ -228,17 +278,21 @@ lastplayed() {
     uri="$(get_current)"
   fi
 
-  local lsp
-  lsp="$(get_sticker "$uri" lastplayed)" || lsp="-"
+  ID="$(get_song_id "$uri")"
 
-  echo "$lsp"
+  local lsp
+  qdb mpdmusic 'Q stat:'$ID' @datetime(lastplayed)' || return 1
+  return 0
+  # lsp="$(get_sticker "$uri" @datetime(lastplayed))" || lsp="-"
+
+  # echo "$lsp"
 }
 
 # shellcheck disable=SC2120
 playcount() {
   # print song playcount.
 
-  local uri
+  local uri ID
 
   if [[ $1 ]]; then
     uri="$1"
@@ -247,10 +301,15 @@ playcount() {
     uri="$(get_current)"
   fi
 
-  local plc
-  plc="$(get_sticker "$uri" playcount 2> /dev/null)" || plc=0
+  ID="$(get_song_id "$uri")"
 
-  echo "$plc"
+  qdb mpdmusic 'Q stat:'$ID' playcount' || return 1
+  return 0
+
+  # local plc
+  # plc="$(get_sticker "$uri" playcount 2> /dev/null)" || plc=0
+
+  # echo "$plc"
 }
 
 # shellcheck disable=SC2120
@@ -266,20 +325,25 @@ skipcount() {
     uri="$(get_current)"
   fi
 
-  local skc
-  skc="$(get_sticker "$uri" skipcount 2> /dev/null)" || {
-    echo 0
-    return 1
-  }
+  ID="$(get_song_id "$uri")"
 
-  echo $((skc))
+  qdb mpdmusic 'Q stat:'$ID' skipcount' || return 1
   return 0
+
+  # local skc
+  # skc="$(get_sticker "$uri" skipcount 2> /dev/null)" || {
+  #   echo 0
+  #   return 1
+  # }
+
+  # echo $((skc))
+  # return 0
 }
 
 # shellcheck disable=SC2119
 song_stats() {
   # print current song statistics.
-  local uri
+  local uri ID
   uri="$(get_current)"
   get_current "[[%name%\n]][[%artist%: ]]%title%[[\n%album%]][[ (%date%)]]"
   echo "$(get_elapsed -h) / $(get_duration -h)"
@@ -288,11 +352,26 @@ song_stats() {
     return
   fi
 
+  ID="$(get_song_id "$uri")"
+  local R r L P S
+  IFS='|' read R L P S < <(qdb mpdmusic 'Q stat:'$ID' rating:@datetime(lastplayed):playcount:skipcount')
+
+ ((R/=2))
+
+  case $R in
+    0) r="-----" ;;
+    1) r="*----" ;;
+    2) r="**---" ;;
+    3) r="***--" ;;
+    4) r="****-" ;;
+    5) r="*****"
+  esac
+
   echo "===="
-  echo "rating:      $(rating)"
-  echo "last played: $(lastplayed)"
-  echo "play count:  $(playcount)"
-  echo "skip count:  $(skipcount)"
+  echo "rating:      ${r}"
+  echo "last played: ${L}"
+  echo "play count:  ${P}"
+  echo "skip count:  ${S}"
 }
 
 show_stats() {

@@ -24,7 +24,7 @@
 #
 # SMPCP
 # C │ 2021/04/04
-# M │ 2025/01/14
+# M │ 2025/08/21
 # D │ Main program.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -85,7 +85,7 @@ exec_command() {
     getprev    ) shift; get_previous "$@" ;;
     getrnd     ) shift; get_rnd "$@" ;;
     help       ) shift; get_help "$@" ;;
-    history    ) _db_get_history ;;
+    history    ) _db_get_history -h ;;
     insertalbum) shift; add_album -i "$@" ;;
     load       ) shift; load "$@" ;;
     ls         ) shift; list_queue "$@" ;;

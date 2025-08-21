@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2024/02/06
+# M : 2025/08/21
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -102,6 +102,7 @@ add_songs() {
   mode="$(get_mode)"
 
   if [[ $mode -eq 1 ]]; then
+    qdb mpdmusic commit
     plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding songs..."
@@ -112,6 +113,7 @@ add_songs() {
     [[ $(state -p) == "stop" ]] && play
     return 0
   elif [[ $mode -eq 2 ]]; then
+    qdb mpdmusic commit
     plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding album..."
@@ -225,6 +227,10 @@ update_song_list && {
   clean_orphan_stickers -q
 }
 echo "done."
+
+logme "loading qdb database"
+
+qdb_setup && logme "done." || logme "oops..."
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...

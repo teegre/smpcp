@@ -25,7 +25,7 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2025/06/04
+# M │ 2025/08/21
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
@@ -39,6 +39,9 @@ declare SMPCP_SETTINGS="$HOME/.config/smpcp/smpcp.conf"
 
 declare SMPCPD_PID="$HOME/.config/smpcp/pid"
 declare SMPCPD_LOCK="$HOME/.config/smpcp/lock"
+
+# declare SMPCP_QDB_USER=
+# declare SMPCP_QDB_PWD=
 
 _date() { printf "%($1)T" "${2:--1}"; }
 

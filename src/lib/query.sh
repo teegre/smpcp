@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2023/04/02
+# M │ 2023/08/21
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -76,20 +76,25 @@ _is_in_history() {
   # 1 false
   
   [[ $1 == "-a" ]] && { local ALBUM=1; shift; }
-  local uri dur D1 D2
+  local uri dur D1 D2 ID
   uri="$1"
   dur="$(read_config keep_in_history)" || return 1
   
   if [[ $ALBUM ]]; then
     uri="$(album_uri "$uri")"
     D1=$(
-      while read -r; do
-        date -d "${REPLY%% *}" "+%s"
-      done < <(find_sticker "$uri" lastplayed 2> /dev/null) | max
+      qdb mpdmusic 'Q song #file^"'$uri'" stat:lastplayed' | max
     )
+    # D1=$(
+    #   while read -r; do
+    #     date -d "${REPLY%% *}" "+%s"
+    #   done < <(find_sticker "$uri" lastplayed 2> /dev/null) | max
+    # )
   else
-    D1="$(get_sticker "$uri" lastplayed 2> /dev/null)"
-    D1="$(date -d "${D1%% *}" "+%s")"
+    ID="$(get_song_id "$uri")" || return 0
+    D1="$(qdb mpdmusic 'Q stat:'$ID' lastplayed')"
+    # D1="$(get_sticker "$uri" lastplayed 2> /dev/null)"
+    # D1="$(date -d "${D1%% *}" "+%s")"
   fi
 
   [[ $D1 ]] || return 1
@@ -125,14 +130,8 @@ _db_rating_count() {
 
 local val
 val="$1"
-
 [[ $val =~ ^[0-9]+ ]] && val="=$val"
-
-sqlite3 "$SMPCP_STICKER_DB" << SQL
-.timeout 2000
-SELECT COUNT(uri) FROM sticker
-WHERE name='rating' AND value${val};
-SQL
+qdb mpdmusic 'Q stat rating='"$val"':@[count:*]'
 }
 
 _db_get_uri_by_rating() {
@@ -173,8 +172,8 @@ get_uri_by_rating() {
       skipcount=0
 
     ((skipcount>=skiplimit)) && continue
-    _is_in_history "$REPLY" && continue
     _is_in_playlist "$REPLY" && continue
+    _is_in_history "$REPLY" && continue
 
     echo "$REPLY"
     QUEUE+=("$REPLY")
@@ -189,15 +188,12 @@ _db_get_history() {
 
 local hlen from
 hlen="$(read_config keep_in_history)"
-from="$(date -d "now -$hlen" "+%F %T")"
+from="$(date -d "now -$hlen" "+%s")"
 
-sqlite3 "$SMPCP_STICKER_DB" << SQL
-.timeout 2000
-SELECT datetime(value) AS d, uri
-FROM sticker
-WHERE name='lastplayed' AND value BETWEEN '${from}' AND '$(now)'
-ORDER BY d DESC;
-SQL
+[[ $1 == -h ]] && \
+  qdb mpdmusic 'Q stat #lastplayed>'$from':--@datetime(lastplayed) song:file'
+[[ $1 == -h ]] || \
+  qdb mpdmusic 'Q stat --lastplayed>'$from' song:file'
 }
 
 _db_get_previous_song() {
@@ -365,7 +361,6 @@ get_random_song() {
   while read -r; do
     _is_in_playlist "$REPLY" && continue
 
-    skipcount="$(get_sticker "$REPLY" skipcount 2> /dev/null)" ||
       skipcount=0
 
     ((skipcount>=skiplimit)) && continue
@@ -380,7 +375,7 @@ get_random_song() {
     QUEUE+=("$REPLY")
     ((count++))
     ((count==$1)) && break
-  done < <(shuf --random-source /dev/urandom "$SMPCP_SONG_LIST" 2> /dev/null)
+  done < <(qdb mpdmusic 'Q song file' | shuf --random-source /dev/urandom 2> /dev/null)
 }
 
 get_rnd() {
@@ -411,39 +406,40 @@ get_rnd() {
     return
   }
 
-  local RT R4 R5 C RR4 RR5
-  RT="$(_db_rating_count "!=0")"
-  R5="$(_db_rating_count "10")"
-  R4="$(_db_rating_count "8")"
+  # local RT R4 R5 C RR4 RR5
+  # RT="$(_db_rating_count "!=0")"
+  # R5="$(_db_rating_count "10")"
+  # R4="$(_db_rating_count "8")"
   
   ((C=count))
-  ((RR5=C*R5/RT))
+  # ((RR5=C*R5/RT))
 
-  logme "query: ***** $RR5"
+  # logme "query: ***** $RR5"
 
-  ((RR5>0)) && {
-    get_uri_by_rating 10 $((RR5))
-    r=$?
-    ((count-=r))
-  }
+  # ((RR5>0)) && {
+  #   get_uri_by_rating 10 $((RR5))
+  #   r=$?
+  #   ((count-=r))
+  # }
 
-  ((RR4=C*R4/RT))
+  # ((RR4=C*R4/RT))
 
-  logme "query: ****- $RR4"
+  # logme "query: ****- $RR4"
 
-  ((RR4>0)) && {
-    get_uri_by_rating 8 $((RR4))
-    r=$?
-    ((count-=r))
-  }
+  # ((RR4>0)) && {
+    # get_uri_by_rating 8 $((RR4))
+    # r=$?
+    # ((count-=r))
+  # }
 
   logme "query: ----- $count"
 
   get_random_song $((count))
 
-  ((C+count-RR5-RR4==0))
+  # ((C+count-RR5-RR4==0))
 
-  logme "query: found $((C+(count-RR5-RR4))) song(s)."
+  # logme "query: found $((C+(count-RR5-RR4))) song(s)."
+  logme "query: found $((count+RR5)) song(s)."
 }
 
 get_fav() {
