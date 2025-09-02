@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/08/21
+# M : 2025/09/01
 # D : Statistics management.
 
 qdb_setup() {
@@ -91,11 +91,6 @@ get_sticker() {
     value="$(qdb mpdmusic 'Q stat:'$ID' '"$name"'')" || return 1
     echo "$value"
     return 0
-    # value="$(cmd sticker get song "$uri" "$name")" || return 1
-    # [[ $value =~ ^sticker:[[:space:]]${name}=(.+)$ ]] && {
-    #   echo "${BASH_REMATCH[1]}"
-    #   return 0
-    # }
   }
   return 1
 }
@@ -193,12 +188,11 @@ update_stats() {
 
   update_history_index
 
-  [[ $NO_PLAYCOUNT ]] || \
-    qdb mpdmusic 'W stat:'$ID' lastplayed @now playcount @inc' || return 1
-
-  [[ $NO_PLAYCOUNT ]] && \
+  if [[ $NO_PLAYCOUNT ]]; then
     qdb mpdmusic 'W stat:'$ID' lastplayed @now' || return 1
-
+  else
+    qdb mpdmusic 'W stat:'$ID' lastplayed @now playcount @inc' || return 1
+  fi
   return 0
 }
 
@@ -392,7 +386,7 @@ show_stats() {
         uptime) secs_to_hms $((v)); echo ;;
         playtime) secs_to_hms $((v)); echo ;;
         db_playtime) secs_to_hms $((v)); echo ;;
-        db_update) _date "%Y/%m/%d %H:%M:%S" $((v)); echo ;;
+        db_update) _date "%Y/%m/%dT%H:%M:%S" $((v)); echo ;;
         update) secs_to_hms $((v)); echo ;;
         *) echo "$v"
 

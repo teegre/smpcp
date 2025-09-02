@@ -75,7 +75,7 @@ exec_command() {
     cload      ) shift; cload "$@" ;;
     consume    ) shift; consume "$@" ;;
     crop       ) crop ;;
-    dbg        ) shift; "$@" ;;
+    expert     ) shift; "$@" ;;
     delete     ) shift; delete "$@" ;;
     dim        ) shift; dim "$@" ;;
     getcurrent ) shift; get_current "$@" ;;

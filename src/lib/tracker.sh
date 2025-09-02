@@ -25,7 +25,7 @@
 #
 # TRACKER
 # C : 2021/04/09
-# M : 2025/06/04
+# M : 2025/08/31
 # D : Player event tracker.
 
 _wait() {
@@ -60,6 +60,8 @@ tracker() {
   #            while a song is playing.
   #   pause  - player has been paused.
   #   stop   - player has been stopped.
+  #
+  #   database - a mpd database update occured
 
   local PID ID STATE
 
@@ -72,6 +74,11 @@ tracker() {
     unset PID ID
 
   while read -r; do
+
+    [[ $REPLY == database ]] && {
+      update_song_list &
+      continue
+    }
 
     STATE="$(state -p)"
 
@@ -135,5 +142,5 @@ tracker() {
       echo "change"
     }
 
-  done < <(cmd idleloop player)
+  done < <(cmd idleloop player database)
 }

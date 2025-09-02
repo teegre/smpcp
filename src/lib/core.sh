@@ -25,11 +25,11 @@
 #
 # CORE
 # C │ 2021/03/31
-# M │ 2025/08/21
+# M │ 2025/08/30
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
-__version='0.1.9.6-2'
+__version='0.1.9.6-3'
 
 declare SMPCP_ASSETS="${HOME}/.local/share/smpcp/assets"
 declare SMPCP_ICON="${SMPCP_ASSETS}/default.png"
@@ -59,7 +59,7 @@ secs_to_hms() {
     ((weeks>0)) && ((days=days%7))
 
     ((weeks>1)) && w="weeks" || w="week"
-    ((days>1))   && d="days" || d="day"
+    ((days>1))  && d="days"  || d="day"
 
     if ((weeks>0)) && ((days>0)); then
       TZ=UTC _date "$((weeks)) ${w}, $((days)) ${d}, %H:%M:%S" $((dur))

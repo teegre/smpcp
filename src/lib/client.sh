@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+ #shellcheck shell=bash
 
 #
 # .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2025/06/04
+# M │ 2025/09/02
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -176,7 +176,7 @@ parse_song_info() {
   #
   # available tags:
   #
-  # %file% %ext% %last-modified% %format%
+  # %file% %ext% %added% %last-modified% %format%
   # %artist% %name% %title% %album% %albumartist% %genre% %date%
   # %time% %duration%
   # %pos% %id%
@@ -242,8 +242,8 @@ parse_song_info() {
       fmt="${fmt//"%ext%"/"$(get_ext "$filename")"}"
       continue
     }
-    [[ $REPLY =~ ^Added:[[:space:]](.+$) ]] && {
-      fmt="${fmt//"%added%"/"$BASH_REMATCH[1]"}"
+    [[ $REPLY =~ ^Added:[[:space:]](.+)$ ]] && {
+      fmt="${fmt//"%added%"/"${BASH_REMATCH[1]}"}"
       continue
     }
     [[ $REPLY =~ ^Last-Modified:[[:space:]](.+)$ ]] && {
@@ -446,9 +446,6 @@ get_elapsed() {
   [[ $1 ]] || { echo "$elapsed"; return; }
 
   [[ $1 == "-h" ]] && {
-    local duration
-    duration="$(fcmd status duration)"
-    duration="${duration%%.*}"
     secs_to_hms $((elapsed))
     echo
     return
@@ -676,27 +673,73 @@ get_discography() {
 
 }
 
-update_song_list() {
-  # make a text file containing all songs to ease playlist generation.
-  # do it only if a database update previously occurred (expensive!).
-
-  [[ -s $SMPCP_SONG_LIST ]] && {
-    local list_mod_date db_mod_date
-    list_mod_date="$(stat -t "$SMPCP_SONG_LIST" | cut -d' ' -f 13)"
-    db_mod_date="$(fcmd stats db_update)"
-    ((list_mod_date >= db_mod_date)) && return 1
+__get_fingerprint() {
+  local uri file fingerprint
+  uri="$1"
+  file="$(get_music_dir)"/"$uri"
+  fingerprint="$(fpcalc -length 12 -json "${file}" 2> /dev/null)" || {
+    local duration="$(smpcp expert get_info "$uri" "%duration%")"
+    local FP="$(sha1sum "${file}" | cut -d' ' -f1)"
+    fingerprint='{"duration": "'${duration}'", "fingerprint": "'${FP}'"}'
   }
-    
-  [[ -t 1 ]] || notify_player "updating song list..."
-  [[ -t 1 ]] && message M "updating song list..."
+  echo "$fingerprint"
+}
+
+update_song_list() {
+  # update stats database
+  # do it only if a mpd database update previously occurred (expensive!).
+  
+  local D D1 D2
+
+  D1="$(smpcp expert fcmd stats db_update)"
+  D2="$(qdb mpdmusic 'get last_update')"
+
+  ((D1 <= D2)) && return 1
+
+  D="$(date -d @"$D1" "+%Y-%m-%d")"
+
+  [[ -t 1 ]] || notify_player "updating database..."
+  [[ -t 1 ]] && message M "updating database..."
 
   local T="$EPOCHSECONDS"
-  fcmd -x list file file > "$SMPCP_SONG_LIST"
-  [[ -t 1 ]] && local D=$((EPOCHSECONDS-T))
-  [[ -t 1 ]] || local D="$(sec_to_hms $((EPOCHSECONDS-T)))"
 
-  [[ -t 1 ]] && message M "song list updated in ${D} seconds."
-  [[ -t 1 ]] || notify_player "song list updated in ${D}."
+  while read -r; do
+    file="$(quote "${REPLY}")"
+    qdb mpdmusic 'exists song file "'"${file}"'"' || {
+      local data="$(__get_fingerprint "${file}")"
+
+      [[ $data ]] || { logme "db:skip ${file}"; continue; }
+
+      local duration="$(echo "$data" | jq -r .duration)"
+      local fingerprint="$(echo "$data" | jq -r .fingerprint)"
+
+      # file has been renamed?
+      qdb mpdmusic 'exists fingerprint data '${fingerprint}'' && {
+        logme "db:update $file"
+        # update file only
+        local ID="$(qdb mpdmusic 'q fingerprint $id:#data="'${fingerprint}'"')"
+        qdb mpdmusic 'qq song fingerprint data="'${fingerprint}'"'
+        qdb mpdmusic 'w @recall(song) "'"${file}"'" duration "'${duration}'"'
+        continue
+      }
+
+      # add new entry
+      logme "db:add $file"
+      qdb mpdmusic 'w @autoid(song) file "'"${file}"'" duration "'${duration}'"'
+      local ID="$(get_song_id "${file}")"
+      qdb mpdmusic 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0'
+      qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
+    }
+  done < <(search added-since "$D" | sort)
+
+  qdb mpdmusic 'set last_update @now'
+  qdb mpdmusic commit
+
+  [[ -t 1 ]] && local T2=$((EPOCHSECONDS-T))
+  [[ -t 1 ]] || local T2="$(secs_to_hms $((EPOCHSECONDS-T)))"
+
+  [[ -t 1 ]] && message M "song list updated in ${T2} seconds."
+  [[ -t 1 ]] || notify_player "song list updated in ${T2}."
 
   return 0
 }

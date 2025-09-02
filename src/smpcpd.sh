@@ -220,17 +220,9 @@ trap update_daemon HUP
 
 trap quit_daemon INT QUIT TERM
 
-echo "reading database..."
-update_song_list && {
-  echo "done."
-  echo "cleaning orphan stickers..."
-  clean_orphan_stickers -q
-}
-echo "done."
-
 logme "loading qdb database"
-
 qdb_setup && logme "done." || logme "oops..."
+update_song_list
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...

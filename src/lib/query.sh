@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+# shellcheck shell=baa$h
 
 #
 # .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2023/08/21
+# M │ 2023/08/31
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -65,7 +65,7 @@ update() {
   # update database.
   # usage: update [uri]
 
-  cmd update "$@"
+  cmd update "$@" && qdb mpdmusic 'set last_update @now'
 }
 
 _is_in_history() {
@@ -83,18 +83,11 @@ _is_in_history() {
   if [[ $ALBUM ]]; then
     uri="$(album_uri "$uri")"
     D1=$(
-      qdb mpdmusic 'Q song #file^"'$uri'" stat:lastplayed' | max
+      qdb mpdmusic 'Q song #file^"'"$uri"'" stat:lastplayed' 2> /dev/null | max
     )
-    # D1=$(
-    #   while read -r; do
-    #     date -d "${REPLY%% *}" "+%s"
-    #   done < <(find_sticker "$uri" lastplayed 2> /dev/null) | max
-    # )
   else
     ID="$(get_song_id "$uri")" || return 0
     D1="$(qdb mpdmusic 'Q stat:'$ID' lastplayed')"
-    # D1="$(get_sticker "$uri" lastplayed 2> /dev/null)"
-    # D1="$(date -d "${D1%% *}" "+%s")"
   fi
 
   [[ $D1 ]] || return 1
@@ -131,7 +124,7 @@ _db_rating_count() {
 local val
 val="$1"
 [[ $val =~ ^[0-9]+ ]] && val="=$val"
-qdb mpdmusic 'Q stat rating='"$val"':@[count:*]'
+qdb mpdmusic 'Q stat rating="'$val'":@[count:*]'
 }
 
 _db_get_uri_by_rating() {
@@ -349,7 +342,7 @@ SQL
 get_random_song() {
   # print random song(s).
 
-  local count=0 skiplimit skipcount
+  local count=0 skiplimit tracks
 
   [[ $1 == "-a" ]] && {
     local ALBUM=1
@@ -358,12 +351,11 @@ get_random_song() {
 
   skiplimit="$(read_config skip_limit)" || skiplimit=3
 
+  [[ $ALBUM ]] && tracks=100
+  [[ $ALBUM ]] || tracks=$(($1<10?100:$1**2))
+
   while read -r; do
     _is_in_playlist "$REPLY" && continue
-
-      skipcount=0
-
-    ((skipcount>=skiplimit)) && continue
 
     if [[ $ALBUM ]]; then
       _is_in_history -a "$REPLY" && continue
@@ -375,7 +367,7 @@ get_random_song() {
     QUEUE+=("$REPLY")
     ((count++))
     ((count==$1)) && break
-  done < <(qdb mpdmusic 'Q song file' | shuf --random-source /dev/urandom 2> /dev/null)
+  done < <(qdb mpdmusic 'Q song?!'$((tracks))' file stat:#skipcount<'$skiplimit'' 2> /dev/null)
 }
 
 get_rnd() {
@@ -439,7 +431,7 @@ get_rnd() {
   # ((C+count-RR5-RR4==0))
 
   # logme "query: found $((C+(count-RR5-RR4))) song(s)."
-  logme "query: found $((count+RR5)) song(s)."
+  logme "query: found $((count)) song(s)."
 }
 
 get_fav() {
