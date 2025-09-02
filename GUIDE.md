@@ -249,7 +249,7 @@ Examples:
 ```
 About formatting
 
-Format string can be anything and '%' enclosed tags are expanded  by *_parse_song_info*
+Format string can be anything and '%' enclosed tags are expanded  by *parse_song_info*
 
 If a tag is empty or missing, it is stripped from the source string.  
 A substring surrounded by double square brackets `[[tag: %tag%]]` is also stripped if it contains a missing or empty tag.
@@ -258,17 +258,18 @@ For instance:
 
 `[[tag: %missing-tag% ]]title: %title%`
 
-Since %missing-tag% doesn't exist, *_parse_song_info* prints:
+Since %missing-tag% doesn't exist, *parse_song_info* prints:
 
 `title: song title`
 
-By default, if no format string is given, *_parse_song_info* displays song's filepath.  
+By default, if no format string is given, *parse_song_info* displays song's filepath.  
 
 Available metadata are:
 
 *  %file%
 *  %ext%
 *  %last-modified%
+*  %added%
 *  %artist%
 *  %name%
 *  %album%
