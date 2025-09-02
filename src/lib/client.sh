@@ -706,7 +706,7 @@ update_song_list() {
   while read -r; do
     file="$(quote "${REPLY}")"
     qdb mpdmusic 'exists song file "'"${file}"'"' || {
-      local data="$(__get_fingerprint "${file}")"
+      local data="$(__get_fingerprint "$REPLY")"
 
       [[ $data ]] || { logme "db:skip ${file}"; continue; }
 
@@ -715,18 +715,17 @@ update_song_list() {
 
       # file has been renamed?
       qdb mpdmusic 'exists fingerprint data '${fingerprint}'' && {
-        logme "db:update $file"
+        logme "db:update ${REPLY}"
         # update file only
-        local ID="$(qdb mpdmusic 'q fingerprint $id:#data="'${fingerprint}'"')"
         qdb mpdmusic 'qq song fingerprint data="'${fingerprint}'"'
-        qdb mpdmusic 'w @recall(song) "'"${file}"'" duration "'${duration}'"'
+        qdb mpdmusic 'w @recall(song) file "'"${file}"'" duration "'${duration}'"'
         continue
       }
 
       # add new entry
       logme "db:add $file"
       qdb mpdmusic 'w @autoid(song) file "'"${file}"'" duration "'${duration}'"'
-      local ID="$(get_song_id "${file}")"
+      local ID="$(get_song_id "${REPLY}")"
       qdb mpdmusic 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0'
       qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
     }
