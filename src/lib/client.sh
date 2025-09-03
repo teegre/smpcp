@@ -673,7 +673,7 @@ get_discography() {
 
 }
 
-__get_fingerprint() {
+_get_fingerprint() {
   local uri file fingerprint
   uri="$1"
   file="$(get_music_dir)"/"$uri"
@@ -692,7 +692,7 @@ update_song_list() {
   local D D1 D2
 
   D1="$(smpcp expert fcmd stats db_update)"
-  D2="$(qdb mpdmusic 'get last_update')"
+  D2="$(qdb mpdmusic 'get lastupdate')"
 
   ((D1 <= D2)) && return 1
 
@@ -731,7 +731,7 @@ update_song_list() {
     }
   done < <(search added-since "$D" | sort)
 
-  qdb mpdmusic 'set last_update @now'
+  qdb mpdmusic 'set lastupdate @now'
   qdb mpdmusic commit
 
   [[ -t 1 ]] && local T2=$((EPOCHSECONDS-T))

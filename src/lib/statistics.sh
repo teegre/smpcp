@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/09/01
+# M : 2025/09/03
 # D : Statistics management.
 
 qdb_setup() {
@@ -74,7 +74,7 @@ get_song_id() {
   [[ $uri =~ ^https?: ]] && return 1
   [[ $uri =~ ^cdda: ]] && return 1
 
-  qdb mpdmusic "Q song \$id:#file=\"$uri\"" && return 0
+  qdb mpdmusic "id song file \"$uri\"" && return 0
   return 1
 }
 

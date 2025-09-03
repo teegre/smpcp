@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2025/08/21
+# M : 2025/09/03
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -222,7 +222,6 @@ trap quit_daemon INT QUIT TERM
 
 logme "loading qdb database"
 qdb_setup && logme "done." || logme "oops..."
-update_song_list
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...
