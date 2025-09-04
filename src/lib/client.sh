@@ -678,7 +678,7 @@ _get_fingerprint() {
   uri="$1"
   file="$(get_music_dir)"/"$uri"
   fingerprint="$(fpcalc -length 12 -json "${file}" 2> /dev/null)" || {
-    local duration="$(smpcp expert get_info "$uri" "%duration%")"
+    local duration="$(get_info "$uri" "%duration%")"
     local FP="$(sha1sum "${file}" | cut -d' ' -f1)"
     fingerprint='{"duration": "'${duration}'", "fingerprint": "'${FP}'"}'
   }
@@ -706,7 +706,7 @@ update_song_list() {
   while read -r; do
     file="$(quote "${REPLY}")"
     qdb mpdmusic 'exists song file "'"${file}"'"' || {
-      local data="$(__get_fingerprint "$REPLY")"
+      local data="$(_get_fingerprint "$REPLY")"
 
       [[ $data ]] || { logme "db:skip ${file}"; continue; }
 
