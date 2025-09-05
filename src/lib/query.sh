@@ -65,7 +65,7 @@ update() {
   # update database.
   # usage: update [uri]
 
-  cmd update "$@" && qdb mpdmusic 'set last_update @now'
+  cmd update "$@"
 }
 
 _is_in_history() {
@@ -295,7 +295,7 @@ local -a _orphans
 local -a orphans
 local t i=0 uri
 
-mapfile -t uris < <(_db_get_all_songs)
+mapfile -t uris < <(qdb mpdmusic 'q song file' | sort)
 
 ((t=${#uris[@]}))
 
@@ -323,16 +323,17 @@ message M "found ${#_orphans[@]} orphan(s)."
 
 # format list
 for ((i=0;i<${#_orphans[@]}-1;i++)); do
-  orphans+=("${_orphans[$i]}, ")
+  orphans+=("${_orphans[$i]},")
 done
 
 orphans+=("${_orphans[-1]}")
 
-sqlite3 "$SMPCP_STICKER_DB" << SQL
-.timeout 2000
-DELETE FROM sticker
-WHERE uri IN (${orphans[*]})
-SQL
+qdb mpdmusic 'qq stat song:file('${orphans[*]}')'
+qdb mpdmusic 'hdel @recall(stat)'
+qdb mpdmusic 'qq fingerprint song:file('${orphans[*]}')'
+qdb mpdmusic 'hdel @recall(fingerprint)'
+qdb mpdmusic 'qq song file('${orphans[*]}')'
+qdb mpdmusic 'hdel @recall(song)'
 
 [[ -t 1 ]] && message M "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
 [[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
@@ -343,6 +344,9 @@ get_random_song() {
   # print random song(s).
 
   local count=0 skiplimit tracks
+
+  local dur="$(read_config keep_in_history)"
+  local D="$(date -d "now -${dur}" "+%s")"
 
   [[ $1 == "-a" ]] && {
     local ALBUM=1
@@ -357,17 +361,11 @@ get_random_song() {
   while read -r; do
     _is_in_playlist "$REPLY" && continue
 
-    if [[ $ALBUM ]]; then
-      _is_in_history -a "$REPLY" && continue
-    else
-      _is_in_history "$REPLY" && continue
-    fi
-
     echo "$REPLY"
     QUEUE+=("$REPLY")
     ((count++))
     ((count==$1)) && break
-  done < <(qdb mpdmusic 'Q song?!'$((tracks))' file stat:#skipcount<'$skiplimit'' 2> /dev/null)
+  done < <(qdb mpdmusic 'Q song?!'$((tracks))' file stat:#lastplayed<'$D':#skipcount<'$skiplimit'' 2> /dev/null)
 }
 
 get_rnd() {

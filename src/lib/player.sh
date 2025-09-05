@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2023/12/27
+# M │ 2025/09/04
 # D │ Player functions.
 
 toggle() {

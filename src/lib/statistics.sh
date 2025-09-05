@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/09/03
+# M : 2025/09/04
 # D : Statistics management.
 
 qdb_setup() {
@@ -45,7 +45,7 @@ qdb_setup() {
   # elif [[ $password =~ ^@\((.+)\)$ ]]; then
   #   password="$(echo "${BASH_REMATCH[1]}" | base64 -d)"
   # elif [[ $password =~ ^@\(.+[^\)]$ ]]; then
-  #   __err E .email "base64 password, invalid syntax."
+  #   message E "base64 password, invalid syntax."
   #   return 1
   # fi
 
@@ -56,7 +56,7 @@ qdb_setup() {
   # export SMPCP_QDB_PWD
   # unset user password
 
-  qdb --quiet --nofield "${SMPCP_STICKER_DB}" open && return 0
+  qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open && return 0
   return 1
 }
 
@@ -68,13 +68,20 @@ quote() {
 }
 
 get_song_id() {
+  [[ $SONGID ]] && {
+    echo "$SONGID"
+    return 0
+  }
+
   local uri value
-  uri="$(quote "$@")"
+  [[ $@ ]] || uri="$(quote "$(get_current)")"
+  [[ $@ ]] && uri="$(quote "$@")"
 
   [[ $uri =~ ^https?: ]] && return 1
   [[ $uri =~ ^cdda: ]] && return 1
 
-  qdb mpdmusic "id song file \"$uri\"" && return 0
+
+  get_song_id "$uri" && return 0
   return 1
 }
 
@@ -346,7 +353,7 @@ song_stats() {
     return
   fi
 
-  ID="$(get_song_id "$uri")"
+  ID="$(get_song_id "${uri}")"
   local R r L P S
   IFS='|' read R L P S < <(qdb mpdmusic 'Q stat:'$ID' rating:@datetime(lastplayed):playcount:skipcount')
 
