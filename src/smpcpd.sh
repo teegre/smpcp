@@ -25,10 +25,11 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2025/09/03
+# M : 2025/09/05
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
+declare SMPCP_SONG_ID="/tmp/smpcpd-songid"
 
 # shellcheck source=/usr/lib/smpcp/client.sh
 source "$SMPCP_LIB"/client.sh

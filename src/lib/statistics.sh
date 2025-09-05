@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/09/04
+# M : 2025/09/05
 # D : Statistics management.
 
 qdb_setup() {
@@ -68,11 +68,6 @@ quote() {
 }
 
 get_song_id() {
-  [[ $SONGID ]] && {
-    echo "$SONGID"
-    return 0
-  }
-
   local uri value
   [[ $@ ]] || uri="$(quote "$(get_current)")"
   [[ $@ ]] && uri="$(quote "$@")"
@@ -80,8 +75,9 @@ get_song_id() {
   [[ $uri =~ ^https?: ]] && return 1
   [[ $uri =~ ^cdda: ]] && return 1
 
+  qdb mpdmusic ping 2> /dev/null || return 1
 
-  get_song_id "$uri" && return 0
+  export SONGID=$(qdb mpdmusic "id song file \"$uri\"" 2> /dev/null) && return 0
   return 1
 }
 
@@ -94,8 +90,8 @@ get_sticker() {
 
   name="$2"
   [[ $uri && $name ]] && {
-    ID="$(get_song_id "$uri")" || return 1
-    value="$(qdb mpdmusic 'Q stat:'$ID' '"$name"'')" || return 1
+    get_song_id || return 1
+    value="$(qdb mpdmusic 'Q stat:'$SONGID' '"$name"'')" || return 1
     echo "$value"
     return 0
   }
@@ -191,14 +187,14 @@ update_stats() {
   [[ $uri =~ ^https?: ]] && return 0
   [[ $uri =~ ^cdda: ]] && return 0
 
-  ID="$(get_song_id "$uri")"
-
   update_history_index
 
+  get_song_id || return 1
+
   if [[ $NO_PLAYCOUNT ]]; then
-    qdb mpdmusic 'W stat:'$ID' lastplayed @now' || return 1
+    qdb mpdmusic 'W stat:'$SONGID' lastplayed @now' || return 1
   else
-    qdb mpdmusic 'W stat:'$ID' lastplayed @now playcount @inc' || return 1
+    qdb mpdmusic 'W stat:'$SONGID' lastplayed @now playcount @inc' || return 1
   fi
   return 0
 }
@@ -210,9 +206,8 @@ reset_stats() {
 
   [[ $uri ]] || return 1
 
-  ID="$(get_song_id "$uri")"
-
-  qdb mpdmusic 'W stat:'$ID' lastplayed 0 playcount 0 skipcount 0' || return 1
+  get_song_id || return 1
+  qdb mpdmusic 'W stat:'$SONGID' lastplayed 0 playcount 0 skipcount 0' || return 1
 
   return 0
 }
@@ -223,7 +218,7 @@ rating() {
   # value must be an integer between 0 (unset) and 5.
   # if no given value, print actual rating.
 
-  local uri ID
+  local uri
 
   if [[ $1 ]] && ! [[ $1 =~ ^[0-9]+$ ]]; then
     uri="$1"
@@ -232,10 +227,10 @@ rating() {
     uri="$(get_current)"
   fi
 
-  ID="$(get_song_id "$uri")"
+  get_song_id || return 1
 
   local cr
-  cr="$(qdb mpdmusic 'Q stat:'$ID' rating')" || cr=0
+  cr="$(qdb mpdmusic 'Q stat:'$SONGID' rating')" || cr=0
   ((cr/=2))
 
   [[ $1 ]] || {
@@ -257,8 +252,7 @@ rating() {
       return 1
     }
 
-    qdb mpdmusic 'W stat:'$ID' rating '$((r*2))'' || return 1
-    # set_sticker "$uri" rating $((r*2)) || return 1
+    qdb mpdmusic 'W stat:'$SONGID' rating '$((r*2))'' || return 1
     message M "$(get_current "%artist%: %title%") [$cr → $r]"
     return 0
   }
@@ -279,10 +273,9 @@ lastplayed() {
     uri="$(get_current)"
   fi
 
-  ID="$(get_song_id "$uri")"
-
   local lsp
-  qdb mpdmusic 'Q stat:'$ID' @datetime(lastplayed)' || return 1
+  get_song_id || return 1
+  qdb mpdmusic 'Q stat:'$SONGID' @datetime(lastplayed)' || return 1
   return 0
   # lsp="$(get_sticker "$uri" @datetime(lastplayed))" || lsp="-"
 
@@ -302,9 +295,8 @@ playcount() {
     uri="$(get_current)"
   fi
 
-  ID="$(get_song_id "$uri")"
-
-  qdb mpdmusic 'Q stat:'$ID' playcount' || return 1
+  get_song_id || return 1
+  qdb mpdmusic 'Q stat:'$SONGID' playcount' || return 1
   return 0
 
   # local plc
@@ -326,9 +318,8 @@ skipcount() {
     uri="$(get_current)"
   fi
 
-  ID="$(get_song_id "$uri")"
-
-  qdb mpdmusic 'Q stat:'$ID' skipcount' || return 1
+  get_song_id || return 1
+  qdb mpdmusic 'Q stat:'$SONGID' skipcount' || return 1
   return 0
 
   # local skc
@@ -353,9 +344,9 @@ song_stats() {
     return
   fi
 
-  ID="$(get_song_id "${uri}")"
   local R r L P S
-  IFS='|' read R L P S < <(qdb mpdmusic 'Q stat:'$ID' rating:@datetime(lastplayed):playcount:skipcount')
+  get_song_id || return 1
+  IFS='|' read R L P S < <(qdb mpdmusic 'Q stat:'$SONGID' rating:@datetime(lastplayed):playcount:skipcount')
 
  ((R/=2))
 

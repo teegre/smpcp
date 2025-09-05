@@ -28,8 +28,6 @@
 # M : 2025/09/05
 # D : Player event tracker.
 
-declare -g SONGID=
-
 _wait() {
   # wait until the song is over.
 
@@ -52,14 +50,6 @@ _wait() {
   echo "end"
 }
 
-export_song_id() {
-  local uri
-  uri="$(quote "$@")"
-  SONGID="$(qdb mpdmusic "id song file \"${uri}\"")"
-  logme "exported SONGID=${SONGID}"
-  qdb mpdmusic 'echo "exported SONGID='$SONGID'"'
-}
-
 tracker() {
   # track and print player events.
   # events:
@@ -79,7 +69,6 @@ tracker() {
 
   _wait & PID=$!
   ID="$(get_current "%id%")"
-  export_song_id "$(get_current)"
 
   wait_for_pid 1 "$PID" &&
     unset PID ID
@@ -100,7 +89,6 @@ tracker() {
 
       _wait & PID=$!
       ID="$(get_current "%id%")"
-      export_song_id "$(get_current)"
       continue
     }
 
@@ -115,7 +103,6 @@ tracker() {
           kill "$PID" 2> /dev/null
           _wait & PID=$!
           ID="$(get_current "%id%")"
-          export_song_id "$(get_current)"
           continue
         }
       }
@@ -150,7 +137,6 @@ tracker() {
 
       _wait & PID=$!
       ID="$(get_current "%id%")"
-      export_song_id "$(get_current)"
       
       echo "change"
     }

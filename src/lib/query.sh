@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2023/08/31
+# M │ 2023/09/05
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -68,35 +68,6 @@ update() {
   cmd update "$@"
 }
 
-_is_in_history() {
-  # return whether a song/album is in history.
-  # usage: _is_in_history [-a] <uri> 
-  # exit status:
-  # 0 true
-  # 1 false
-  
-  [[ $1 == "-a" ]] && { local ALBUM=1; shift; }
-  local uri dur D1 D2 ID
-  uri="$1"
-  dur="$(read_config keep_in_history)" || return 1
-  
-  if [[ $ALBUM ]]; then
-    uri="$(album_uri "$uri")"
-    D1=$(
-      qdb mpdmusic 'Q song #file^"'"$uri"'" stat:lastplayed' 2> /dev/null | max
-    )
-  else
-    ID="$(get_song_id "$uri")" || return 0
-    D1="$(qdb mpdmusic 'Q stat:'$ID' lastplayed')"
-  fi
-
-  [[ $D1 ]] || return 1
-
-  D2="$(date -d "now -${dur}" "+%s")"
-
-  ((D1 >= D2)) && return 0 || return 1
-}
-
 _is_in_playlist() {
   # check whether a song or artist is
   # already in the queue.
@@ -120,73 +91,19 @@ _db_rating_count() {
 # comparison operators are:
 #  = equal, > greater, < lesser, >= greater or equal
 #  <= lesser or equal, <> or != different
-
-local val
-val="$1"
-[[ $val =~ ^[0-9]+ ]] && val="=$val"
-qdb mpdmusic 'Q stat rating="'$val'":@[count:*]'
-}
-
-_db_get_uri_by_rating() {
-# return a list of uri that matches given rating.
-# usage: _db_get_uri_by_rating <rating>
-# example: _db_get_uri_by_rating '>6' 2
-# comparison operators are:
-#  = equal, > greater, < lesser, >= greater or equal
-#  <= lesser or equal, <> or != different
-
-local val
-val="$1"
-
-[[ $val =~ ^[0-9]+ ]] && val="=$val"
-
-sqlite3 "$SMPCP_STICKER_DB" << SQL
-.timeout 2000
-SELECT uri FROM sticker
-WHERE name='rating' AND value${val}
-ORDER BY Random();
-SQL
-}
-
-get_uri_by_rating() {
-  # filters _db_get_uri_by_rating and
-  # check lastplayed and skipcount values to
-  # determine if the song is ok to be added 
-  # to the queue.
-  # exit status:
-  # 0 no item was found.
-  # >0 the number of items found.
-  
-  local count=0 skiplimit skipcount
-  skiplimit="$(read_config skip_limit)" || skiplimit=0
-  
-  while read -r; do
-    skipcount="$(get_sticker "$REPLY" skipcount 2> /dev/null)" ||
-      skipcount=0
-
-    ((skipcount>=skiplimit)) && continue
-    _is_in_playlist "$REPLY" && continue
-    _is_in_history "$REPLY" && continue
-
-    echo "$REPLY"
-    QUEUE+=("$REPLY")
-    ((count++))
-    ((count==$2)) && break
-  done < <(_db_get_uri_by_rating "$1")
-
-  return $((count))
+  return 0
 }
 
 _db_get_history() {
+  qdb mpdmusic ping 2> /dev/null || return 1
+  local hlen from
+  hlen="$(read_config keep_in_history)"
+  from="$(date -d "now -$hlen" "+%s")"
 
-local hlen from
-hlen="$(read_config keep_in_history)"
-from="$(date -d "now -$hlen" "+%s")"
-
-[[ $1 == -h ]] && \
-  qdb mpdmusic 'Q stat #lastplayed>'$from':--@datetime(lastplayed) song:file'
-[[ $1 == -h ]] || \
-  qdb mpdmusic 'Q stat --lastplayed>'$from' song:file'
+  [[ $1 == -h ]] && \
+    qdb mpdmusic 'Q stat #lastplayed>'$from':--@datetime(lastplayed) song:file'
+  [[ $1 == -h ]] || \
+    qdb mpdmusic 'Q stat --lastplayed>'$from' song:file'
 }
 
 _db_get_previous_song() {
@@ -229,36 +146,7 @@ _db_get_favourite() {
 # to 'song_mode_count' configuration parameter or to the 
 # number entered, if any.
 
-if [[ $1 == "-l" ]]; then
-  local order="ORDER BY RANDOM()"
-  if [[ $2 =~ [[:digit:]]+ ]]; then
-    local limit="LIMIT $2"
-    shift 2
-  else
-    local count
-    count="$(read_config song_mode_count)" || count=10
-    local limit="LIMIT $count"
-    shift
-  fi
-else
-  local order="ORDER BY r.rating DESC, c.playcount DESC"
-fi
-
-sqlite3 "$SMPCP_STICKER_DB" << SQL
-.timeout 2000
-SELECT c.uri FROM (
-  SELECT uri, CAST(value AS INTEGER) AS playcount FROM sticker
-  WHERE name='playcount' AND playcount > 0
-  ) AS c
-  LEFT JOIN (
-  SELECT uri, CAST(value AS INTEGER) AS rating FROM sticker
-  WHERE name='rating' AND rating > 6
-  ) AS r
-  ON c.uri=r.uri
-  WHERE r.rating IS NOT NULL
-${order}
-${limit};
-SQL
+ return 0
 }
 
 clean_orphan_stickers() {
@@ -271,77 +159,80 @@ clean_orphan_stickers() {
 # keep its stats in the sticker database and only update its uri...
 # it would imply storing some unique id for each file...
 
-[[ $1 == "-q" ]] && {
-  shift
-  local QUIET=1
-}
+  qdb mpdmusic ping 2> /dev/null || return 1
 
-local musicdir
+  [[ $1 == "-q" ]] && {
+    shift
+    local QUIET=1
+  }
 
-musicdir="$(get_music_dir)" || {
-  message E "could not find music directory."
-  return 1
-}
+  local musicdir
 
-local T="$EPOCHSECONDS"
+  musicdir="$(get_music_dir)" || {
+    message E "could not find music directory."
+    return 1
+  }
 
-[[ -t 1 ]] && message M "cleaning sticker database..."
-[[ -t 1 ]] || notify_player "cleaning sticker database..."
+  local T="$EPOCHSECONDS"
 
-message M "scanning sticker database."
+  [[ -t 1 ]] && message M "cleaning sticker database..."
+  [[ -t 1 ]] || notify_player "cleaning sticker database..."
 
-local uris
-local -a _orphans
-local -a orphans
-local t i=0 uri
+  message M "scanning sticker database."
 
-mapfile -t uris < <(qdb mpdmusic 'q song file' | sort)
+  local uris
+  local -a _orphans
+  local -a orphans
+  local t i=0 uri
 
-((t=${#uris[@]}))
+  mapfile -t uris < <(qdb mpdmusic 'q song file' | sort)
 
-message M "found $t URI."
-message M "done."
-message M "processing."
+  ((t=${#uris[@]}))
 
-for uri in "${uris[@]}"; do
-  [[ $QUIET ]] || ((++i))
-  [[ -a ${musicdir}/$uri ]] ||
-    _orphans+=("'${uri//\'/\'\'}'")
-  [[ $QUIET ]] ||
-    printf "\r-- %d/%d: %d%%" $((i)) $((t)) $((i*100/t))
-done
+  message M "found $t URI."
+  message M "done."
+  message M "processing."
 
-[[ $QUIET ]] || echo
+  for uri in "${uris[@]}"; do
+    [[ $QUIET ]] || ((++i))
+    [[ -a ${musicdir}/$uri ]] ||
+      _orphans+=("'${uri//\'/\'\'}'")
+    [[ $QUIET ]] ||
+      printf "\r-- %d/%d: %d%%" $((i)) $((t)) $((i*100/t))
+  done
 
-message M "found ${#_orphans[@]} orphan(s)."
+  [[ $QUIET ]] || echo
 
-[[ ${_orphans[*]} ]] || {
-  [[ -t 1 ]] && message M "sticker database is clean."
-  [[ -t 1 ]] || notify_player "sticker database is clean."
-  return 0
-}
+  message M "found ${#_orphans[@]} orphan(s)."
 
-# format list
-for ((i=0;i<${#_orphans[@]}-1;i++)); do
-  orphans+=("${_orphans[$i]},")
-done
+  [[ ${_orphans[*]} ]] || {
+    [[ -t 1 ]] && message M "sticker database is clean."
+    [[ -t 1 ]] || notify_player "sticker database is clean."
+    return 0
+  }
 
-orphans+=("${_orphans[-1]}")
+  # format list
+  for ((i=0;i<${#_orphans[@]}-1;i++)); do
+    orphans+=("${_orphans[$i]},")
+  done
 
-qdb mpdmusic 'qq stat song:file('${orphans[*]}')'
-qdb mpdmusic 'hdel @recall(stat)'
-qdb mpdmusic 'qq fingerprint song:file('${orphans[*]}')'
-qdb mpdmusic 'hdel @recall(fingerprint)'
-qdb mpdmusic 'qq song file('${orphans[*]}')'
-qdb mpdmusic 'hdel @recall(song)'
+  orphans+=("${_orphans[-1]}")
 
-[[ -t 1 ]] && message M "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
-[[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
+  qdb mpdmusic 'qq stat song:file('${orphans[*]}')'
+  qdb mpdmusic 'hdel @recall(stat)'
+  qdb mpdmusic 'qq fingerprint song:file('${orphans[*]}')'
+  qdb mpdmusic 'hdel @recall(fingerprint)'
+  qdb mpdmusic 'qq song file('${orphans[*]}')'
+  qdb mpdmusic 'hdel @recall(song)'
+
+  [[ -t 1 ]] && message M "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
+  [[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
 
 }
 
 get_random_song() {
   # print random song(s).
+  qdb mpdmusic ping 2> /dev/null || return 1
 
   local count=0 skiplimit tracks
 

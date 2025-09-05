@@ -165,7 +165,7 @@ skip() {
 
   state || return 1
 
-  local uri ID
+  local uri
 
   uri="$(get_current)"
 
@@ -174,8 +174,8 @@ skip() {
 
   while [[ -a $SMPCPD_LOCK ]]; do sleep 1; done
 
-  ID="$(get_song_id "$uri")"
-  qdb mpdmusic 'W stat:'$ID' skipcount @inc'
+  get_song_id || return 1
+  qdb mpdmusic 'W stat:'$SONGID' skipcount @inc'
   update_stats "$uri"
   next
   return 0
@@ -575,7 +575,24 @@ status() {
     pstatus
     printf "%s\n" "$(get_current "%name%\n${fmt}")"
   else
-    echo "$(pstatus) $(rating "$uri") x$(playcount "$uri")"
+    if get_song_id; then
+      local r R P
+      IFS='|' read R P < <(qdb mpdmusic 'q stat:'$SONGID' rating:playcount')
+
+      case $((R/2)) in
+        0) r="-----" ;;
+        1) r="*----" ;;
+        2) r="**---" ;;
+        3) r="***--" ;;
+        4) r="****-" ;;
+        5) r="*****"
+      esac
+
+      echo "$(pstatus) ${r} x${P}"
+    else
+      pstatus
+    fi
+
     local info
     info="$(get_current "$fmt")"
     [[ $info ]] || echo "$uri"
