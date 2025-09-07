@@ -349,6 +349,8 @@ song_stats() {
   get_song_id || return 1
   IFS='|' read R L P S < <(qdb mpdmusic 'Q stat:'$SONGID' rating:@datetime(lastplayed):playcount:skipcount')
 
+  [[ $L =~ ^1970 ]] && L="-"
+
  ((R/=2))
 
   case $R in
