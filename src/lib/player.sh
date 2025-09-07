@@ -25,7 +25,7 @@
 #
 # PLAYER
 # C │ 2021/04/02
-# M │ 2025/09/04
+# M │ 2025/09/07
 # D │ Player functions.
 
 toggle() {
@@ -176,7 +176,7 @@ skip() {
 
   get_song_id || return 1
   qdb mpdmusic 'W stat:'$SONGID' skipcount @inc'
-  update_stats "$uri"
+  update_stats --no-playcount "$uri"
   next
   return 0
 }

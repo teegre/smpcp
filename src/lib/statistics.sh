@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/09/05
+# M : 2025/09/07
 # D : Statistics management.
 
 qdb_setup() {
@@ -69,6 +69,7 @@ quote() {
 
 get_song_id() {
   local uri value
+
   [[ $@ ]] || uri="$(quote "$(get_current)")"
   [[ $@ ]] && uri="$(quote "$@")"
 
@@ -189,7 +190,7 @@ update_stats() {
 
   update_history_index
 
-  get_song_id || return 1
+  get_song_id "$uri" || return 1
 
   if [[ $NO_PLAYCOUNT ]]; then
     qdb mpdmusic 'W stat:'$SONGID' lastplayed @now' || return 1
