@@ -237,7 +237,7 @@ Use `-s` option when using with *lsinfo*, *search* or similar commands.
 
 Examples:
 
-`cmd lsinfo "kraftwerk/the_man_machine" | _parse_song_info -s "%track%. %title"`
+`cmd lsinfo "kraftwerk/the_man_machine" | parse_song_info -s "%track%. %title"`
 
 ```
 1. The Robots
