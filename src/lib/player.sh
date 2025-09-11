@@ -176,7 +176,6 @@ skip() {
 
   get_song_id || return 1
   qdb mpdmusic 'W stat:'$SONGID' skipcount @inc'
-  update_stats --no-playcount "$uri"
   next
   return 0
 }
