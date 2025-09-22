@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2025/09/05
+# M : 2025/09/22
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -112,6 +112,7 @@ add_songs() {
     __song_mode
     rm "$SMPCPD_LOCK"
     [[ $(state -p) == "stop" ]] && play
+    auto_compact
     return 0
   elif [[ $mode -eq 2 ]]; then
     qdb mpdmusic commit
@@ -123,6 +124,7 @@ add_songs() {
     __album_mode
     rm "$SMPCPD_LOCK"
     state || play
+    auto_compact
     return 0
   fi
 

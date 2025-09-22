@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/09/07
+# M : 2025/09/22
 # D : Statistics management.
 
 qdb_setup() {
@@ -60,6 +60,23 @@ qdb_setup() {
   return 1
 }
 
+auto_compact() {
+  # 
+  local lastcompact now result
+  qdb mpdmusic ping || return 1
+  lastcompact="$(qdb mpdmusic 'get lastcompact')" || lastcompact=0
+  now="$(_date "%s")"
+  ((now-lastcompact >= 3600)) && {
+    logme "compacting database..."
+    qdb mpdmusic compact
+    result=$?
+    ((result == 0)) && { logme "done."; qdb mpdmusic 'set lastcompact @now'; }
+    ((result == 1)) && logme "an error occured."
+    return $result
+  }
+  return 1
+}
+
 quote() {
   local val="$1"
   val="${val//\"/\\\\\\\"}"
@@ -83,6 +100,7 @@ get_song_id() {
 }
 
 get_sticker() {
+  # OBSOLETE
   local uri name value ID
   uri="$1"
 
@@ -100,6 +118,7 @@ get_sticker() {
 }
 
 set_sticker() {
+  # OBSOLETE
   local uri name value ID
   uri="$1"
 
@@ -117,6 +136,7 @@ set_sticker() {
 }
 
 find_sticker() {
+  # OBSOLETE
   local uri name
   uri="$1"
 
@@ -133,6 +153,7 @@ find_sticker() {
 }
 
 delete_sticker() {
+  # OBSOLETE
   local uri name
   uri="$1"
 
@@ -299,11 +320,6 @@ playcount() {
   get_song_id || return 1
   qdb mpdmusic 'Q stat:'$SONGID' playcount' || return 1
   return 0
-
-  # local plc
-  # plc="$(get_sticker "$uri" playcount 2> /dev/null)" || plc=0
-
-  # echo "$plc"
 }
 
 # shellcheck disable=SC2120
@@ -322,15 +338,6 @@ skipcount() {
   get_song_id || return 1
   qdb mpdmusic 'Q stat:'$SONGID' skipcount' || return 1
   return 0
-
-  # local skc
-  # skc="$(get_sticker "$uri" skipcount 2> /dev/null)" || {
-  #   echo 0
-  #   return 1
-  # }
-
-  # echo $((skc))
-  # return 0
 }
 
 # shellcheck disable=SC2119
