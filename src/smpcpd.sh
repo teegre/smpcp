@@ -225,6 +225,7 @@ trap quit_daemon INT QUIT TERM
 
 logme "loading qdb database"
 qdb_setup && logme "done." || logme "oops..."
+auto_backup || logme "db backup failed..."
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...
