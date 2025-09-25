@@ -103,7 +103,7 @@ add_songs() {
   mode="$(get_mode)"
 
   if [[ $mode -eq 1 ]]; then
-    qdb mpdmusic commit
+    auto_compact || qdb mpdmusic commit
     plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding songs..."
@@ -112,10 +112,9 @@ add_songs() {
     __song_mode
     rm "$SMPCPD_LOCK"
     [[ $(state -p) == "stop" ]] && play
-    auto_compact
     return 0
   elif [[ $mode -eq 2 ]]; then
-    qdb mpdmusic commit
+    auto_compact || qdb mpdmusic commit
     plugin_notify "add" 2> /dev/null
     touch "$SMPCPD_LOCK"
     notify_player "Now adding album..."
@@ -124,7 +123,6 @@ add_songs() {
     __album_mode
     rm "$SMPCPD_LOCK"
     state || play
-    auto_compact
     return 0
   fi
 
