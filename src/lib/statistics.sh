@@ -82,7 +82,7 @@ auto_backup() {
   local lastbackup now
   now="$(_date "%Y%m%d%H%M%S")"
   cp "${SMPCP_STICKER_DB}" "${SMPCP_STICKER_DB}.${now}.bak" 2> /dev/null && {
-    qdb -q "${SMPCP_STICKER_DB}" "set lastbackup ${now}"
+    qdb -q "${SMPCP_STICKER_DB}" "set lastbackup @now"
     return 0
   }
   return 1
