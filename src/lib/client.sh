@@ -740,6 +740,8 @@ update_song_list() {
   [[ -t 1 ]] && message M "song list updated in ${T2} seconds."
   [[ -t 1 ]] || notify_player "song list updated in ${T2}."
 
+  clean_orphan_stickers
+
   return 0
 }
 

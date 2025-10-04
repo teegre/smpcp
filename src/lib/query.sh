@@ -182,7 +182,7 @@ clean_orphan_stickers() {
 
   local uris
   local -a _orphans
-  local -a orphans
+  local orphans
   local t i=0 uri
 
   mapfile -t uris < <(qdb mpdmusic 'q song file' | sort)
@@ -195,8 +195,10 @@ clean_orphan_stickers() {
 
   for uri in "${uris[@]}"; do
     [[ $QUIET ]] || ((++i))
-    [[ -a ${musicdir}/$uri ]] ||
-      _orphans+=("'${uri//\'/\'\'}'")
+    [[ -a ${musicdir}/"${uri//\\/}" ]] ||
+      # _orphans+=("'${uri//\'/\'\'}'")
+      _orphans+=("\"${uri//\\/}\"")
+      # _orphans+=("$(quote "${uri}")")
     [[ $QUIET ]] ||
       printf "\r-- %d/%d: %d%%" $((i)) $((t)) $((i*100/t))
   done
@@ -212,18 +214,22 @@ clean_orphan_stickers() {
   }
 
   # format list
+  orphans=""
   for ((i=0;i<${#_orphans[@]}-1;i++)); do
-    orphans+=("${_orphans[$i]},")
+    orphans+="${_orphans[$i]},"
   done
 
-  orphans+=("${_orphans[-1]}")
+  orphans+="${_orphans[-1]}"
 
-  qdb mpdmusic 'qq stat song:file('${orphans[*]}')'
-  qdb mpdmusic 'hdel @recall(stat)'
-  qdb mpdmusic 'qq fingerprint song:file('${orphans[*]}')'
-  qdb mpdmusic 'hdel @recall(fingerprint)'
-  qdb mpdmusic 'qq song file('${orphans[*]}')'
-  qdb mpdmusic 'hdel @recall(song)'
+  echo "${orphans}"
+
+  qdb mpdmusic 'qq stat song:file('${orphans}')' && {
+    qdb mpdmusic 'hdel @recall(stat)'
+    qdb mpdmusic 'qq fingerprint song:file('${orphans}')'
+    qdb mpdmusic 'hdel @recall(fingerprint)'
+    qdb mpdmusic 'qq song file('${orphans[*]}')'
+    qdb mpdmusic 'hdel @recall(song)'
+  }
 
   [[ -t 1 ]] && message M "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
   [[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
