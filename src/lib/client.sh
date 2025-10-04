@@ -725,7 +725,7 @@ update_song_list() {
       # add new entry
       logme "db:add $file"
       qdb mpdmusic 'w @autoid(song) file "'"${file}"'" duration "'${duration}'"'
-      local ID="$(get_song_id "${REPLY}")"
+      local ID="$(qdb mpdmusic 'id song file "'"${file}"'"')"
       qdb mpdmusic 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0'
       qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
     }
