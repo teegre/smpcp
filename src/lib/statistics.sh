@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/09/22
+# M : 2025/10/07
 # D : Statistics management.
 
 qdb_setup() {
@@ -90,8 +90,8 @@ auto_backup() {
 
 quote() {
   local val="$1"
-  val="${val//\"/\\\\\\\"}"
-  val="${val//\'/\\\\\\\'}"
+  val="${val//\"/\\\"}"
+  val="${val//\'/\\\'}"
   echo $val
 }
 

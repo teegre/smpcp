@@ -25,7 +25,7 @@
 #
 # QUERY
 # C │ 2021/04/05
-# M │ 2023/09/05
+# M │ 2023/10/07
 # D │ Music and sticker database query + related utilities.
 
 # to achieve some advanced search we need to directly query
@@ -149,15 +149,12 @@ _db_get_favourite() {
  return 0
 }
 
-clean_orphan_stickers() {
+clean_orphans() {
 # check for orphans and remove them from
-# sticker database.
+# the stats database.
 #
-# NOTE: when a file is removed physically and from the database, 
-# its stats remain in the sticker database. Hence this function.
-# But when a file is renamed or moved, it would be great to
-# keep its stats in the sticker database and only update its uri...
-# it would imply storing some unique id for each file...
+# NOTE: when a file is removed physically and from mpd's database,
+# its stats remain in the stats database. Hence this function.
 
   qdb mpdmusic ping 2> /dev/null || return 1
 
@@ -195,10 +192,10 @@ clean_orphan_stickers() {
 
   for uri in "${uris[@]}"; do
     [[ $QUIET ]] || ((++i))
-    [[ -a ${musicdir}/"${uri//\\/}" ]] ||
-      # _orphans+=("'${uri//\'/\'\'}'")
-      _orphans+=("\"${uri//\\/}\"")
-      # _orphans+=("$(quote "${uri}")")
+    [[ -a ${musicdir}/"${uri//\\/}" ]] || {
+      uri="$(quote "${uri}")"
+      _orphans+=("\"${uri//\"/\\\"}\"")
+    }
     [[ $QUIET ]] ||
       printf "\r-- %d/%d: %d%%" $((i)) $((t)) $((i*100/t))
   done
@@ -214,26 +211,29 @@ clean_orphan_stickers() {
   }
 
   # format list
-  orphans=""
-  for ((i=0;i<${#_orphans[@]}-1;i++)); do
-    orphans+="${_orphans[$i]},"
-  done
+  printf -v orphans "%s," "${_orphans[@]}"
 
-  orphans+="${_orphans[-1]}"
+  orphans="${orphans:0:-1}"
 
   echo "${orphans}"
 
-  qdb mpdmusic 'qq stat song:file('${orphans}')' && {
-    qdb mpdmusic 'hdel @recall(stat)'
-    qdb mpdmusic 'qq fingerprint song:file('${orphans}')'
-    qdb mpdmusic 'hdel @recall(fingerprint)'
-    qdb mpdmusic 'qq song file('${orphans[*]}')'
-    qdb mpdmusic 'hdel @recall(song)'
-  }
+  if qdb mpdmusic "qq stat song:file(${orphans})"; then
+    qdb mpdmusic 'hdel @recall(stat)' && \
+      qdb mpdmusic "qq fingerprint song:file(${orphans})" && \
+        qdb mpdmusic 'hdel @recall(fingerprint)' && \
+          qdb mpdmusic "qq song file(${orphans})" && \
+            qdb mpdmusic 'hdel @recall(song)' && \
+              qdb mpdmusic commit
+  else
+    [[ -t 1 ]] && message E "error cleaning the database"
+    [[ -t 1 ]] || notify_player "error cleaning the database"
+    return 1
+  fi
 
   [[ -t 1 ]] && message M "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
   [[ -t 1 ]] || notify_player "sticker database cleaned in $(secs_to_hms "$((EPOCHSECONDS-T))")."
 
+  return 0
 }
 
 get_random_song() {

@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2025/09/02
+# M │ 2025/10/07
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -673,7 +673,7 @@ get_discography() {
 
 }
 
-_get_fingerprint() {
+_get_fingerprint2() {
   local uri file fingerprint
   uri="$1"
   file="$(get_music_dir)"/"$uri"
@@ -685,23 +685,46 @@ _get_fingerprint() {
   echo "$fingerprint"
 }
 
+_get_fingerprint() {
+  local uri file fingerprint duration filesize fpdata fphash
+  uri="$1"
+  file="$(get_music_dir)"/"$uri"
+
+  duration="$(get_info "$uri" "%duration%")"
+  filesize="$(stat -c%s "$file" 2> /dev/null || echo 0)"
+
+  fingerprint="$(fpcalc -start 30 -length 30 -json "$file" 2> /dev/null)"
+  if [[ $? -eq 0 && -n "$fingerprint" ]]; then
+    fpdata="$(echo "$fingerprint" | jq -r .fingerprint)"
+    fphash="$(printf '%s' "$fpdata" | sha1sum | cut -d' ' -f1)"
+  else
+    fphash="$(sha1sum "$file" | cut -d' ' -f1)"
+  fi
+
+  jq -nc \
+    --arg duration    "$duration"              \
+    --arg fingerprint "${fphash}-${filesize}" \
+    '{duration: $duration, fingerprint: $fingerprint}'
+}
+
 update_song_list() {
   # update stats database
   # do it only if a mpd database update previously occurred (expensive!).
   
-  local D D1 D2
+  local D D1 D2 mpdcmd
 
   D1="$(smpcp expert fcmd stats db_update)"
   D2="$(qdb mpdmusic 'get lastupdate')"
 
   ((D1 <= D2)) && return 1
 
-  D="$(date -d @"$D1" "+%Y-%m-%d")"
-
   [[ -t 1 ]] || notify_player "updating database..."
   [[ -t 1 ]] && message M "updating database..."
 
   local T="$EPOCHSECONDS"
+
+  ((D2 == 0)) && mpdcmd="fcmd -x listall file | sort"
+  ((D2 == 0)) || mpdcmd="search added-since $D2 | sort"
 
   while read -r; do
     file="$(quote "${REPLY}")"
@@ -714,7 +737,7 @@ update_song_list() {
       local fingerprint="$(echo "$data" | jq -r .fingerprint)"
 
       # file has been renamed?
-      qdb mpdmusic 'exists fingerprint data '${fingerprint}'' && {
+      qdb mpdmusic 'exists fingerprint data '"${fingerprint}"'' && {
         logme "db:update ${REPLY}"
         # update file only
         qdb mpdmusic 'qq song fingerprint data="'${fingerprint}'"'
@@ -729,7 +752,7 @@ update_song_list() {
       qdb mpdmusic 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0'
       qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
     }
-  done < <(search added-since "$D" | sort)
+  done < <($mpdcmd)
 
   qdb mpdmusic 'set lastupdate @now'
   qdb mpdmusic commit
@@ -740,7 +763,7 @@ update_song_list() {
   [[ -t 1 ]] && message M "song list updated in ${T2} seconds."
   [[ -t 1 ]] || notify_player "song list updated in ${T2}."
 
-  clean_orphan_stickers
+  clean_orphans
 
   return 0
 }
