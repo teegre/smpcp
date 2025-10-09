@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2025/10/07
+# M │ 2025/10/09
 # D │ Basic MPD client.
 
 declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
@@ -780,7 +780,6 @@ update_songs() {
       qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
         continue
     }
-
   done < <($mpdcmd)
 
 
