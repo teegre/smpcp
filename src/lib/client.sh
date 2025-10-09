@@ -702,16 +702,44 @@ _get_fingerprint() {
   fi
 
   jq -nc \
-    --arg duration    "$duration"              \
+    --arg duration    "$duration"             \
     --arg fingerprint "${fphash}-${filesize}" \
     '{duration: $duration, fingerprint: $fingerprint}'
 }
 
-update_song_list() {
+update_modified_songs() {
+  [[ $1 ]] || return 1
+
+  while read -r; do
+    local file="$(quote "${REPLY}")"
+    qdb mpdmusic 'exists song file "'"${file}"'"' && {
+      local data="$(_get_fingerprint "$REPLY")"
+
+      [[ $data ]] || { logme "db:skip ${file}"; continue; }
+
+      local duration="$(echo "$data" | jq -r .duration)"
+      local fingerprint="$(echo "$data" | jq -r .fingerprint)"
+
+      qdb mpdmusic 'exists fingerprint data "'"${fingerprint}"'"' && continue
+      # update fingerprint
+      qdb mpdmusic 'qq fingerprint song:file="'"${file}"'"' && {
+        logme "db:update fingerprint ${REPLY}"
+        qdb mpdmusic 'w @recall(fingerprint) data "'${fingerprint}'" size "'${#fingerprint}'"'
+      }
+      # update duration (?)
+      qdb mpdmusic 'qq song file="'"${file}"'"' && {
+        logme "db:update duration ${REPLY}"
+        qdb mpdmusic 'w @recall(song) duration "'${duration}'"'
+      }
+    }
+  done < <(fcmd -x search modified-since "$1" file | sort)
+}
+
+update_songs() {
   # update stats database
   # do it only if a mpd database update previously occurred (expensive!).
   
-  local D D1 D2 mpdcmd
+  local D D1 D2 mpdcmd file
 
   D1="$(smpcp expert fcmd stats db_update)"
   D2="$(qdb mpdmusic 'get lastupdate')"
@@ -724,10 +752,10 @@ update_song_list() {
   local T="$EPOCHSECONDS"
 
   ((D2 == 0)) && mpdcmd="fcmd -x listall file | sort"
-  ((D2 == 0)) || mpdcmd="search added-since $D2 | sort"
+  ((D2 == 0)) || mpdcmd="fcmd -x search added-since $D2 file | sort"
 
   while read -r; do
-    file="$(quote "${REPLY}")"
+    local file="$(quote "${REPLY}")"
     qdb mpdmusic 'exists song file "'"${file}"'"' || {
       local data="$(_get_fingerprint "$REPLY")"
 
@@ -744,15 +772,19 @@ update_song_list() {
         qdb mpdmusic 'w @recall(song) file "'"${file}"'" duration "'${duration}'"'
         continue
       }
-
       # add new entry
       logme "db:add $file"
       qdb mpdmusic 'w @autoid(song) file "'"${file}"'" duration "'${duration}'"'
       local ID="$(qdb mpdmusic 'id song file "'"${file}"'"')"
       qdb mpdmusic 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0'
       qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
+        continue
     }
+
   done < <($mpdcmd)
+
+
+  update_modified_songs "$D2"
 
   qdb mpdmusic 'set lastupdate @now'
   qdb mpdmusic commit

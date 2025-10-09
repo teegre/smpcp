@@ -76,7 +76,7 @@ tracker() {
   while read -r; do
 
     [[ $REPLY == database ]] && {
-      update_song_list &
+      update_songs &
       continue
     }
 
