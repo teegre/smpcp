@@ -410,7 +410,13 @@ get_duration() {
   # For these files, statistics are not updated because smpcpd
   # believes they have not been played thoroughly.
   # Below is a trick to address the issue.
-  URI="$(get_music_dir)/$(get_current)"
+
+  if [[ -n $1 ]]; then
+    URI="$(get_music_dir)/${1}}"
+  else
+    URI="$(get_music_dir)/$(get_current)"
+  fi
+
   duration_ms="$(mediainfo --Inform="Audio;%Duration%" "$URI" 2> /dev/null)"
   [[ $duration_ms ]] && {
     duration=$((duration_ms/1000))
@@ -751,8 +757,8 @@ update_songs() {
 
   local T="$EPOCHSECONDS"
 
-  ((D2 == 0)) && mpdcmd="fcmd -x listall file | sort"
-  ((D2 == 0)) || mpdcmd="fcmd -x search added-since $D2 file | sort"
+  ((D2 == 0)) && mpdcmd="fcmd -x listall file"
+  ((D2 == 0)) || mpdcmd="fcmd -x search added-since $D2 file"
 
   while read -r; do
     local file="$(quote "${REPLY}")"
@@ -780,7 +786,7 @@ update_songs() {
       qdb mpdmusic 'w @autoid(fingerprint) song song:'${ID}' data "'${fingerprint}'" size "'${#fingerprint}'"'
         continue
     }
-  done < <($mpdcmd)
+  done < <($mpdcmd | sort)
 
 
   update_modified_songs "$D2"
