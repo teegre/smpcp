@@ -1,4 +1,4 @@
-# shellcheck shell=baa$h
+# shellcheck shell=bash
 
 #
 # .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
@@ -123,16 +123,6 @@ _db_get_previous_song() {
     ((i++))
   done < <(_db_get_history 2> /dev/null)
   return 1
-}
-
-_db_get_all_songs() {
-
-sqlite3 "$SMPCP_STICKER_DB" << SQL
-.timeout 2000
-SELECT uri FROM sticker
-GROUP BY uri
-ORDER BY uri ASC;
-SQL
 }
 
 
@@ -262,7 +252,7 @@ get_random_song() {
     QUEUE+=("$REPLY")
     ((count++))
     ((count==$1)) && break
-  done < <(qdb mpdmusic 'Q song?!'$((tracks))' file stat:#lastplayed<'$D':#skipcount<'$skiplimit'' 2> /dev/null)
+  done < <(qdb mpdmusic 'q song?!'$((tracks))' file stat:#lastplayed<'$D':#skipcount<'$skiplimit'' 2> /dev/null)
 }
 
 get_rnd() {
@@ -293,43 +283,9 @@ get_rnd() {
     return
   }
 
-  # local RT R4 R5 C RR4 RR5
-  # RT="$(_db_rating_count "!=0")"
-  # R5="$(_db_rating_count "10")"
-  # R4="$(_db_rating_count "8")"
-  
-  ((C=count))
-  # ((RR5=C*R5/RT))
-
-  # logme "query: ***** $RR5"
-
-  # ((RR5>0)) && {
-  #   get_uri_by_rating 10 $((RR5))
-  #   r=$?
-  #   ((count-=r))
-  # }
-
-  # ((RR4=C*R4/RT))
-
-  # logme "query: ****- $RR4"
-
-  # ((RR4>0)) && {
-    # get_uri_by_rating 8 $((RR4))
-    # r=$?
-    # ((count-=r))
-  # }
-
   logme "query: ----- $count"
 
   get_random_song $((count))
-
-  # ((C+count-RR5-RR4==0))
-
-  # logme "query: found $((C+(count-RR5-RR4))) song(s)."
   logme "query: found $((count)) song(s)."
 }
 
-get_fav() {
-  # print random favourite songs
-  _db_get_favourite -l
-}

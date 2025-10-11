@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/10/07
+# M : 2025/10/11
 # D : Statistics management.
 
 qdb_setup() {
@@ -57,6 +57,41 @@ qdb_setup() {
   # unset user password
 
   qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open && return 0
+  # No database... build it...  may take a while...
+  local QDBCMDS="$(mktemp)"
+  local ID=1
+  logme "db:create"
+  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastbackup 0'
+  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastcompact 0'
+  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastupdate 0'
+  notify_player "database created."
+  local songcount="$(fcmd stats songs)"
+  local percent=
+  logme "db:process"
+  notify_player "processing files..."
+  while read -r; do
+    percent=$((ID*100/songcount))
+    (((songcount - ID) % (songcount / 10) == 0)) && notify_player "processing files...\n${percent}% done."
+    local file="$(quote "${REPLY}")"
+    local duration="$(get_duration "${REPLY}")"
+    echo 'w @autoid(song) file "'"${file}"'" duration "'"${duration}"'"' >> $QDBCMDS
+    echo 'w @autoid(fingerprint) song song:'${ID}' data n/a size 0' >> $QDBCMDS
+    echo 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0' >> $QDBCMDS
+    ((ID++))
+  done < <(fcmd -x listall file | sort)
+
+  echo "set lastupdate @now" >> $QDBCMDS
+
+  logme "db:write"
+  notify_player "writing to database..."
+  qdb --quiet --pipe "${SMPCP_STICKER_DB}" < $QDBCMDS
+  rm "$QDBCMDS"
+  notify_player "all set!"
+  logme "db:done"
+  logme "db:session"
+
+  qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open
+
   return 1
 }
 
@@ -224,10 +259,20 @@ update_stats() {
 
   get_song_id "$uri" || return 1
 
+  # check audio fingerprint
+  qdb mpdmusic 'q fingerprint:'${SONGID}' data=n/a' 2> /dev/null && {
+    local file="$(quote "$uri")"
+    local data="$(_get_fingerprint "$uri")"
+    [[ -n $data ]] && {
+      local fingerprint="$(echo "$data" | jq -r .fingerprint)"
+      qdb mpdmusic 'w fingerprint:'${SONGID}' data "'"${fingerprint}"'" size "'"${#fingerprint}"'"'
+    }
+  }
+
   if [[ $NO_PLAYCOUNT ]]; then
-    qdb mpdmusic 'W stat:'$SONGID' lastplayed @now' || return 1
+    qdb mpdmusic 'w stat:'$SONGID' lastplayed @now' || return 1
   else
-    qdb mpdmusic 'W stat:'$SONGID' lastplayed @now playcount @inc' || return 1
+    qdb mpdmusic 'w stat:'$SONGID' lastplayed @now playcount @inc' || return 1
   fi
   return 0
 }

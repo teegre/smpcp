@@ -25,10 +25,8 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2025/10/09
+# M │ 2025/10/11
 # D │ Basic MPD client.
-
-declare SMPCP_SONG_LIST="$HOME/.config/smpcp/songlist"
 
 is_mpd() {
   # check whether mpd is running or not.
@@ -411,8 +409,9 @@ get_duration() {
   # believes they have not been played thoroughly.
   # Below is a trick to address the issue.
 
-  if [[ -n $1 ]]; then
-    URI="$(get_music_dir)/${1}}"
+  if [[ -n $1 ]] && [[ $1 != -h ]]; then
+    URI="$(get_music_dir)/${1}"
+    shift
   else
     URI="$(get_music_dir)/$(get_current)"
   fi
@@ -696,7 +695,7 @@ _get_fingerprint() {
   uri="$1"
   file="$(get_music_dir)"/"$uri"
 
-  duration="$(get_info "$uri" "%duration%")"
+  duration="$(get_duration "$uri")"
   filesize="$(stat -c%s "$file" 2> /dev/null || echo 0)"
 
   fingerprint="$(fpcalc -start 30 -length 30 -json "$file" 2> /dev/null)"
@@ -787,7 +786,6 @@ update_songs() {
         continue
     }
   done < <($mpdcmd | sort)
-
 
   update_modified_songs "$D2"
 
