@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/10/11
+# M : 2025/10/12
 # D : Statistics management.
 
 qdb_setup() {
@@ -156,7 +156,7 @@ get_sticker() {
   name="$2"
   [[ $uri && $name ]] && {
     get_song_id || return 1
-    value="$(qdb mpdmusic 'Q stat:'$SONGID' '"$name"'')" || return 1
+    value="$(qdb mpdmusic 'q stat:'$SONGID' '"$name"'')" || return 1
     echo "$value"
     return 0
   }
@@ -285,7 +285,7 @@ reset_stats() {
   [[ $uri ]] || return 1
 
   get_song_id || return 1
-  qdb mpdmusic 'W stat:'$SONGID' lastplayed 0 playcount 0 skipcount 0' || return 1
+  qdb mpdmusic 'w stat:'$SONGID' lastplayed 0 playcount 0 skipcount 0' || return 1
 
   return 0
 }
@@ -308,7 +308,7 @@ rating() {
   get_song_id || return 1
 
   local cr
-  cr="$(qdb mpdmusic 'Q stat:'$SONGID' rating')" || cr=0
+  cr="$(qdb mpdmusic 'q stat:'$SONGID' rating')" || cr=0
   ((cr/=2))
 
   [[ $1 ]] || {
@@ -330,7 +330,7 @@ rating() {
       return 1
     }
 
-    qdb mpdmusic 'W stat:'$SONGID' rating '$((r*2))'' || return 1
+    qdb mpdmusic 'w stat:'$SONGID' rating '$((r*2))'' || return 1
     message M "$(get_current "%artist%: %title%") [$cr → $r]"
     return 0
   }
@@ -353,7 +353,7 @@ lastplayed() {
 
   local lsp
   get_song_id || return 1
-  qdb mpdmusic 'Q stat:'$SONGID' @datetime(lastplayed)' || return 1
+  qdb mpdmusic 'q stat:'$SONGID' @datetime(lastplayed)' || return 1
   return 0
   # lsp="$(get_sticker "$uri" @datetime(lastplayed))" || lsp="-"
 
@@ -374,7 +374,7 @@ playcount() {
   fi
 
   get_song_id || return 1
-  qdb mpdmusic 'Q stat:'$SONGID' playcount' || return 1
+  qdb mpdmusic 'q stat:'$SONGID' playcount' || return 1
   return 0
 }
 
@@ -392,7 +392,7 @@ skipcount() {
   fi
 
   get_song_id || return 1
-  qdb mpdmusic 'Q stat:'$SONGID' skipcount' || return 1
+  qdb mpdmusic 'q stat:'$SONGID' skipcount' || return 1
   return 0
 }
 
@@ -410,7 +410,7 @@ song_stats() {
 
   local R r L P S
   get_song_id || return 1
-  IFS='|' read R L P S < <(qdb mpdmusic 'Q stat:'$SONGID' rating:@datetime(lastplayed):playcount:skipcount')
+  IFS='|' read R L P S < <(qdb mpdmusic 'q stat:'$SONGID' rating:@datetime(lastplayed):playcount:skipcount')
 
   [[ $L =~ ^1970 ]] && L="-"
 
