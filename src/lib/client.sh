@@ -25,7 +25,7 @@
 #
 # CLIENT
 # C │ 2021/04/02
-# M │ 2025/10/11
+# M │ 2025/10/12
 # D │ Basic MPD client.
 
 is_mpd() {
@@ -758,6 +758,8 @@ update_songs() {
 
   ((D2 == 0)) && mpdcmd="fcmd -x listall file"
   ((D2 == 0)) || mpdcmd="fcmd -x search added-since $D2 file"
+
+  qdb mpdmusic commit
 
   while read -r; do
     local file="$(quote "${REPLY}")"
