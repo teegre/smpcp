@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/10/12
+# M : 2025/10/13
 # D : Statistics management.
 
 qdb_setup() {
@@ -75,7 +75,7 @@ qdb_setup() {
     local file="$(quote "${REPLY}")"
     local duration="$(get_duration "${REPLY}")"
     echo 'w @autoid(song) file "'"${file}"'" duration "'"${duration}"'"' >> $QDBCMDS
-    echo 'w @autoid(fingerprint) song song:'${ID}' data n/a size 0' >> $QDBCMDS
+    echo 'w @autoid(fingerprint) song song:'${ID}' data --- size 0' >> $QDBCMDS
     echo 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0' >> $QDBCMDS
     ((ID++))
   done < <(fcmd -x listall file | sort)
@@ -260,7 +260,7 @@ update_stats() {
   get_song_id "$uri" || return 1
 
   # check audio fingerprint
-  qdb mpdmusic 'q fingerprint:'${SONGID}' data=n/a' 2> /dev/null && {
+  qdb mpdmusic 'q fingerprint:'${SONGID}' data=---' 2> /dev/null && {
     local file="$(quote "$uri")"
     local data="$(_get_fingerprint "$uri")"
     [[ -n $data ]] && {
