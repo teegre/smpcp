@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/10/13
+# M : 2025/10/14
 # D : Statistics management.
 
 qdb_setup() {
@@ -135,6 +135,8 @@ get_song_id() {
 
   [[ $@ ]] || uri="$(quote "$(get_current)")"
   [[ $@ ]] && uri="$(quote "$@")"
+
+  [[ -z $uri ]] && return 1
 
   [[ $uri =~ ^https?: ]] && return 1
   [[ $uri =~ ^cdda: ]] && return 1
