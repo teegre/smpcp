@@ -90,6 +90,6 @@ Type `smpcp plugins` to see a list of installed plugins.
 
 ### Writing plugins
 
-I provided a (very basic and still in construction) guide to help plugins development: [Plugins Development Guide Wiki](https://gitlab.com/teegre/smpcp/-/wikis/Plugin-Development-Guide)  
+I provided a (very basic and still in construction) guide to help plugins development: [Plugins Development Guide Wiki](https://github.com/teegre/smpcp/wiki/SMPCP-Plugins-Development-Guide)  
 And you can check out the example plugin called **hello**.
 
