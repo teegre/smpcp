@@ -75,7 +75,7 @@ qdb_setup() {
     local file="$(quote "${REPLY}")"
     local duration="$(get_duration "${REPLY}")"
     echo 'w @autoid(song) file "'"${file}"'" duration "'"${duration}"'"' >> $QDBCMDS
-    echo 'w @autoid(fingerprint) song song:'${ID}' data --- size 0' >> $QDBCMDS
+    echo 'w @autoid(fingerprint) song song:'${ID}' data ---' >> $QDBCMDS
     echo 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0' >> $QDBCMDS
     ((ID++))
   done < <(fcmd -x listall file | sort)
@@ -267,7 +267,7 @@ update_stats() {
     local data="$(_get_fingerprint "$uri")"
     [[ -n $data ]] && {
       local fingerprint="$(echo "$data" | jq -r .fingerprint)"
-      qdb mpdmusic 'w fingerprint:'${SONGID}' data "'"${fingerprint}"'" size "'"${#fingerprint}"'"'
+      qdb mpdmusic 'w fingerprint:'${SONGID}' data "'"${fingerprint}"'"'
     }
   }
 
