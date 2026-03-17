@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021-2025, Stéphane MEYER.
+# Copyright (C) 2021-2026, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #
 # STATISTICS
 # C : 2021/04/08
-# M : 2025/10/14
+# M : 2026/03/17
 # D : Statistics management.
 
 qdb_setup() {
@@ -35,8 +35,8 @@ qdb_setup() {
 
   # if [[ $password =~ ^\$\((.+)\)$ ]]; then
   #   local cmd="${BASH_REMATCH[1]}"
-  #   password="$($cmd)" 2> /dev/null  || {
-  #     message E "invalid command."
+  #   password="$($cmd)" 2> /dev/null || {
+  #     message E "invalid password command."
   #     return 1
   #   }
   # elif [[ $password =~ ^\$\(.+[^\)]$ ]]; then
@@ -55,16 +55,20 @@ qdb_setup() {
   # SMPCP_QDB_PWD="$password"
   # export SMPCP_QDB_PWD
   # unset user password
+  logme "db:load"
+  timeout=30
+  while ((timeout > 0)); do
+    qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open && return 0
+    logme "db:load failed"
+    logme "db:load retry"
+    sleep 2
+    ((timeout--))
+  done
 
-  qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open && return 0
   # No database... build it...  may take a while...
   local QDBCMDS="$(mktemp)"
   local ID=1
   logme "db:create"
-  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastbackup 0'
-  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastcompact 0'
-  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastupdate 0'
-  notify_player "database created."
   local songcount="$(fcmd stats songs)"
   local percent=
   logme "db:process"
@@ -83,12 +87,16 @@ qdb_setup() {
   echo "set lastupdate @now" >> $QDBCMDS
 
   logme "db:write"
+  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastbackup 0'
+  qdb --quiet --nofield "${SMPCP_STICKER_DB}" 'set lastcompact 0'
   notify_player "writing to database..."
   qdb --quiet --pipe "${SMPCP_STICKER_DB}" < $QDBCMDS
   rm "$QDBCMDS"
   notify_player "all set!"
   logme "db:done"
   logme "db:session"
+
+  notify_player "database created."
 
   qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open
 
