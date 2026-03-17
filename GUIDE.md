@@ -18,15 +18,15 @@ This function is called each time a player event occurs and event is passed as t
 
 Player events are:
 
-*  `start` - daemon is starting
-*  `play` - playback started
-*  `pause` - playback paused
-*  `stop` - playback stopped
-*  `end` - reached the end of current song
-*  `change` - a new song is playing
-*  `add` - new songs are added
-*  `added` - new songs were added
-*  `quit` - daemon is quitting
+* `start` - daemon is starting
+* `play` - playback started
+* `pause` - playback paused
+* `stop` - playback stopped
+* `end` - reached the end of current song
+* `change` - a new song is playing
+* `add` - new songs are added
+* `added` - new songs were added
+* `quit` - daemon is quitting
 
 ## Plugin version
 
@@ -54,22 +54,22 @@ Libraries are stored in `/usr/lib/smpcp`.
 
 These libraries are sourced by default:
 
-*  client.sh
-*  core.sh
-*  help.sh
-*  player.sh
-*  playlist.sh
-*  plugin.sh
-*  query.sh
-*  statistics.sh
-*  tracker.sh
-*  volume.sh
+* client.sh
+* core.sh
+* help.sh
+* player.sh
+* playlist.sh
+* plugin.sh
+* query.sh
+* statistics.sh
+* tracker.sh
+* volume.sh
 
 # core.sh
 
 **core.sh** contains general purpose utility functions.
 
-## Environment variables:
+## Environment variables
 
 `SMPCP_ASSETS` assets directory.  
 `SMPCP_CACHE` cache directory (used for album art images).  
@@ -77,7 +77,7 @@ These libraries are sourced by default:
 `SMPCP_SETTINGS` settings file.  
 `SMPCP_ICON` default icon (for notifications).
 
-## Functions:
+## Functions
 
 ### _date
 
@@ -183,7 +183,7 @@ Sends HUP signal to **smpcpd** to notify it to add new songs to the queue.
 
 **client.sh** is a basic MPD client.
 
-## Functions :
+## Functions
 
 ### is_mpd
 
@@ -266,23 +266,23 @@ By default, if no format string is given, *parse_song_info* displays song's file
 
 Available metadata are:
 
-*  %file%
-*  %ext%
-*  %last-modified%
-*  %added%
-*  %artist%
-*  %name%
-*  %album%
-*  %albumartist% (defaults to %artist% if not found)
-*  %title%
-*  %track%
-*  %genre%
-*  %date%
-*  %disc%
-*  %time%
-*  %duration%
-*  %pos%
-*  %id%
+* %file%
+* %ext%
+* %last-modified%
+* %added%
+* %artist%
+* %name%
+* %album%
+* %albumartist% (defaults to %artist% if not found)
+* %title%
+* %track%
+* %genre%
+* %date%
+* %disc%
+* %time%
+* %duration%
+* %pos%
+* %id%
 
 ### get_current, get_next, get_previous
 

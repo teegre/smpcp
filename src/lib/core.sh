@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021-2025, Stéphane MEYER.
+# Copyright (C) 2021-2026, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 # D │ Utility functions.
 
 # shellcheck disable=SC2034
-__version='0.2.1-29'
+__version='0.2.1-3'
 
 declare SMPCP_ASSETS="${HOME}/.local/share/smpcp/assets"
 declare SMPCP_ICON="${SMPCP_ASSETS}/default.png"
