@@ -10,8 +10,8 @@
 
 ## Description
 
-**smpcp** is a command line client for [Music Player Daemon](https://www.musicpd.org).
-Written in Bash and in C, it includes some more advanced features like:
+**smpcp** is a command line client for [Music Player Daemon](https://www.musicpd.org).  
+Written in `Bash` and in `C`, it includes some more advanced features like:
 
 * Auto-generated playlists (song and album modes).
 * Notifications (with album art).
