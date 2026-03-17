@@ -25,7 +25,7 @@
 #
 # SMPCPD
 # C : 2021/04/10
-# M : 2025/09/22
+# M : 2026/03/17
 # D : Music non stop daemon.
 
 declare SMPCP_LIB="${HOME}/.local/lib/smpcp"
@@ -186,6 +186,7 @@ quit_daemon() {
   logme "smpcpd: shutting down."
   echo "shutting down..."
   plugin_notify "quit"
+  export SMPCPD_QUIT=1
   clear_media
   :> "$SMPCPD_PID"
   RUN=0
@@ -221,14 +222,16 @@ trap update_daemon HUP
 
 trap quit_daemon INT QUIT TERM
 
-logme "loading qdb database"
-qdb_setup && logme "done." || logme "oops..."
-auto_backup || logme "db backup failed..."
+qdb_setup && logme "db:done" || logme "db:oops..."
+
+[[ $SMPCPD_QUIT ]] || {
+  auto_backup || logme "db:backup failed..."
+}
 
 # have to handle the case mpd is not running
 # or was stopped when smpcpd was running...
 RUN=1
-while ((RUN)); do
+while ((RUN && !SMPCPD_QUIT)); do
   is_mpd && {
     [[ $DETECT ]] && {
       unset DETECT

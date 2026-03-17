@@ -59,11 +59,21 @@ qdb_setup() {
   timeout=30
   while ((timeout > 0)); do
     qdb --quiet --nofield --log "${SMPCP_STICKER_DB}" open && return 0
-    logme "db:load failed"
-    logme "db:load retry"
+
+    ((timeout % 10 == 0)) && {
+      logme "db:load failed"
+      logme "db:load retry"
+    }
+
+    [[ $SMPCPD_QUIT ]] && break
     sleep 2
     ((timeout--))
   done
+
+  [[ $SMPCPD_QUIT ]] && {
+    logme "db:interrupted"
+    return 1
+  }
 
   # No database... build it...  may take a while...
   local QDBCMDS="$(mktemp)"
@@ -81,8 +91,17 @@ qdb_setup() {
     echo 'w @autoid(song) file "'"${file}"'" duration "'"${duration}"'"' >> $QDBCMDS
     echo 'w @autoid(fingerprint) song song:'${ID}' data ---' >> $QDBCMDS
     echo 'w @autoid(stat) song song:'${ID}' lastplayed 0 playcount 0 skipcount 0 rating 0' >> $QDBCMDS
+
+    [[ $SMPCPD_QUIT ]] && break;
+
     ((ID++))
   done < <(fcmd -x listall file | sort)
+
+  [[ $SMPCPD_QUIT ]] && {
+    logme "qdb:interrupted"
+    rm "$QDBCMDS"
+    return 1
+  }
 
   echo "set lastupdate @now" >> $QDBCMDS
 
@@ -104,7 +123,6 @@ qdb_setup() {
 }
 
 auto_compact() {
-  # 
   local lastcompact now result
   qdb mpdmusic ping || return 1
   lastcompact="$(qdb mpdmusic 'get lastcompact')" || lastcompact=0
@@ -121,7 +139,7 @@ auto_compact() {
 }
 
 auto_backup() {
-  #
+  [[ $SMPCPD_QUIT ]] && return 1;
   local lastbackup now
   now="$(_date "%Y%m%d%H%M%S")"
   cp "${SMPCP_STICKER_DB}" "${SMPCP_STICKER_DB}.${now}.bak" 2> /dev/null && {
