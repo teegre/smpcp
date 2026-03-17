@@ -17,14 +17,13 @@ MANPAGE5   = $(PROGNAME).conf.5
 CC         = gcc
 LIBS       = -lmpdclient
 
-.PHONY: install
 install:src/$(PROGNAME)
 install:src/$(DAEMON)
 	install -d $(BINDIR)
 	install -m755 src/$(PROGNAME) $(BINDIR)/$(PROGNAME)
 	install -m755 src/$(DAEMON) $(BINDIR)/$(DAEMON)
-	${CC} src/idle.c $(LIBS) -o src/idlecmd
-	install -m755 src/idlecmd $(BINDIR)
+	${CC} src/smpcp-idle.c $(LIBS) -o src/smpcp-idle
+	install -m755 src/smpcp-idle $(BINDIR)
 	install -m644 $(SERVICE) $(SYSDUNIT)/$(SERVICE)
 	install -Dm644 src/lib/*.* -t $(LIBDIR)/$(PROGNAME)
 	install -Dm644 smpcp.conf  -t $(SHAREDIR)/$(PROGNAME)
@@ -36,13 +35,12 @@ install:src/$(DAEMON)
 	if [ $$(basename $$SHELL) == "zsh"  ]; then install -Dm644 autocomplete/zsh-smpcp-complete $(ZSHCOMP)/_$(PROGNAME); fi
 	rm src/$(PROGNAME)
 	rm src/$(DAEMON)
-	rm src/idlecmd
+	rm src/smpcp-idle
 
-.PHONY: uninstall
 uninstall:
 	rm $(BINDIR)/$(PROGNAME)
 	rm $(BINDIR)/$(DAEMON)
-	rm $(BINDIR)/idlecmd
+	rm $(BINDIR)/smpcp-idle
 	rm $(SYSDUNIT)/$(SERVICE)
 	rm -rf $(LIBDIR)/$(PROGNAME)
 	rm -rf $(SHAREDIR)/$(PROGNAME)

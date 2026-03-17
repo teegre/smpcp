@@ -1,4 +1,4 @@
- #shellcheck shell=bash
+#shellcheck shell=bash
 
 #
 # .▄▄ · • ▌ ▄ ·.  ▄▄▄· ▄▄·  ▄▄▄· super
@@ -8,7 +8,7 @@
 #  ▀▀▀▀ ▀▀  █▪▀▀▀.▀   ·▀▀▀ .▀    plus+
 #
 # This file is part of smpcp.
-# Copyright (C) 2021-2025, Stéphane MEYER.
+# Copyright (C) 2021-2026, Stéphane MEYER.
 #
 # Smpcp is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -55,8 +55,8 @@ fi
 
 if [[ $1 =~ ^idle.*$ ]]; then
   case $1 in
-    idle    ) shift; idlecmd "$@" ;;
-    idleloop) shift; idlecmd loop "$@" ;;
+    idle    ) shift; smpcp-idle "$@" ;;
+    idleloop) shift; smpcp-idle loop "$@" ;;
     *       ) echo "ACK [] {} invalid command."
   esac
   return $?
