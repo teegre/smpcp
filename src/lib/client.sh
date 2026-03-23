@@ -532,7 +532,7 @@ get_albumart() {
   # remove trailing /
   musicdir="${musicdir%*/}"
 
-  # does directory exists?
+  # does directory exist?
   [[ -d $musicdir ]] || {
     echo "$default"
     return
@@ -716,6 +716,9 @@ update_modified_songs() {
   [[ $1 ]] || return 1
 
   while read -r; do
+
+    [[ $SMPCPD_QUIT ]] && return
+
     local file="$(quote "${REPLY}")"
     qdb mpdmusic 'exists song file "'"${file}"'"' && {
       local data="$(_get_fingerprint "$REPLY")"
@@ -762,6 +765,9 @@ update_songs() {
   qdb mpdmusic commit
 
   while read -r; do
+
+    [[ $SMPCPD_QUIT ]] && return
+
     local file="$(quote "${REPLY}")"
     qdb mpdmusic 'exists song file "'"${file}"'"' || {
       local data="$(_get_fingerprint "$REPLY")"

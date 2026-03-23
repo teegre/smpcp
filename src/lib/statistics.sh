@@ -98,7 +98,7 @@ qdb_setup() {
   done < <(fcmd -x listall file | sort)
 
   [[ $SMPCPD_QUIT ]] && {
-    logme "qdb:interrupted"
+    logme "db:interrupted"
     rm "$QDBCMDS"
     return 1
   }
@@ -429,6 +429,9 @@ song_stats() {
   # print current song statistics.
   local uri ID
   uri="$(get_current)"
+
+  [[ $uri ]] || return
+
   get_current "[[%name%\n]][[%artist%: ]]%title%[[\n%album%]][[ (%date%)]]"
   echo "$(get_elapsed -h) / $(get_duration -h)"
 
