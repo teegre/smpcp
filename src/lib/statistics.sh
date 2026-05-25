@@ -129,10 +129,13 @@ auto_compact() {
   now="$(_date "%s")"
   ((now-lastcompact >= 3600)) && {
     logme "compacting database..."
+    notify_player "Compacting database..."
     qdb mpdmusic compact
     result=$?
     ((result == 0)) && { logme "done."; qdb mpdmusic 'set lastcompact @now'; }
     ((result == 1)) && logme "an error occured."
+    ((result == 0)) && notify_player "Done."
+    ((result == 1)) && notify_player "An error occured during compaction."
     return $result
   }
   return 1
